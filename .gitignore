@@ -1,4 +1,50 @@
-.DS_Store # macOS の一時ファイル
-*.swp     # Vim のスワップファイル
-*.bak     # バックアップファイル
-local/    # ローカル環境固有の設定など
+# macOS files
+.DS_Store
+*.swp
+*.bak
+
+# Local environment specific settings
+local/
+
+# Confidential files - Claude settings and sensitive data
+claude/settings.json
+claude/projects/*/
+claude/todos/
+claude/.claude/
+claude/statsig/
+
+# API keys and tokens
+*.key
+*.pem
+*.p12
+*.token
+*_token
+*_key
+api_keys.json
+secrets.json
+
+# Environment variables with sensitive data
+.env.local
+.env.production
+
+# SSH keys and configs
+ssh/id_*
+ssh/known_hosts
+ssh/config
+
+# GPG keys
+gnupg/
+
+# Oh-My-Zsh - ignore the entire directory as it's a git repository
+oh-my-zsh/
+
+# Neovim temporary files
+nvim/lazy-lock.json
+nvim/*.tmp
+nvim/swap/
+nvim/backup/
+nvim/undo/
+
+# Wezterm logs and temporary files
+wezterm/.claude/
+wezterm/logs/

@@ -1,0 +1,5 @@
+This is a test file for clipboard functionality.
+You can use this to test yanking in NeoVim.
+Line 1: Hello World
+Line 2: Testing clipboard
+Line 3: Copy this line!
