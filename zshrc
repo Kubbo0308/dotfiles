@@ -25,6 +25,10 @@ ZSH_HIGHLIGHT_STYLES[cursor]='bg=blue'
 # ルートユーザ
 ZSH_HIGHLIGHT_STYLES[root]='bg=red'弧の色を変える
 
+# zsh-autosuggestions color configuration
+# Use a lighter gray for better visibility against dark backgrounds
+export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
+
 # git alias
 alias grsh='git reset --soft HEAD^'
 alias gst='git status'
