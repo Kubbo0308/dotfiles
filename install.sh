@@ -70,6 +70,32 @@ if [ -d "$DOTFILES_DIR/config/nvim" ]; then
     create_symlink "$DOTFILES_DIR/config/nvim" "$HOME/.config/nvim"
 fi
 
+# Install oh-my-zsh custom configurations
+if [ -d "$DOTFILES_DIR/oh-my-zsh-custom" ]; then
+    echo "🔌 Setting up Oh-My-Zsh custom configurations..."
+    
+    # Create oh-my-zsh custom directory if it doesn't exist
+    mkdir -p "$HOME/.oh-my-zsh/custom"
+    
+    # Copy custom themes
+    if [ -d "$DOTFILES_DIR/oh-my-zsh-custom/themes" ]; then
+        echo "🎨 Installing custom themes..."
+        cp -r "$DOTFILES_DIR/oh-my-zsh-custom/themes/"* "$HOME/.oh-my-zsh/custom/themes/" 2>/dev/null || true
+    fi
+    
+    # Copy custom zsh files
+    if [ -f "$DOTFILES_DIR/oh-my-zsh-custom/example.zsh" ]; then
+        echo "📝 Installing custom zsh files..."
+        cp "$DOTFILES_DIR/oh-my-zsh-custom/"*.zsh "$HOME/.oh-my-zsh/custom/" 2>/dev/null || true
+    fi
+    
+    # Install plugins from plugins.txt
+    if [ -f "$DOTFILES_DIR/install-oh-my-zsh-plugins.sh" ]; then
+        echo "📦 Installing Oh-My-Zsh plugins..."
+        "$DOTFILES_DIR/install-oh-my-zsh-plugins.sh"
+    fi
+fi
+
 echo "✅ Dotfiles installation completed!"
 
 if [ -d "$BACKUP_DIR" ]; then

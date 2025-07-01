@@ -35,8 +35,9 @@ ssh/config
 # GPG keys
 gnupg/
 
-# Oh-My-Zsh - ignore the entire directory as it's a git repository
+# Oh-My-Zsh - ignore the main directory but allow custom configs
 oh-my-zsh/
+!oh-my-zsh-custom/
 
 # Neovim temporary files
 nvim/lazy-lock.json

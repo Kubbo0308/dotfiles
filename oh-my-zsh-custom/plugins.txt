@@ -1,0 +1,11 @@
+# Oh-My-Zsh Custom Plugins List
+# This file lists external plugins that should be installed in ~/.oh-my-zsh/custom/plugins/
+
+# Syntax highlighting for zsh
+https://github.com/zsh-users/zsh-syntax-highlighting.git
+
+# Auto suggestions for zsh
+https://github.com/zsh-users/zsh-autosuggestions.git
+
+# Additional completions for zsh
+https://github.com/zsh-users/zsh-completions.git

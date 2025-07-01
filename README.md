@@ -6,16 +6,20 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 
 ```
 ~/.dotfiles/
-├── claude/           # Claude AI configuration (sensitive files ignored)
+├── claude/                      # Claude AI configuration (sensitive files ignored)
 ├── config/
-│   ├── nvim/        # Neovim configuration
-│   └── wezterm/     # WezTerm terminal configuration
-├── oh-my-zsh/       # Oh My Zsh framework (cache/logs ignored)
-├── zshrc            # Zsh shell configuration
-├── .gitignore       # Ignores sensitive files and cache
-├── install.sh       # Installation script
-├── uninstall.sh     # Uninstallation script
-└── README.md        # This file
+│   ├── nvim/                   # Neovim configuration
+│   └── wezterm/                # WezTerm terminal configuration
+├── oh-my-zsh-custom/           # Oh My Zsh custom configurations
+│   ├── themes/                 # Custom themes
+│   ├── plugins.txt             # External plugins list
+│   └── *.zsh                   # Custom zsh files
+├── zshrc                       # Zsh shell configuration
+├── .gitignore                  # Ignores sensitive files and cache
+├── install.sh                  # Installation script
+├── install-oh-my-zsh-plugins.sh # Oh My Zsh plugins installer
+├── uninstall.sh                # Uninstallation script
+└── README.md                   # This file
 ```
 
 ## Installation
@@ -33,9 +37,12 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 This will create symbolic links:
 - `~/.zshrc` → `~/.dotfiles/zshrc`
 - `~/.claude` → `~/.dotfiles/claude`
-- `~/.oh-my-zsh` → `~/.dotfiles/oh-my-zsh`
 - `~/.config/wezterm` → `~/.dotfiles/config/wezterm`
 - `~/.config/nvim` → `~/.dotfiles/config/nvim`
+
+And install Oh-My-Zsh customizations:
+- Custom themes and zsh files
+- External plugins (zsh-autosuggestions, zsh-syntax-highlighting, etc.)
 
 ## Security
 
