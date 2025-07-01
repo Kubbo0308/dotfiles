@@ -2,7 +2,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="agnoster"
 
-plugins=(git docker zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
+plugins=(git docker brew github composer zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -42,4 +42,4 @@ if [ -f '/Users/takesupasankyu/Downloads/google-cloud-sdk/completion.zsh.inc' ];
 
 export PATH="$HOME/Downloads/google-cloud-sdk/bin:$PATH"
 
-. "$HOME/.local/bin/env"
+if [ -f "$HOME/.local/bin/env" ]; then . "$HOME/.local/bin/env"; fi
