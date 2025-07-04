@@ -76,29 +76,42 @@ return {
     end,
   },
 
-  -- TypeScript utilities
+  -- TypeScript utilities (modern replacement for archived typescript.nvim)
   {
-    "jose-elias-alvarez/typescript.nvim",
-    dependencies = "nvim-lua/plenary.nvim",
-    ft = { "typescript", "typescriptreact" },
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    ft = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
     config = function()
-      require("typescript").setup({
-        disable_commands = false,
-        debug = false,
-        go_to_source_definition = {
-          fallback = true,
-        },
-        server = {
-          on_attach = function(client, bufnr)
-            -- Key mappings for TypeScript
-            local opts = { buffer = bufnr, silent = true }
-            vim.keymap.set("n", "<leader>to", "<cmd>TypescriptOrganizeImports<cr>", vim.tbl_extend("force", opts, { desc = "Organize imports" }))
-            vim.keymap.set("n", "<leader>tR", "<cmd>TypescriptRenameFile<cr>", vim.tbl_extend("force", opts, { desc = "Rename file" }))
-            vim.keymap.set("n", "<leader>ti", "<cmd>TypescriptAddMissingImports<cr>", vim.tbl_extend("force", opts, { desc = "Add missing imports" }))
-            vim.keymap.set("n", "<leader>tF", "<cmd>TypescriptFixAll<cr>", vim.tbl_extend("force", opts, { desc = "Fix all" }))
-            vim.keymap.set("n", "<leader>tu", "<cmd>TypescriptRemoveUnused<cr>", vim.tbl_extend("force", opts, { desc = "Remove unused" }))
-            vim.keymap.set("n", "<leader>td", "<cmd>TypescriptGoToSourceDefinition<cr>", vim.tbl_extend("force", opts, { desc = "Go to source definition" }))
-          end,
+      require("typescript-tools").setup({
+        on_attach = function(client, bufnr)
+          -- Key mappings for TypeScript utilities
+          local opts = { buffer = bufnr, silent = true }
+          vim.keymap.set("n", "<leader>to", "<cmd>TSToolsOrganizeImports<cr>", vim.tbl_extend("force", opts, { desc = "Organize imports" }))
+          vim.keymap.set("n", "<leader>tR", "<cmd>TSToolsRenameFile<cr>", vim.tbl_extend("force", opts, { desc = "Rename file" }))
+          vim.keymap.set("n", "<leader>ti", "<cmd>TSToolsAddMissingImports<cr>", vim.tbl_extend("force", opts, { desc = "Add missing imports" }))
+          vim.keymap.set("n", "<leader>tF", "<cmd>TSToolsFixAll<cr>", vim.tbl_extend("force", opts, { desc = "Fix all" }))
+          vim.keymap.set("n", "<leader>tu", "<cmd>TSToolsRemoveUnused<cr>", vim.tbl_extend("force", opts, { desc = "Remove unused imports" }))
+          vim.keymap.set("n", "<leader>td", "<cmd>TSToolsGoToSourceDefinition<cr>", vim.tbl_extend("force", opts, { desc = "Go to source definition" }))
+          vim.keymap.set("n", "<leader>tr", "<cmd>TSToolsFileReferences<cr>", vim.tbl_extend("force", opts, { desc = "File references" }))
+        end,
+        settings = {
+          separate_diagnostic_server = true,
+          publish_diagnostic_on = "insert_leave",
+          expose_as_code_action = {},
+          tsserver_path = nil,
+          tsserver_plugins = {},
+          tsserver_max_memory = "auto",
+          tsserver_format_options = {},
+          tsserver_file_preferences = {},
+          tsserver_locale = "en",
+          complete_function_calls = false,
+          include_completions_with_insert_text = true,
+          code_lens = "off",
+          disable_member_code_lens = true,
+          jsx_close_tag = {
+            enable = false,
+            filetypes = { "javascriptreact", "typescriptreact" },
+          }
         },
       })
     end,

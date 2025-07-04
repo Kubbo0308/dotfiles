@@ -41,8 +41,8 @@ end)
 config.color_scheme = "Tokyo Night"
 
 -- font
-config.font = wezterm.font("Firge35Nerd Console")
-config.font_size = 20.0
+config.font = wezterm.font("Hack Nerd Font Mono", {weight="Regular", stretch="Normal", style="Normal"})
+config.font_size = 16.0
 config.use_ime = true
 
 -- 右ステータスのカスタマイズ
