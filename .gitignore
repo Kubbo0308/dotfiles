@@ -5,6 +5,7 @@
 
 # Local environment specific settings
 local/
+claude/settings.local.json
 
 # Confidential files - Claude settings and sensitive data
 claude/settings.json
@@ -12,6 +13,7 @@ claude/projects/*/
 claude/todos/
 claude/.claude/
 claude/statsig/
+claude/ide
 
 # API keys and tokens
 *.key
