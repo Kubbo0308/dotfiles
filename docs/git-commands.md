@@ -13,14 +13,14 @@ This document outlines all the Git-related commands available in our Neovim conf
 - `<leader>gg` - **Git commands** (show all git commands)
 
 ### **Git Fugitive Commands**
-- `:Git` or `:G` - Open git command interface
-- `:Gstatus` - Show git status
-- `:Gdiff` - Show diff of current file
-- `:Gblame` - Show git blame for current file
-- `:Glog` - Show git log
+- `:Git` or `:G` - Open git status interface (replaces `:Gstatus`)
+- `:Gdiffsplit` - Show diff of current file (replaces `:Gdiff`)
+- `:Git blame` - Show git blame for current file (replaces `:Gblame`)
+- `:Gclog` - Show git log in quickfix (replaces `:Glog`)
+- `:0Gclog` - Show git log for current file only
 - `:Gwrite` - Stage current file (`git add`)
 - `:Gread` - Checkout current file (`git checkout`)
-- `:Gcommit` - Open commit buffer
+- `:Git commit` - Open commit interface (replaces `:Gcommit`)
 
 ### **GitHub Integration (Octo.nvim)**
 - `<leader>ghi` - **List GitHub issues**

@@ -213,16 +213,18 @@ return {
           { name = "Git Files", cmd = "Telescope git_files", desc = "Show git tracked files" },
           { name = "Git Branches", cmd = "Telescope git_branches", desc = "Switch git branches" },
           { name = "Git Commits", cmd = "Telescope git_commits", desc = "Browse git commits" },
-          { name = "Git Diff Files", cmd = "lua require('telescope.builtin').git_diff_files()", desc = "Show files with diffs" },
+          { name = "Git Diff Files", cmd = function() git_diff_files() end, desc = "Show files with diffs" },
           { name = "Git Blame (Current Line)", cmd = "GitBlameCurrentLine", desc = "Show blame for current line" },
           { name = "Git Blame (Toggle)", cmd = "GitBlameToggle", desc = "Toggle git blame display" },
           { name = "Git Blame (Open URL)", cmd = "GitBlameOpenCommitURL", desc = "Open commit URL in browser" },
-          { name = "Git Fugitive", cmd = "Git", desc = "Open git command interface" },
-          { name = "Git Diff", cmd = "Gdiff", desc = "Show diff of current file" },
-          { name = "Git Log", cmd = "Glog", desc = "Show git log" },
+          { name = "Git Status (Fugitive)", cmd = "Git", desc = "Open git status interface" },
+          { name = "Git Diff", cmd = "Gdiffsplit", desc = "Show diff of current file" },
+          { name = "Git Log", cmd = "Gclog", desc = "Show git log in quickfix" },
+          { name = "Git Log (Current File)", cmd = "0Gclog", desc = "Show git log for current file" },
           { name = "Git Add (Stage)", cmd = "Gwrite", desc = "Stage current file" },
           { name = "Git Checkout", cmd = "Gread", desc = "Checkout current file" },
-          { name = "Git Commit", cmd = "Gcommit", desc = "Open commit buffer" },
+          { name = "Git Commit", cmd = "Git commit", desc = "Open commit interface" },
+          { name = "Git Blame (Fugitive)", cmd = "Git blame", desc = "Show git blame for current file" },
           { name = "GitHub Issues", cmd = "Octo issue list", desc = "List GitHub issues" },
           { name = "GitHub PRs", cmd = "Octo pr list", desc = "List GitHub pull requests" },
           { name = "GitHub Create PR", cmd = "Octo pr create", desc = "Create new pull request" },
@@ -255,7 +257,11 @@ return {
               actions.close(prompt_bufnr)
               local selection = require('telescope.actions.state').get_selected_entry()
               if selection then
-                vim.cmd(selection.cmd)
+                if type(selection.cmd) == "function" then
+                  selection.cmd()
+                else
+                  vim.cmd(selection.cmd)
+                end
               end
             end)
             return true
