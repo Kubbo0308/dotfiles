@@ -209,26 +209,23 @@ return {
         opts = opts or {}
         
         local git_commands_list = {
+          -- Telescope Git Commands (Primary)
           { name = "Git Status", cmd = "Telescope git_status", desc = "Show git status files" },
           { name = "Git Files", cmd = "Telescope git_files", desc = "Show git tracked files" },
           { name = "Git Branches", cmd = "Telescope git_branches", desc = "Switch git branches" },
           { name = "Git Commits", cmd = "Telescope git_commits", desc = "Browse git commits" },
           { name = "Git Diff Files", cmd = function() git_diff_files() end, desc = "Show files with diffs" },
-          { name = "Git Blame (Current Line)", cmd = "GitBlameCurrentLine", desc = "Show blame for current line" },
-          { name = "Git Blame (Toggle)", cmd = "GitBlameToggle", desc = "Toggle git blame display" },
-          { name = "Git Blame (Open URL)", cmd = "GitBlameOpenCommitURL", desc = "Open commit URL in browser" },
-          { name = "Git Status (Fugitive)", cmd = "Git", desc = "Open git status interface" },
-          { name = "Git Diff", cmd = "Gdiffsplit", desc = "Show diff of current file" },
-          { name = "Git Log", cmd = "Gclog", desc = "Show git log in quickfix" },
-          { name = "Git Log (Current File)", cmd = "0Gclog", desc = "Show git log for current file" },
-          { name = "Git Add (Stage)", cmd = "Gwrite", desc = "Stage current file" },
-          { name = "Git Checkout", cmd = "Gread", desc = "Checkout current file" },
-          { name = "Git Commit", cmd = "Git commit", desc = "Open commit interface" },
-          { name = "Git Blame (Fugitive)", cmd = "Git blame", desc = "Show git blame for current file" },
-          { name = "GitHub Issues", cmd = "Octo issue list", desc = "List GitHub issues" },
-          { name = "GitHub PRs", cmd = "Octo pr list", desc = "List GitHub pull requests" },
-          { name = "GitHub Create PR", cmd = "Octo pr create", desc = "Create new pull request" },
-          { name = "GitHub Review", cmd = "Octo review start", desc = "Start PR review" },
+          
+          -- DiffView Commands (Better than fugitive for diffs)
+          { name = "Open DiffView", cmd = "DiffviewOpen", desc = "Open diff view interface" },
+          { name = "File History", cmd = "DiffviewFileHistory", desc = "Show file history" },
+          { name = "Close DiffView", cmd = "DiffviewClose", desc = "Close diff view" },
+          
+          -- Git Blame Commands (GitSigns)
+          { name = "Git Blame Line", cmd = "Gitsigns blame_line", desc = "Show blame for current line" },
+          { name = "Git Blame Toggle", cmd = "Gitsigns toggle_current_line_blame", desc = "Toggle git blame display" },
+          
+          -- GitSigns Commands (Hunk Management)
           { name = "Next Hunk", cmd = "normal! ]c", desc = "Go to next git hunk" },
           { name = "Previous Hunk", cmd = "normal! [c", desc = "Go to previous git hunk" },
           { name = "Stage Hunk", cmd = "Gitsigns stage_hunk", desc = "Stage current hunk" },
@@ -236,6 +233,19 @@ return {
           { name = "Preview Hunk", cmd = "Gitsigns preview_hunk", desc = "Preview current hunk" },
           { name = "Stage Buffer", cmd = "Gitsigns stage_buffer", desc = "Stage entire buffer" },
           { name = "Reset Buffer", cmd = "Gitsigns reset_buffer", desc = "Reset entire buffer" },
+          
+          -- GitHub Integration (Octo.nvim)
+          { name = "GitHub Issues", cmd = "Octo issue list", desc = "List GitHub issues" },
+          { name = "GitHub PRs", cmd = "Octo pr list", desc = "List GitHub pull requests" },
+          { name = "GitHub Create PR", cmd = "Octo pr create", desc = "Create new pull request" },
+          { name = "GitHub Review", cmd = "Octo review start", desc = "Start PR review" },
+          
+          -- Vim-Fugitive Commands (Only the reliable ones)
+          { name = "Git Status (Interactive)", cmd = "Git", desc = "Open interactive git status" },
+          { name = "Git Add All", cmd = "Git add .", desc = "Stage all changes" },
+          { name = "Git Commit", cmd = "Git commit", desc = "Open commit interface" },
+          { name = "Git Push", cmd = "Git push", desc = "Push to remote" },
+          { name = "Git Pull", cmd = "Git pull", desc = "Pull from remote" },
         }
         
         pickers.new(opts, {

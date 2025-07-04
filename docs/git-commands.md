@@ -1,37 +1,34 @@
 # Git Commands in Neovim
 
-This document outlines all the Git-related commands available in our Neovim configuration.
+This document outlines all the Git-related commands available in our streamlined Neovim configuration.
 
-## **Core Git Commands in Neovim**
+## **Consolidated Git Tools**
 
-### **Telescope Git Integration**
+Our configuration uses **4 focused git tools** to avoid conflicts:
+1. **Telescope** - Primary git navigation (files, branches, commits, status)
+2. **GitSigns** - Git signs, blame, and hunk management
+3. **DiffView** - Advanced diff and file history viewer
+4. **Octo.nvim** - GitHub integration (PRs, issues, reviews)
+5. **vim-fugitive** - Git commands (commit, push, pull, interactive status)
+
+## **Core Git Commands**
+
+### **Telescope Git Integration (Primary)**
 - `<leader>gf` - **Git files** (tracked files only)
-- `<leader>gb` - **Git branches** (switch branches)
+- `<leader>gb` - **Git branches** (switch branches)  
 - `<leader>gc` - **Git commits** (browse commit history)
 - `<leader>gs` - **Git status** (see changed files)
 - `<leader>gd` - **Git diff files** (files with diffs + live preview)
-- `<leader>gg` - **Git commands** (show all git commands)
+- `<leader>gg` - **Git commands menu** (access all git commands)
 
-### **Git Fugitive Commands**
-- `:Git` or `:G` - Open git status interface (replaces `:Gstatus`)
-- `:Gdiffsplit` - Show diff of current file (replaces `:Gdiff`)
-- `:Git blame` - Show git blame for current file (replaces `:Gblame`)
-- `:Gclog` - Show git log in quickfix (replaces `:Glog`)
-- `:0Gclog` - Show git log for current file only
-- `:Gwrite` - Stage current file (`git add`)
-- `:Gread` - Checkout current file (`git checkout`)
-- `:Git commit` - Open commit interface (replaces `:Gcommit`)
+### **DiffView Commands (Better than fugitive)**
+- `<leader>gv` - **Open DiffView** (better than :Gdiff)
+- `<leader>gh` - **File History** (better than :Glog)
+- `:DiffviewClose` - Close diff view
 
-### **GitHub Integration (Octo.nvim)**
-- `<leader>ghi` - **List GitHub issues**
-- `<leader>ghp` - **List GitHub PRs**
-- `<leader>ghr` - **Start PR review**
-- `<leader>ghc` - **Create PR**
-
-### **Git Blame**
-- `<leader>ghb` - **Git blame current line**
-- `<leader>gho` - **Toggle git blame** (show/hide)
-- `<leader>ghu` - **Open commit URL** in browser
+### **GitSigns (Hunk Management & Blame)**
+- `:Gitsigns blame_line` - **Show blame for current line**
+- `:Gitsigns toggle_current_line_blame` - **Toggle git blame display**
 
 ### **GitSigns (Hunk Management)**
 - `]c` - **Next hunk** (git change)
