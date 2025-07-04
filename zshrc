@@ -38,6 +38,9 @@ alias gp='git push'
 # docker compose
 alias dc='docker compose'
 
+# other alias
+alias v='nvim .'
+
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/takesupasankyu/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/takesupasankyu/Downloads/google-cloud-sdk/path.zsh.inc'; fi
 
@@ -47,3 +50,6 @@ if [ -f '/Users/takesupasankyu/Downloads/google-cloud-sdk/completion.zsh.inc' ];
 export PATH="$HOME/Downloads/google-cloud-sdk/bin:$PATH"
 
 if [ -f "$HOME/.local/bin/env" ]; then . "$HOME/.local/bin/env"; fi
+
+# Initialize zoxide
+eval "$(zoxide init zsh)"
