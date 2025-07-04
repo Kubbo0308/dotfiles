@@ -6,6 +6,7 @@
 # Local environment specific settings
 local/
 claude/settings.local.json
+*.local
 
 # Confidential files - Claude settings and sensitive data
 claude/settings.json
