@@ -204,6 +204,65 @@ return {
         }):find()
       end
       
+      -- Git commands picker
+      local function git_commands(opts)
+        opts = opts or {}
+        
+        local git_commands_list = {
+          { name = "Git Status", cmd = "Telescope git_status", desc = "Show git status files" },
+          { name = "Git Files", cmd = "Telescope git_files", desc = "Show git tracked files" },
+          { name = "Git Branches", cmd = "Telescope git_branches", desc = "Switch git branches" },
+          { name = "Git Commits", cmd = "Telescope git_commits", desc = "Browse git commits" },
+          { name = "Git Diff Files", cmd = "lua require('telescope.builtin').git_diff_files()", desc = "Show files with diffs" },
+          { name = "Git Blame (Current Line)", cmd = "GitBlameCurrentLine", desc = "Show blame for current line" },
+          { name = "Git Blame (Toggle)", cmd = "GitBlameToggle", desc = "Toggle git blame display" },
+          { name = "Git Blame (Open URL)", cmd = "GitBlameOpenCommitURL", desc = "Open commit URL in browser" },
+          { name = "Git Fugitive", cmd = "Git", desc = "Open git command interface" },
+          { name = "Git Diff", cmd = "Gdiff", desc = "Show diff of current file" },
+          { name = "Git Log", cmd = "Glog", desc = "Show git log" },
+          { name = "Git Add (Stage)", cmd = "Gwrite", desc = "Stage current file" },
+          { name = "Git Checkout", cmd = "Gread", desc = "Checkout current file" },
+          { name = "Git Commit", cmd = "Gcommit", desc = "Open commit buffer" },
+          { name = "GitHub Issues", cmd = "Octo issue list", desc = "List GitHub issues" },
+          { name = "GitHub PRs", cmd = "Octo pr list", desc = "List GitHub pull requests" },
+          { name = "GitHub Create PR", cmd = "Octo pr create", desc = "Create new pull request" },
+          { name = "GitHub Review", cmd = "Octo review start", desc = "Start PR review" },
+          { name = "Next Hunk", cmd = "normal! ]c", desc = "Go to next git hunk" },
+          { name = "Previous Hunk", cmd = "normal! [c", desc = "Go to previous git hunk" },
+          { name = "Stage Hunk", cmd = "Gitsigns stage_hunk", desc = "Stage current hunk" },
+          { name = "Reset Hunk", cmd = "Gitsigns reset_hunk", desc = "Reset current hunk" },
+          { name = "Preview Hunk", cmd = "Gitsigns preview_hunk", desc = "Preview current hunk" },
+          { name = "Stage Buffer", cmd = "Gitsigns stage_buffer", desc = "Stage entire buffer" },
+          { name = "Reset Buffer", cmd = "Gitsigns reset_buffer", desc = "Reset entire buffer" },
+        }
+        
+        pickers.new(opts, {
+          prompt_title = "Git Commands",
+          finder = finders.new_table {
+            results = git_commands_list,
+            entry_maker = function(entry)
+              return {
+                value = entry,
+                display = string.format("%-25s %s", entry.name, entry.desc),
+                ordinal = entry.name .. " " .. entry.desc,
+                cmd = entry.cmd,
+              }
+            end,
+          },
+          sorter = conf.generic_sorter(opts),
+          attach_mappings = function(prompt_bufnr, map)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selection = require('telescope.actions.state').get_selected_entry()
+              if selection then
+                vim.cmd(selection.cmd)
+              end
+            end)
+            return true
+          end,
+        }):find()
+      end
+      
       -- Key mappings
       local builtin = require('telescope.builtin')
       local keymap = vim.keymap.set
@@ -224,6 +283,7 @@ return {
       keymap('n', '<leader>gc', builtin.git_commits, { desc = 'Git commits' })
       keymap('n', '<leader>gs', builtin.git_status, { desc = 'Git status' })
       keymap('n', '<leader>gd', git_diff_files, { desc = 'Git diff files' })
+      keymap('n', '<leader>gg', git_commands, { desc = 'Git commands' })
       
       -- LSP integration
       keymap('n', '<leader>lr', builtin.lsp_references, { desc = 'LSP references' })
