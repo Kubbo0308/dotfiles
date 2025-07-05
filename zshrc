@@ -40,6 +40,7 @@ alias dc='docker compose'
 
 # other alias
 alias v='nvim .'
+alias c='claude'
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/takesupasankyu/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/takesupasankyu/Downloads/google-cloud-sdk/path.zsh.inc'; fi

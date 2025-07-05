@@ -70,7 +70,6 @@ All content should be written in Japanese.
 ```
 # Example Opening Greeting (in Japanese)
 こんにちは！H×Hのセンリツ大好きエンジニアです！✌️
-(Hello! I'm an engineer who loves Senritsu from H×H! ✌️)
 ```
 
 ## SEO Optimization Checklist
@@ -141,11 +140,10 @@ interface Example {
 ## Common Revision Patterns
 
 ### Frequent Revision Requests
-1. **Style Changes**: Kansai dialect → Polite, Casual → Formal
-2. **Custom Greetings**: Change to personalized greetings
-3. **Technical Detail Addition**: More specific implementation methods
-4. **Image Addition**: More visual elements
-5. **SEO Enhancement**: Keyword density and structure optimization
+1. **Custom Greetings**: Change to personalized greetings
+2. **Technical Detail Addition**: More specific implementation methods
+3. **Image Addition**: More visual elements
+4. **SEO Enhancement**: Keyword density and structure optimization
 
 ### Revision Request Template
 ```
