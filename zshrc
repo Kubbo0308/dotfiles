@@ -52,5 +52,16 @@ export PATH="$HOME/Downloads/google-cloud-sdk/bin:$PATH"
 
 if [ -f "$HOME/.local/bin/env" ]; then . "$HOME/.local/bin/env"; fi
 
+# ファイルの内容をクリップボードにコピーする関数
+# 例: ccopy my_document.txt
+ccopy() {
+  if [ -f "$1" ]; then
+    cat "$1" | pbcopy
+    echo "'$1' の内容をクリップボードにコピーしました。"
+  else
+    echo "エラー: ファイル '$1' が見つからないか、有効なファイルではありません。"
+  fi
+}
+
 # Initialize zoxide
 eval "$(zoxide init zsh)"
