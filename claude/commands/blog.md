@@ -57,12 +57,15 @@ All content should be written in Japanese.
 - **SEO Optimization**: Meta elements and structured content
 - **Table of Contents**: Essential for readability and SEO
 - **Writing Style**: Friendly yet professional (maintaining technical credibility)
+- **First Comment**: In the Introduction section, measure the approximate word count of this article and how long it will take to read it, then add the text "この記事はおよそ〇〇字なので、○分で読めます！"
+- **Add Warning**: At the end of the Introduction section, add the following text:　"※この記事は7割程度がAIによって執筆されています。"
 
 ### Recommended Elements
 - **Image Integration**: Utilize images from `/public` directory or external sources
 - **Links**: Include links to related technologies and tools
 - **Code Blocks**: Appropriate code samples for technical content
 - **Emojis**: Use moderately to create approachability
+- **Short Description**: Add a brief explanation of each section (including the H3 section), using humor occasionally.
 
 ### Writing Style Patterns
 
