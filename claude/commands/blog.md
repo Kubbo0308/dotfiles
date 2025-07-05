@@ -7,11 +7,13 @@ Automatically generates technical blog articles based on recent implementation w
 ## Execution Details
 
 1. **Implementation History Analysis**
+
    - Review recent git commit history
    - Analyze implementation logs in `_docs/` directory
    - Investigate changed files and their contents
 
 2. **Article Structure Generation**
+
    - Technical challenges and solutions
    - Implementation highlights and learnings
    - Code examples and best practices
@@ -32,7 +34,6 @@ Please write an article about [TARGET SITE/PRODUCT] in Markdown format in Japane
 
 ## Requirements
 - Create an SEO-conscious structure
-- Include a table of contents
 - Use a slightly casual but respectful tone (polite Japanese style)
 - Include emojis and decorative elements (colors, bold, italics) for engagement
 - Avoid Kansai dialect
@@ -41,7 +42,7 @@ Please write an article about [TARGET SITE/PRODUCT] in Markdown format in Japane
 
 ## Article Overview
 - [Overview Point 1]
-- [Overview Point 2] 
+- [Overview Point 2]
 - [Overview Point 3]
 
 ## Instructions
@@ -53,14 +54,15 @@ All content should be written in Japanese.
 ## Essential Elements
 
 ### Required Components
+
 - **Format**: Markdown output
 - **SEO Optimization**: Meta elements and structured content
-- **Table of Contents**: Essential for readability and SEO
 - **Writing Style**: Friendly yet professional (maintaining technical credibility)
-- **First Comment**: In the Introduction section, measure the approximate word count of this article and how long it will take to read it, then add the text "この記事はおよそ〇〇字なので、○分で読めます！"
-- **Add Warning**: At the end of the Introduction section, add the following text:　"※この記事は7割程度がAIによって執筆されています。"
+- **First Comment**: In the Introduction section, measure the approximate word count of this article and how long it will take to read it, then add the text "この記事はおよそ〇〇字なので、○ 分で読めます！"
+- **Add Warning**: At the end of the Introduction section, add the following text:"※この記事は 7 割程度が AI によって執筆されています。"
 
 ### Recommended Elements
+
 - **Image Integration**: Utilize images from `/public` directory or external sources
 - **Links**: Include links to related technologies and tools
 - **Code Blocks**: Appropriate code samples for technical content
@@ -70,6 +72,7 @@ All content should be written in Japanese.
 ### Writing Style Patterns
 
 #### Pattern 1: Polite + Casual (Recommended)
+
 ```
 # Example Opening Greeting (in Japanese)
 こんにちは！H×Hのセンリツ大好きエンジニアです！✌️
@@ -78,14 +81,15 @@ All content should be written in Japanese.
 ## SEO Optimization Checklist
 
 ### Essential Items
+
 - [ ] Include keywords in title
-- [ ] Structure with table of contents
 - [ ] Use heading tags (H1-H6) appropriately
 - [ ] Set alt attributes for images
 - [ ] Place internal links appropriately
 - [ ] Include meta description equivalent introduction
 
 ### Recommended Items
+
 - [ ] Naturally place related keywords
 - [ ] Create readable text structure
 - [ ] Maintain appropriate word count (2000+ words recommended)
@@ -95,16 +99,6 @@ All content should be written in Japanese.
 
 ````markdown
 # メインタイトル - キーワード含む魅力的なタイトル
-
-## 目次
-
-1. [はじめに](#はじめに)
-2. [【対象】とは？](#対象とは)
-3. [特徴・機能](#特徴機能)
-4. [技術スタック](#技術スタック)
-5. [制作のポイント](#制作のポイント)
-6. [今後の展望](#今後の展望)
-7. [まとめ](#まとめ)
 
 ## はじめに
 
@@ -143,12 +137,14 @@ interface Example {
 ## Common Revision Patterns
 
 ### Frequent Revision Requests
+
 1. **Custom Greetings**: Change to personalized greetings
 2. **Technical Detail Addition**: More specific implementation methods
 3. **Image Addition**: More visual elements
 4. **SEO Enhancement**: Keyword density and structure optimization
 
 ### Revision Request Template
+
 ```
 Please change the opening greeting to "[CUSTOM GREETING]".
 Also, change from [ORIGINAL STYLE] to [DESIRED STYLE].
