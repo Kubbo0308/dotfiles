@@ -8,6 +8,7 @@ local/
 claude/settings.local.json
 *.local
 _docs/
+*.gif
 
 # Confidential files - Claude settings and sensitive data
 claude/settings.json
