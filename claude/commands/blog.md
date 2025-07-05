@@ -68,6 +68,7 @@ All content should be written in Japanese.
 - **Code Blocks**: Appropriate code samples for technical content
 - **Emojis**: Use moderately to create approachability
 - **Short Description**: Add a brief explanation of each section (including the H3 section), using humor occasionally.
+- **Accordion Content**: Use accordions for long code blocks or detailed explanations to improve readability
 
 ### Writing Style Patterns
 
@@ -94,6 +95,7 @@ All content should be written in Japanese.
 - [ ] Create readable text structure
 - [ ] Maintain appropriate word count (2000+ words recommended)
 - [ ] Include social sharing images
+- [ ] Use accordions for long code blocks and detailed explanations to improve readability
 
 ## Article Structure Template (Japanese)
 
@@ -134,6 +136,153 @@ interface Example {
 記事の要点をまとめ
 ````
 
+## Accordion Usage Guidelines
+
+### When to Use Accordions
+
+Use accordions to improve article readability in the following scenarios:
+
+#### 1. Long Code Blocks (Automatic)
+- Code blocks with 15+ lines automatically become collapsible
+- Shows language, line count, and copy functionality
+- Provides expand/collapse controls for better content scanning
+
+#### 2. Detailed Explanations (Manual)
+Use `<details>` and `<summary>` tags for:
+- Step-by-step tutorials that might overwhelm readers
+- Optional advanced configuration details
+- Troubleshooting sections
+- Additional examples or variations
+- Background information that's helpful but not essential
+
+### Accordion Syntax
+
+#### Details/Summary Accordion
+```markdown
+<details>
+<summary>長いコード例やクリック時に表示したい内容のタイトル</summary>
+
+ここに詳細な説明やコードを記述します。
+
+```python
+# 長いコード例
+def complex_function():
+    # 実装詳細
+    pass
+```
+
+追加の説明文もここに含めることができます。
+</details>
+```
+
+#### Best Practices for Accordion Content
+
+1. **Clear Summary Titles**: Use descriptive titles that explain what's inside
+   ```markdown
+   <summary>認証機能の詳細実装コード (50行)</summary>
+   <summary>エラーハンドリングのベストプラクティス</summary>
+   <summary>パフォーマンス最適化の追加手法</summary>
+   ```
+
+2. **Appropriate Content**: Use accordions for:
+   - Complete code files or large code blocks
+   - Detailed configuration examples
+   - Advanced usage patterns
+   - Debugging information
+   - Reference materials
+
+3. **Content Organization**: Structure accordion content well:
+   ```markdown
+   <details>
+   <summary>データベース設定の詳細</summary>
+   
+   ## 環境別設定
+   
+   ### 開発環境
+   ```yaml
+   database:
+     host: localhost
+     port: 5432
+   ```
+   
+   ### 本番環境
+   ```yaml
+   database:
+     host: prod-server
+     port: 5432
+   ```
+   
+   ## 接続プールの設定
+   
+   詳細な説明...
+   </details>
+   ```
+
+### Content Flow Guidelines
+
+1. **Main Content First**: Keep essential information outside accordions
+2. **Progressive Disclosure**: Use accordions for additional depth
+3. **Logical Grouping**: Group related information in single accordions
+4. **Scannable Structure**: Ensure article remains readable when accordions are collapsed
+
+### Examples in Context
+
+#### Good Usage:
+```markdown
+## API の実装
+
+基本的な API エンドポイントを作成します：
+
+```javascript
+app.get('/api/users', (req, res) => {
+  res.json({ users: [] });
+});
+```
+
+<details>
+<summary>エラーハンドリングとバリデーションを含む完全版</summary>
+
+```javascript
+app.get('/api/users', async (req, res) => {
+  try {
+    // バリデーション
+    const { page = 1, limit = 10 } = req.query;
+    
+    // データ取得
+    const users = await User.findAll({
+      offset: (page - 1) * limit,
+      limit: parseInt(limit)
+    });
+    
+    res.json({
+      users,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total: await User.count()
+      }
+    });
+  } catch (error) {
+    console.error('Users API Error:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+```
+
+この実装には以下の改善点が含まれています：
+- リクエストパラメータのバリデーション
+- ページネーション機能
+- エラーハンドリング
+- ログ出力
+</details>
+```
+
+#### Avoid:
+- Using accordions for essential information readers need
+- Creating too many nested accordions
+- Using accordions for short content (< 5 lines)
+- Unclear or generic summary titles
+
 ## Common Revision Patterns
 
 ### Frequent Revision Requests
@@ -142,6 +291,7 @@ interface Example {
 2. **Technical Detail Addition**: More specific implementation methods
 3. **Image Addition**: More visual elements
 4. **SEO Enhancement**: Keyword density and structure optimization
+5. **Content Organization**: Adding accordions for better content flow and readability
 
 ### Revision Request Template
 
