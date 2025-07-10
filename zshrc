@@ -65,3 +65,10 @@ ccopy() {
 
 # Initialize zoxide
 eval "$(zoxide init zsh)"
+
+# bun completions
+[ -s "/Users/y-kubo/.bun/_bun" ] && source "/Users/y-kubo/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"

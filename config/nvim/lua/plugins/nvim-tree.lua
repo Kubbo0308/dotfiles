@@ -48,18 +48,22 @@ return {
       end
     end
     
+    -- Define custom mappings
+    local function on_attach(bufnr)
+      local api = require('nvim-tree.api')
+      
+      -- default mappings
+      api.config.mappings.default_on_attach(bufnr)
+      
+      -- custom mappings
+      vim.keymap.set('n', '<leader>p', preview_image, { desc = 'Preview image', buffer = bufnr, noremap = true, silent = true, nowait = true })
+    end
+    
     require("nvim-tree").setup {
+      on_attach = on_attach,
       git = {
         enable = true,
         ignore = true,
-      },
-      view = {
-        mappings = {
-          custom_only = false,
-          list = {
-            { key = "<leader>p", action = "preview_image", action_cb = preview_image },
-          },
-        },
       },
       renderer = {
         highlight_git = true,

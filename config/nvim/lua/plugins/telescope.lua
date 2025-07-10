@@ -204,6 +204,116 @@ return {
         }):find()
       end
       
+      -- Enhanced Search with Preview and Highlighting
+      local function enhanced_search(opts)
+        opts = opts or {}
+        
+        -- If no search term is provided, prompt for it
+        if not opts.search or opts.search == "" then
+          vim.ui.input({ prompt = "Search for: " }, function(input)
+            if input and input ~= "" then
+              opts.search = input
+              enhanced_search(opts)
+            end
+          end)
+          return
+        end
+        
+        -- Use ripgrep for fast searching
+        local cmd = { 'rg', '--line-number', '--column', '--no-heading', '--color=never', '--smart-case', opts.search }
+        
+        pickers.new(opts, {
+          prompt_title = "Enhanced Search: " .. opts.search,
+          finder = finders.new_oneshot_job(cmd, {
+            entry_maker = function(line)
+              local filename, lnum, col, text = line:match("([^:]+):(%d+):(%d+):(.*)")
+              if filename then
+                return {
+                  value = line,
+                  display = string.format("%s:%s:%s", filename, lnum, text:sub(1, 80)),
+                  ordinal = filename .. " " .. text,
+                  filename = filename,
+                  lnum = tonumber(lnum),
+                  col = tonumber(col),
+                  text = text,
+                }
+              end
+            end,
+          }),
+          sorter = conf.generic_sorter(opts),
+          previewer = previewers.new_buffer_previewer({
+            title = "Preview",
+            get_buffer_by_name = function(_, entry)
+              return entry.filename
+            end,
+            define_preview = function(self, entry, status)
+              -- Read the file content
+              local lines = vim.fn.readfile(entry.filename)
+              if vim.tbl_isempty(lines) then
+                return
+              end
+              
+              -- Set buffer content
+              vim.api.nvim_buf_set_lines(self.state.bufnr, 0, -1, false, lines)
+              
+              -- Set filetype for proper syntax highlighting
+              local ft = vim.filetype.match({ filename = entry.filename })
+              if ft then
+                vim.api.nvim_buf_set_option(self.state.bufnr, 'filetype', ft)
+              end
+              
+              -- Jump to the line with the match
+              local line_num = entry.lnum
+              if line_num and line_num > 0 then
+                vim.api.nvim_win_set_cursor(self.state.winid, { line_num, entry.col - 1 })
+              end
+              
+              -- Highlight the search term
+              if opts.search then
+                vim.fn.matchadd("Search", opts.search, 11, -1, { window = self.state.winid })
+              end
+            end,
+          }),
+          attach_mappings = function(prompt_bufnr, map)
+            actions.select_default:replace(function()
+              actions.close(prompt_bufnr)
+              local selection = require('telescope.actions.state').get_selected_entry()
+              if selection then
+                -- Open the file and jump to the line
+                vim.cmd('edit ' .. selection.filename)
+                vim.api.nvim_win_set_cursor(0, { selection.lnum, selection.col - 1 })
+                -- Highlight the search term in the opened file
+                vim.fn.matchadd("Search", opts.search, 11)
+              end
+            end)
+            
+            -- Add mapping to open in split
+            map('i', '<C-x>', function()
+              local selection = require('telescope.actions.state').get_selected_entry()
+              if selection then
+                actions.close(prompt_bufnr)
+                vim.cmd('split ' .. selection.filename)
+                vim.api.nvim_win_set_cursor(0, { selection.lnum, selection.col - 1 })
+                vim.fn.matchadd("Search", opts.search, 11)
+              end
+            end)
+            
+            -- Add mapping to open in vertical split
+            map('i', '<C-v>', function()
+              local selection = require('telescope.actions.state').get_selected_entry()
+              if selection then
+                actions.close(prompt_bufnr)
+                vim.cmd('vsplit ' .. selection.filename)
+                vim.api.nvim_win_set_cursor(0, { selection.lnum, selection.col - 1 })
+                vim.fn.matchadd("Search", opts.search, 11)
+              end
+            end)
+            
+            return true
+          end,
+        }):find()
+      end
+      
       -- Git commands picker
       local function git_commands(opts)
         opts = opts or {}
@@ -317,6 +427,7 @@ return {
       keymap('n', '<leader>sh', builtin.search_history, { desc = 'Search history' })
       keymap('n', '<leader>sc', builtin.command_history, { desc = 'Command history' })
       keymap('n', '<leader>ss', builtin.spell_suggest, { desc = 'Spell suggest' })
+      keymap('n', '<leader>st', enhanced_search, { desc = 'Enhanced search with preview' })
       
       -- Miscellaneous
       keymap('n', '<leader>ft', builtin.colorscheme, { desc = 'Color schemes' })
