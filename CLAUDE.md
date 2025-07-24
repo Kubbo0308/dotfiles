@@ -31,6 +31,10 @@ All commits use English prefixes:
 
 Always end responses with "wonderful!!"
 
+### Claude Code Rules
+- Be sure to include a blank line at the end of the file
+- Apply the formatter after the modification is complete
+
 ### Neovim Management
 The Neovim configuration uses lazy.nvim for plugin management:
 ```bash
