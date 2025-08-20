@@ -82,11 +82,25 @@ async function calculateTokensFromTranscript(transcriptFile) {
     for await (const line of rl) {
       try {
         const entry = JSON.parse(line);
-        if (entry.usage?.input_tokens) {
-          totalTokens += entry.usage.input_tokens;
-        }
-        if (entry.usage?.output_tokens) {
-          totalTokens += entry.usage.output_tokens;
+        
+        // Check for usage in both top level and message level
+        const usage = entry.usage || entry.message?.usage;
+        
+        if (usage) {
+          // Add all input token types
+          if (usage.input_tokens) {
+            totalTokens += usage.input_tokens;
+          }
+          if (usage.cache_creation_input_tokens) {
+            totalTokens += usage.cache_creation_input_tokens;
+          }
+          if (usage.cache_read_input_tokens) {
+            totalTokens += usage.cache_read_input_tokens;
+          }
+          // Add output tokens
+          if (usage.output_tokens) {
+            totalTokens += usage.output_tokens;
+          }
         }
       } catch (parseError) {
         // Skip invalid JSON lines
