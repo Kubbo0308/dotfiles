@@ -2,7 +2,7 @@
 name: github-analyzer
 description: Fetch and analyze GitHub Issues and Pull Requests to extract structured information and insights
 tools: Bash
-model: sonnet
+model: haiku
 color: orange
 ---
 

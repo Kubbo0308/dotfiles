@@ -1,7 +1,7 @@
 ---
 name: document
 description: Generate comprehensive documentation for code, APIs, and systems
-tools: Grep, LS, Read, Write
+tools: Grep, LS, Read, Write, Bash, WebFetch, WebSearch
 model: sonnet
 color: cyan
 ---
