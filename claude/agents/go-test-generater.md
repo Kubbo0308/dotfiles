@@ -181,6 +181,11 @@ func assertExpectedBehavior(t *testing.T, got, want interface{}) {
 - Use interfaces for testability
 - Create mock implementations for external dependencies
 - Test error conditions from dependencies
+- When using gomock, create controller directly without defer:
+  ```go
+  ctrl := gomock.NewController(t)
+  // No defer needed - test cleanup happens automatically
+  ```
 
 ## Output Requirements
 
@@ -203,3 +208,5 @@ func assertExpectedBehavior(t *testing.T, got, want interface{}) {
 - Keep test data close to the test function
 - Avoid testing implementation details, focus on behavior
 - Ensure tests are deterministic and repeatable
+- **NEVER use test case name string comparisons (like checking tt.name) for branching logic** - this makes tests fragile to changes
+- **Do NOT use defer with gomock.NewController** - it's unnecessary and can complicate test flow

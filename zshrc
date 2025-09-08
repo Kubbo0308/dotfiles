@@ -72,5 +72,5 @@ eval "$(zoxide init zsh)"
 # bun
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
-export PATH="/opt/homebrew/opt/go@1.21/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
+eval "$(mise activate zsh)"

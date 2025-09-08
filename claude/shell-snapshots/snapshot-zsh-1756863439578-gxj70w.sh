@@ -2189,6 +2189,6 @@ alias -- v='nvim .'
 alias -- which-command=whence
 # Check for rg availability
 if ! command -v rg >/dev/null 2>&1; then
-  alias rg='/opt/homebrew/lib/node_modules/\@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg'
+  alias rg='/Users/y-kubo/.bun/install/global/node_modules/\@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg'
 fi
-export PATH='/opt/homebrew/opt/go@1.21/bin:/Users/y-kubo/.bun/bin:/Users/y-kubo/Downloads/google-cloud-sdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Applications/VMware Fusion.app/Contents/Public:/Users/y-kubo/.volta/bin'
+export PATH='/Users/y-kubo/.local/bin:/opt/homebrew/opt/go@1.21/bin:/Users/y-kubo/.bun/bin:/Users/y-kubo/Downloads/google-cloud-sdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Applications/VMware Fusion.app/Contents/Public:/Users/y-kubo/.volta/bin'

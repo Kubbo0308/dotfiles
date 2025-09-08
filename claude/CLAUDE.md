@@ -37,10 +37,36 @@ This document outlines the rules and policies to follow when developing with Cla
 
 ### 1. Pre-implementation Checklist
 
+- **First, evaluate if specialized subagents should be used for the task**
 - Always check each project's README
 - Create a `plan` outlining the implementation approach before starting
 - Ensure existing systems won't break
 - After UI implementation, check for UI issues using Playwright MCP or similar
+
+### Subagent Evaluation Phase
+
+Before starting any task, evaluate whether specialized subagents are available and appropriate:
+
+1. **Identify Task Type**
+   - Testing: Use `go-test-generator` for Go test generation
+   - Code Review: Use `code-reviewer-gemini` or `code-reviewer-cursor` for comprehensive reviews
+   - Documentation: Use `document` agent for generating docs
+   - Codebase Analysis: Use `codebase-analyzer` for understanding code structure
+   - Task Planning: Use `task-decomposer` for breaking down complex tasks
+   - Security: Use `security` agent for vulnerability analysis
+   - Commits/PRs: Use `commit` or `pull-request` agents
+
+2. **Decision Criteria**
+   - If a specialized agent exists for the task → **Use the agent**
+   - If task matches multiple agents → **Use the most specific one**
+   - If no agent matches → **Proceed with manual implementation**
+
+3. **Agent Usage Examples**
+   - Writing tests for Go code → Always use `go-test-generator`
+   - Reviewing code changes → Always use `code-reviewer-gemini` or `code-reviewer-cursor`
+   - Creating commits → Always use `commit` agent
+   - Creating PRs → Always use `pull-request` agent
+   - Analyzing security issues → Always use `security` agent
 
 ### 2. Code Quality
 
@@ -109,10 +135,12 @@ if err != nil {
 
 ### 5. Testing
 
+- **For Go tests: Always use `go-test-generator` subagent first**
 - Achieve C0 coverage (test all code at least once)
 - Place test files in the same directory
 - Create dedicated test DB for database tests
 - Mock functions are acceptable
+- Test categories: Normal cases, Semi-normal cases (edge cases), Abnormal cases (errors)
 
 ### 6. Project Structure
 
@@ -191,9 +219,34 @@ Use English with the following prefixes:
 - Auto-generate API response types when possible
 - Use Zod for validation
 
+## Development Workflow
+
+### Standard Task Flow
+1. **Subagent Evaluation** → Check if specialized agents are available
+2. **Planning** → Create implementation plan (use `task-decomposer` if complex)
+3. **Implementation** → Write code following guidelines
+4. **Testing** → Use `go-test-generator` for Go, write tests for other languages
+5. **Review** → Use `code-reviewer-gemini` or `code-reviewer-cursor`
+6. **Commit** → Use `commit` agent for proper commit messages
+7. **PR** → Use `pull-request` agent if needed
+
+### Quick Reference: When to Use Subagents
+| Task | Subagent to Use |
+|------|----------------|
+| Writing Go tests | `go-test-generator` |
+| Code review | `code-reviewer-gemini` or `code-reviewer-cursor` |
+| Creating commits | `commit` |
+| Creating PRs | `pull-request` |
+| Security analysis | `security` |
+| Documentation | `document` |
+| Codebase analysis | `codebase-analyzer` |
+| Complex task planning | `task-decomposer` |
+| GitHub Issues/PRs analysis | `github-analyzer` |
+
 ## Checklist
 
 Verify the following upon implementation completion:
+- [ ] Did I check for available subagents before starting?
 - [ ] Is error handling appropriate?
 - [ ] Are tests written? (C0 coverage)
 - [ ] Are performance considerations addressed?
@@ -201,3 +254,4 @@ Verify the following upon implementation completion:
 - [ ] Is documentation updated?
 - [ ] Is there any impact on existing systems?
 - [ ] Are there any UI issues? (Check with Playwright MCP)
+- [ ] Did I use appropriate subagents for review/testing/commits?

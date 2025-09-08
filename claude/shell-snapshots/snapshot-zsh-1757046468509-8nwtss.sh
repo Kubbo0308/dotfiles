@@ -237,6 +237,19 @@ colors () {
 		bg_no_bold[${k#bg-}]="$lc${color[normal]};${color[$k]}$rc" 
 	done
 }
+command_not_found_handler () {
+	if [[ "$1" != "mise" && "$1" != "mise-"* ]] && /opt/homebrew/bin/mise hook-not-found -s zsh -- "$1"
+	then
+		_mise_hook
+		"$@"
+	elif [ -n "$(declare -f _command_not_found_handler)" ]
+	then
+		_command_not_found_handler "$@"
+	else
+		echo "zsh: command not found: $1" >&2
+		return 127
+	fi
+}
 compaudit () {
 	# undefined
 	builtin autoload -XUz /usr/share/zsh/5.9/functions
@@ -1014,6 +1027,24 @@ is_theme () {
 }
 jenv_prompt_info () {
 	return 1
+}
+mise () {
+	local command
+	command="${1:-}" 
+	if [ "$#" = 0 ]
+	then
+		command /opt/homebrew/bin/mise
+		return
+	fi
+	shift
+	case "$command" in
+		(deactivate | shell | sh) if [[ ! " $@ " =~ " --help " ]] && [[ ! " $@ " =~ " -h " ]]
+			then
+				eval "$(command /opt/homebrew/bin/mise "$command" "$@")"
+				return $?
+			fi ;;
+	esac
+	command /opt/homebrew/bin/mise "$command" "$@"
 }
 mkcd () {
 	mkdir -p $@ && cd ${@:$#}
@@ -2189,6 +2220,6 @@ alias -- v='nvim .'
 alias -- which-command=whence
 # Check for rg availability
 if ! command -v rg >/dev/null 2>&1; then
-  alias rg='/opt/homebrew/lib/node_modules/\@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg'
+  alias rg='/Users/y-kubo/.local/share/mise/installs/node/20.5.0/lib/node_modules/@anthropic-ai/claude-code/vendor/ripgrep/arm64-darwin/rg'
 fi
-export PATH='/opt/homebrew/opt/go@1.21/bin:/Users/y-kubo/.bun/bin:/Users/y-kubo/Downloads/google-cloud-sdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Applications/VMware Fusion.app/Contents/Public:/Users/y-kubo/.volta/bin'
+export PATH='/Users/y-kubo/.local/share/mise/installs/go/1.21.13/bin:/Users/y-kubo/.local/share/mise/installs/node/20.5.0/bin:/Users/y-kubo/.local/share/mise/installs/yarn/4.9.1/bin:/Users/y-kubo/.local/bin:/Users/y-kubo/.bun/bin:/Users/y-kubo/Downloads/google-cloud-sdk/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/Applications/VMware Fusion.app/Contents/Public:/Users/y-kubo/.volta/bin'
