@@ -12,11 +12,17 @@ let input = '';
 process.stdin.on('data', chunk => input += chunk);
 process.stdin.on('end', async () => {
   try {
+    // Handle empty input
+    if (!input.trim()) {
+      console.log(`📁 ${path.basename(process.cwd())} | ⚠️  No input data`);
+      return;
+    }
+
     const data = JSON.parse(input);
 
-    // Extract values
-    const model = data.model?.display_name || 'Unknown';
-    const currentDir = path.basename(data.workspace?.current_dir || data.cwd || '.');
+    // Extract values with better fallbacks
+    const model = data.model?.display_name || data.model?.id || 'Unknown';
+    const currentDir = path.basename(data.workspace?.current_dir || data.cwd || process.cwd());
     const sessionId = data.session_id;
 
     // Calculate token usage for current session
@@ -65,7 +71,9 @@ process.stdin.on('end', async () => {
 
     console.log(statusLine);
   } catch (error) {
-    console.log(`📁 ${path.basename(process.cwd())} | ⚠️  Error: ${error.message}`);
+    // More helpful error message that includes current directory
+    const fallbackDir = path.basename(process.cwd());
+    console.log(`📁 ${fallbackDir} | ⚠️  Error: ${error.message}`);
   }
 });
 
