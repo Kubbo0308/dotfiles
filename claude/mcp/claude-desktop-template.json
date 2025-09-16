@@ -8,6 +8,14 @@
         "${MCP_FS_PATH_1}",
         "${MCP_FS_PATH_2}"
       ]
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest"]
+    },
+    "context7": {
+      "command": "npx",
+      "args": ["-y", "@upstash/context7-mcp"]
     }
   }
 }

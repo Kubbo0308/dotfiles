@@ -38,15 +38,21 @@ replace_vars() {
     # Read template and replace variables
     content=$(cat "$template")
     
-    # Replace common variables
-    content="${content//\${USER_HOME}/${USER_HOME:-$HOME}}"
-    content="${content//\${MCP_FS_PATH_1}/${MCP_FS_PATH_1:-$HOME/Desktop}}"
-    content="${content//\${MCP_FS_PATH_2}/${MCP_FS_PATH_2:-$HOME/Downloads}}"
+    # Replace common variables with proper defaults
+    USER_HOME="${USER_HOME:-$HOME}"
+    MCP_FS_PATH_1="${MCP_FS_PATH_1:-$HOME/Desktop}"
+    MCP_FS_PATH_2="${MCP_FS_PATH_2:-$HOME/Downloads}"
+    
+    content="${content//\$\{USER_HOME\}/${USER_HOME}}"
+    content="${content//\$\{MCP_FS_PATH_1\}/${MCP_FS_PATH_1}}"
+    content="${content//\$\{MCP_FS_PATH_2\}/${MCP_FS_PATH_2}}"
     content="${content//\${GITHUB_TOKEN}/${GITHUB_TOKEN}}"
     content="${content//\${NOTION_API_KEY}/${NOTION_API_KEY}}"
     content="${content//\${AWS_ACCESS_KEY_ID}/${AWS_ACCESS_KEY_ID}}"
     content="${content//\${AWS_SECRET_ACCESS_KEY}/${AWS_SECRET_ACCESS_KEY}}"
     content="${content//\${AWS_REGION}/${AWS_REGION}}"
+    content="${content//\${CONTEXT7_API_KEY}/${CONTEXT7_API_KEY}}"
+    content="${content//\${BRAVE_API_KEY}/${BRAVE_API_KEY}}"
     
     # Write output
     echo "$content" > "$output"
