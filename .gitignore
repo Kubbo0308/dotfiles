@@ -21,6 +21,12 @@ claude/shell-snapshots/
 claude/plugins/config.json.backup
 log/
 
+# MCP generated config files (contain absolute paths)
+claude/mcp/claude-desktop.json
+claude/mcp/cursor.json
+claude/mcp/servers/*.json
+!claude/mcp/servers/*-template.json
+
 # API keys and tokens
 *.key
 *.pem
@@ -34,6 +40,8 @@ secrets.json
 # Environment variables with sensitive data
 .env.local
 .env.production
+claude/environments/.env.local
+claude/environments/*.local
 
 # SSH keys and configs
 ssh/id_*

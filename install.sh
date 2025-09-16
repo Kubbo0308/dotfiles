@@ -96,6 +96,30 @@ if [ -d "$DOTFILES_DIR/oh-my-zsh-custom" ]; then
     fi
 fi
 
+# Set up MCP configuration for Claude
+if [ -d "$DOTFILES_DIR/claude/mcp" ]; then
+    echo "⚙️  Setting up MCP configuration..."
+    
+    # Check if .env.local exists
+    if [ ! -f "$DOTFILES_DIR/claude/environments/.env.local" ]; then
+        echo "📝 Creating .env.local from template..."
+        cp "$DOTFILES_DIR/claude/environments/.env.example" "$DOTFILES_DIR/claude/environments/.env.local"
+        echo "⚠️  Please edit $DOTFILES_DIR/claude/environments/.env.local with your values"
+    fi
+    
+    # Generate MCP configs from templates
+    if [ -f "$DOTFILES_DIR/claude/mcp/generate-config.sh" ]; then
+        echo "🔧 Generating MCP configurations..."
+        "$DOTFILES_DIR/claude/mcp/generate-config.sh"
+    fi
+    
+    # Set up symbolic links
+    if [ -f "$DOTFILES_DIR/claude/mcp/setup-links.sh" ]; then
+        echo "🔗 Creating MCP configuration symbolic links..."
+        "$DOTFILES_DIR/claude/mcp/setup-links.sh"
+    fi
+fi
+
 echo "✅ Dotfiles installation completed!"
 
 if [ -d "$BACKUP_DIR" ]; then
