@@ -43,12 +43,13 @@ alias v='nvim .'
 alias c='claude'
 
 # The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/takesupasankyu/Downloads/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/takesupasankyu/Downloads/google-cloud-sdk/path.zsh.inc'; fi
+GCP_SDK_PATH="${GCP_SDK_PATH:-$HOME/Downloads/google-cloud-sdk}"
+if [ -f "$GCP_SDK_PATH/path.zsh.inc" ]; then . "$GCP_SDK_PATH/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
-if [ -f '/Users/takesupasankyu/Downloads/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/takesupasankyu/Downloads/google-cloud-sdk/completion.zsh.inc'; fi
+if [ -f "$GCP_SDK_PATH/completion.zsh.inc" ]; then . "$GCP_SDK_PATH/completion.zsh.inc"; fi
 
-export PATH="$HOME/Downloads/google-cloud-sdk/bin:$PATH"
+export PATH="$GCP_SDK_PATH/bin:$PATH"
 
 if [ -f "$HOME/.local/bin/env" ]; then . "$HOME/.local/bin/env"; fi
 

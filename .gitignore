@@ -62,6 +62,14 @@ nvim/swap/
 nvim/backup/
 nvim/undo/
 
+# Neovim test and documentation files
+config/nvim/test_*
+config/nvim/clipboard_test.txt
+config/nvim/*_REPORT.md
+config/nvim/*_GUIDE.md
+config/nvim/*_SUMMARY.md
+config/nvim/*_FIX_*.md
+
 # Wezterm logs and temporary files
 wezterm/.claude/
 wezterm/logs/
