@@ -80,6 +80,7 @@ Before starting any task, evaluate whether specialized subagents are available a
    - Task Planning: Use `task-decomposer` for breaking down complex tasks
    - Security: Use `security` agent for vulnerability analysis
    - Commits/PRs: Use `commit` or `pull-request` agents
+   - **Web Research: Use `web-researcher` for enhanced web search with Context7 MCP integration**
 
 2. **Decision Criteria**
    - If a specialized agent exists for the task → **Use the agent**
@@ -95,6 +96,7 @@ Before starting any task, evaluate whether specialized subagents are available a
    - Creating commits → Always use `commit` agent
    - Creating PRs → Always use `pull-request` agent
    - Analyzing security issues → Always use `security` agent
+   - **Web research and information gathering → Always use `web-researcher` agent**
 
 ### 2. Code Quality
 
@@ -272,6 +274,7 @@ Use English with the following prefixes:
 | Documentation | `document` | MEDIUM |
 | Complex task planning | `task-decomposer` | MEDIUM |
 | GitHub Issues/PRs analysis | `github-analyzer` | MEDIUM |
+| **Enhanced web research** | **`web-researcher`** | **HIGH** |
 
 ## Checklist
 
