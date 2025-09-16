@@ -97,6 +97,9 @@ Before starting any task, evaluate whether specialized subagents are available a
    - Creating PRs → Always use `pull-request` agent
    - Analyzing security issues → Always use `security` agent
    - **Web research and information gathering → Always use `web-researcher` agent**
+     - **Use cases**: Technical documentation research, API reference gathering, framework comparison, technology trends analysis, best practices research, security recommendations research
+   - **Web automation, scraping, screenshots → Always use `web-automation` agent**
+     - **Use cases**: E-commerce price monitoring, automated form filling, ticket booking, screenshot capture, product data extraction, automated purchasing (with user consent), reservation systems
 
 ### 2. Code Quality
 
@@ -275,6 +278,7 @@ Use English with the following prefixes:
 | Complex task planning | `task-decomposer` | MEDIUM |
 | GitHub Issues/PRs analysis | `github-analyzer` | MEDIUM |
 | **Enhanced web research** | **`web-researcher`** | **HIGH** |
+| **Web automation & scraping** | **`web-automation`** | **HIGH** |
 
 ## Checklist
 
