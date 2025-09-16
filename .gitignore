@@ -17,6 +17,9 @@ claude/todos/
 claude/.claude/
 claude/statsig/
 claude/ide
+claude/shell-snapshots/
+claude/plugins/config.json.backup
+log/
 
 # API keys and tokens
 *.key

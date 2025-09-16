@@ -59,21 +59,24 @@ These language-specific endings serve as visual indicators to confirm CLAUDE.md 
 
 ### 1. Pre-implementation Checklist
 
-- **First, evaluate if specialized subagents should be used for the task**
+- **ALWAYS evaluate if specialized subagents should be used for the task - BE PROACTIVE!**
+- **Especially use `codebase-analyzer` frequently for understanding code structure**
 - Always check each project's README
 - Create a `plan` outlining the implementation approach before starting
 - Ensure existing systems won't break
 - After UI implementation, check for UI issues using Playwright MCP or similar
 
-### Subagent Evaluation Phase
+### Subagent Evaluation Phase (CRITICAL - USE PROACTIVELY!)
+
+**IMPORTANT**: Subagents should be used PROACTIVELY whenever possible. Don't wait for explicit requests - if a subagent can help with the task, USE IT!
 
 Before starting any task, evaluate whether specialized subagents are available and appropriate:
 
-1. **Identify Task Type**
+1. **Identify Task Type** (Always check this first!)
    - Testing: Use `go-test-generator` for Go test generation
    - Code Review: Use `code-reviewer-gemini` or `code-reviewer-cursor` for comprehensive reviews
    - Documentation: Use `document` agent for generating docs
-   - Codebase Analysis: Use `codebase-analyzer` for understanding code structure
+   - **Codebase Analysis: ALWAYS use `codebase-analyzer` for understanding code structure (MOST FREQUENTLY USED!)**
    - Task Planning: Use `task-decomposer` for breaking down complex tasks
    - Security: Use `security` agent for vulnerability analysis
    - Commits/PRs: Use `commit` or `pull-request` agents
@@ -84,6 +87,9 @@ Before starting any task, evaluate whether specialized subagents are available a
    - If no agent matches → **Proceed with manual implementation**
 
 3. **Agent Usage Examples**
+   - **Understanding new projects/directories → ALWAYS use `codebase-analyzer` FIRST**
+   - **Before implementing features → Use `codebase-analyzer` to understand existing structure**
+   - **When asked about code → Use `codebase-analyzer` for comprehensive analysis**
    - Writing tests for Go code → Always use `go-test-generator`
    - Reviewing code changes → Always use `code-reviewer-gemini` or `code-reviewer-cursor`
    - Creating commits → Always use `commit` agent
@@ -252,18 +258,20 @@ Use English with the following prefixes:
 6. **Commit** → Use `commit` agent for proper commit messages
 7. **PR** → Use `pull-request` agent if needed
 
-### Quick Reference: When to Use Subagents
-| Task | Subagent to Use |
-|------|----------------|
-| Writing Go tests | `go-test-generator` |
-| Code review | `code-reviewer-gemini` or `code-reviewer-cursor` |
-| Creating commits | `commit` |
-| Creating PRs | `pull-request` |
-| Security analysis | `security` |
-| Documentation | `document` |
-| Codebase analysis | `codebase-analyzer` |
-| Complex task planning | `task-decomposer` |
-| GitHub Issues/PRs analysis | `github-analyzer` |
+### Quick Reference: When to Use Subagents (USE PROACTIVELY!)
+| Task | Subagent to Use | Priority |
+|------|-----------------|----------|
+| **Understanding any codebase** | **`codebase-analyzer`** | **HIGHEST - Use FIRST** |
+| **Before implementing features** | **`codebase-analyzer`** | **HIGHEST** |
+| **Exploring new directories** | **`codebase-analyzer`** | **HIGHEST** |
+| Writing Go tests | `go-test-generator` | HIGH |
+| Code review | `code-reviewer-gemini` or `code-reviewer-cursor` | HIGH |
+| Creating commits | `commit` | HIGH |
+| Creating PRs | `pull-request` | HIGH |
+| Security analysis | `security` | HIGH |
+| Documentation | `document` | MEDIUM |
+| Complex task planning | `task-decomposer` | MEDIUM |
+| GitHub Issues/PRs analysis | `github-analyzer` | MEDIUM |
 
 ## Checklist
 
