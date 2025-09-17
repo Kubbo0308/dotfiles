@@ -1,0 +1,14 @@
+# Sensitive and runtime files for Codex CLI
+auth.json
+history.jsonl
+version.json
+
+# Runtime state directories
+sessions/
+session/
+log/
+logs/
+
+# Local backups created during migrations
+*.before-migrate-*
+
