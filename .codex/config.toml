@@ -1,1 +1,3 @@
 projects = { "/Users/y-kubo/.dotfiles" = { trust_level = "trusted" } }
+notify = ["bash", ".codex/notify_macos.sh"]
+model = "gpt-5-codex"
