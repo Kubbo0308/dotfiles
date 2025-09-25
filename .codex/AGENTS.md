@@ -1,118 +1,39 @@
 # AGENTS.md
 
-This file provides guidance to Codex (Codex CLI) when working with code in this repository. It defines conventions and expectations that apply across all Codex agents when assisting in this project.
+Guidance for Codex agents working out of `~/.dotfiles/.codex`. Focus on rules that consistently prevent mistakes and keep the local environment tidy.
 
-## Repository Overview
+## Response Discipline
+- Keep answers concise, action-oriented, and self-contained.
+- Always end every user-facing reply with `wonderful!!`.
+- When discussing code or data changes, reference files with clickable paths and single-line positions (e.g. ``internal/app/main.go:42``).
+- Summaries should lead with the actual work performed before listing follow-ups.
 
-This is a dotfiles repository that manages personal development environment configurations via Git and symbolic links. It provides a unified way to synchronize development tools across multiple machines.
+## Shell & Tooling Conventions
+- Run shell commands through `"bash", "-lc"` and always set an explicit `workdir`.
+- Prefer `rg` (or `rg --files`) for searches; fall back only when ripgrep is unavailable.
+- Request `with_escalated_permissions` whenever touching Docker, Postgres, or non-workspace paths, and explain why in the justification.
+- Clean up helper objects you create (temp tables, scratch files, containers) before finishing a task.
 
-## Development Commands
+## Editing Standards
+- Default to ASCII, preserve surrounding style, and end edited files with a trailing newline.
+- Apply formatters or linters when available, but never introduce large rewrites unless the task demands it.
+- Make surgical edits; highlight only the relevant hunks in your explanation.
+- If you touch generated data (e.g., bulk SQL inserts), add quick sanity checks so the dataset stays consistent.
 
-### Installation & Setup
-```bash
-# Initial installation
-~/.dotfiles/install.sh
+## Data & Environment Safety
+- When working with Postgres, snapshot the selection you are about to mutate, run the change, then re-query to confirm counts/flags match expectations.
+- Document any synthetic data shapes you create (zero-value cases, mismatch scenarios) so future agents can recognize them.
+- Never assume background services are running—verify `docker compose` state before relying on it.
+- Leave the environment in a ready-to-use state: dropped temp tables, restarted services (if you stopped any), and no stray files.
 
-# Install Oh-My-Zsh plugins
-~/.dotfiles/install-oh-my-zsh-plugins.sh
+## Planning & Communication
+- Create a plan for any multi-step task and update it as steps progress; skip only for trivial one-off edits.
+- If requirements are ambiguous, ask early instead of guessing.
+- Call out residual risks or tests you could not run so the user knows what to verify next.
 
-# Update dotfiles
-cd ~/.dotfiles && git pull
-
-# Remove dotfiles (cleanup)
-~/.dotfiles/uninstall.sh
-```
-
-### Git Workflow
-All commits use English prefixes:
-- add/ — Feature addition
-- fix/ — Bug fix
-- update/ — Configuration updates
-
-Always end responses with "wonderful!!"
-
-### Codex Rules
-- Keep responses concise and actionable
-- Include a blank line at the end of files
-- Apply formatters after modifications when available
-- Prefer minimal, surgical changes that match repo style
-
-### Neovim Management
-The Neovim configuration uses lazy.nvim for plugin management:
-```bash
-# Plugins auto-install on first launch
-nvim
-
-# Access git commands menu
-<leader>gg
-
-# Key telescope commands
-<leader>ff  # Find files
-<leader>fg  # Live grep
-<leader>gd  # Git diff files
-```
-
-## Architecture
-
-### Configuration Structure
-```
-~/.dotfiles/
-├── config/
-│   ├── nvim/            # Neovim configuration (Lua-based)
-│   │   ├── init.lua     # Main config entry point
-│   │   └── lua/plugins/ # Plugin configurations (lazy.nvim)
-│   └── wezterm/         # Terminal configuration
-├── oh-my-zsh-custom/    # Zsh customizations
-├── claude/              # Claude AI settings
-├── .codex/              # Codex CLI settings (this directory)
-├── docs/                # Documentation (e.g., git-commands.md)
-└── zshrc                # Main Zsh configuration
-```
-
-### Neovim Plugin Architecture
-- Modular plugin structure: each plugin category in `lua/plugins/`
-- Consolidated git tools: Telescope, GitSigns, DiffView, Octo.nvim, vim-fugitive
-- Language-specific configs: Go, JavaScript/TypeScript
-- Leader key: Space (`<leader>`)
-
-### Symbolic Link System
-The installation scripts and setup link from the home directory to dotfiles:
-- `~/.zshrc` → `~/.dotfiles/zshrc`
-- `~/.config/nvim` → `~/.dotfiles/config/nvim`
-- `~/.config/wezterm` → `~/.dotfiles/config/wezterm`
-- `~/.claude` → `~/.dotfiles/claude`
-- `~/.codex` → `~/.dotfiles/.codex`
-
-### Terminal Environment
-- Shell: Zsh with Oh-My-Zsh
-- Theme: agnoster
-- Terminal: WezTerm with Tokyo Night color scheme
-- Tools: zoxide for directory navigation, various git aliases
-
-## Important Notes
-
-### Git Tool Consolidation
-Neovim git tooling is streamlined to:
-1. Telescope for git navigation
-2. GitSigns for hunks and blame
-3. DiffView for advanced diffs
-4. Octo.nvim for GitHub integration
-5. vim-fugitive for core git commands
-
-### Plugin Loading Strategy
-- Most plugins use lazy loading via `cmd`, `keys`, or `event`
-- vim-fugitive includes `Gclog` and `Glog` to prevent loading errors
-- TypeScript tools use modern `typescript-tools.nvim`
-
-### Security Considerations
-Sensitive files are ignored via `.gitignore`:
-- API keys and tokens
-- Claude/Codex project data
-- SSH configurations
-- Environment variables
-- Cache files
-
-### Documentation Locations
-- `docs/git-commands.md`: Comprehensive git workflow guide
-
+## Frequent Pitfalls to Avoid
+- Forgetting to request elevated permissions for Docker/Postgres commands.
+- Leaving temporary database tables that confuse later queries.
+- Returning bulky command output instead of summarizing the key lines.
+- Omitting the final `wonderful!!` sign-off.
 
