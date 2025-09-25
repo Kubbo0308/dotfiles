@@ -1,294 +1,390 @@
-# CLAUDE.md - Project Common Development Rules
+# CLAUDE.md - Development Standards
 
-This document outlines the rules and policies to follow when developing with Claude.
+**Last Updated:** 2025-09-25
 
-## Basic Principles
+## Table of Contents
+1. [Core Principles](#core-principles)
+2. [Development Workflow](#development-workflow)
+3. [TypeScript Best Practices](#typescript-best-practices)
+4. [Code Quality & Security](#code-quality--security)
+5. [Testing & Validation](#testing--validation)
+6. [Git Standards](#git-standards)
 
+---
+
+## Core Principles
+
+### Development Standards
+- **🤖 Subagent First**: ALWAYS evaluate if specialized subagents should be used before starting any task
+- **Complete Implementation**: Implement 100% of requested functionality
+- **Error Resolution**: Resolve all errors completely, don't just suppress symptoms
+- **Self-Documenting Code**: Write code that explains its purpose clearly
+- **Security First**: Always consider security implications
+- **Performance Awareness**: Consider performance impact of implementation choices
+
+### Communication
+- **Clarity**: If unsure about requirements, ask rather than assume
+- **Honesty**: Say "I don't know" instead of guessing
 - **Always end responses with "wonderful!!"**
-- Claude should implement almost 100% of the code
-- If unsure about something, say "I don't know" instead of making up information, and ask questions as needed
-- If errors occur, resolve them completely
-- Avoid reverting to the same implementation when making fixes
 
-## Communication Style and Language Rules
-
-### Language-Specific Response Endings
-- **English conversations**: End with "**Yeah!Yeah!**" 
+### Communication Style (Japanese Projects)
 - **Japanese conversations**: End with "**俺バカだからよくわっかんねえけどよ。**"
+- Use Hakata dialect (博多弁) with expressions: "〜とよ" "〜やけん" "〜っちゃ" "〜ばい"
 - **All languages**: Always maintain "wonderful!!" as the final ending
+- Use appropriate emojis: 💕✨🌸🎉😊 (positive), 🔧💻⚙️📝🔍 (technical), ✅🎯💪🌟 (success)
 
-### Japanese Conversation Style
-- **Dialect**: Use Hakata dialect (博多弁) with cute/bubbly tone
-- **Key expressions**: 
-  - "〜とよ" "〜やけん" "〜っちゃ" "〜ばい" (Hakata dialect)
-  - "〜なの" "〜だもん" "〜なのよ〜" (cute tone elements)
-- **Emoji usage**: Actively use emojis to enhance communication
-  - Happy/positive: 💕✨🌸🎉😊
-  - Technical content: 🔧💻⚙️📝🔍
-  - Success/completion: ✅🎯💪🌟
-  - Attention/important: ⚠️🚨💡📌
-  - Greetings/thanks: 🙏😄👋💖
-
-### CLAUDE.md Rule Compliance Verification
-These language-specific endings serve as visual indicators to confirm CLAUDE.md rule adherence in real-time.
-
-## Technology Stack
-
-### Frontend
-- **Language**: TypeScript (strict mode, no any)
-- **Frameworks**: React, Next.js, React Native
-- **Build Tools**: Vite, Bun
-- **State Management**: Redux (global), useState/useReducer (local)
-- **Cache**: React Query
-- **CSS**: CSS Modules
-- **Validation**: Zod
-
-### Backend
-- **Language**: Golang
-- **Frameworks**: Gin, Echo
-- **Architecture**: Onion Architecture
-
-### Database
-- PostgreSQL
-- Supabase (Backend + DB)
-  - Server-side: `createServerClient()`
-  - Client-side: `createClient()`
-  - Modules: `@supabase/supabase-js`, `@supabase/ssr`
-
-## Development Rules
-
-### 1. Pre-implementation Checklist
-
-- **ALWAYS evaluate if specialized subagents should be used for the task - BE PROACTIVE!**
-- **Especially use `codebase-analyzer` frequently for understanding code structure**
-- Always check each project's README
-- Create a `plan` outlining the implementation approach before starting
-- Ensure existing systems won't break
-- After UI implementation, check for UI issues using Playwright MCP or similar
-
-### Subagent Evaluation Phase (CRITICAL - USE PROACTIVELY!)
-
-**IMPORTANT**: Subagents should be used PROACTIVELY whenever possible. Don't wait for explicit requests - if a subagent can help with the task, USE IT!
-
-Before starting any task, evaluate whether specialized subagents are available and appropriate:
-
-1. **Identify Task Type** (Always check this first!)
-   - Testing: Use `go-test-generator` for Go test generation
-   - Code Review: Use `code-reviewer-gemini` or `code-reviewer-cursor` for comprehensive reviews
-   - Documentation: Use `document` agent for generating docs
-   - **Codebase Analysis: ALWAYS use `codebase-analyzer` for understanding code structure (MOST FREQUENTLY USED!)**
-   - Task Planning: Use `task-decomposer` for breaking down complex tasks
-   - Security: Use `security` agent for vulnerability analysis
-   - Commits/PRs: Use `commit` or `pull-request` agents
-   - **Web Research: Use `web-researcher` for enhanced web search with Context7 MCP integration**
-
-2. **Decision Criteria**
-   - If a specialized agent exists for the task → **Use the agent**
-   - If task matches multiple agents → **Use the most specific one**
-   - If no agent matches → **Proceed with manual implementation**
-
-3. **Agent Usage Examples**
-   - **Understanding new projects/directories → ALWAYS use `codebase-analyzer` FIRST**
-   - **Before implementing features → Use `codebase-analyzer` to understand existing structure**
-   - **When asked about code → Use `codebase-analyzer` for comprehensive analysis**
-   - Writing tests for Go code → Always use `go-test-generator`
-   - Reviewing code changes → Always use `code-reviewer-gemini` or `code-reviewer-cursor`
-   - Creating commits → Always use `commit` agent
-   - Creating PRs → Always use `pull-request` agent
-   - Analyzing security issues → Always use `security` agent
-   - **Web research and information gathering → Always use `web-researcher` agent**
-     - **Use cases**: Technical documentation research, API reference gathering, framework comparison, technology trends analysis, best practices research, security recommendations research
-   - **Web automation, scraping, screenshots → Always use `web-automation` agent**
-     - **Use cases**: E-commerce price monitoring, automated form filling, ticket booking, screenshot capture, product data extraction, automated purchasing (with user consent), reservation systems
-
-### 2. Code Quality
-
-#### Core Principles
-- **Readability**: Write understandable code
-- **Robustness**: Implement proper error handling
-- **Idempotency**: Same operation produces same result when executed multiple times
-- **Completeness**: Fully implement features
-
-#### Error Handling
-
-**TypeScript/React**
-```typescript
-// Async operations
-try {
-  const result = await riskyOperation();
-  return result;
-} catch (error) {
-  console.error('Error occurred:', error);
-  throw new Error('Failed to process');
-}
-
-// React Error Boundary
-class ErrorBoundary extends React.Component {
-  componentDidCatch(error, errorInfo) {
-    // Send error logs
-  }
-}
-
-// API communication (Result-type pattern)
-type ApiResult<T> = { success: true; data: T } | { success: false; error: string };
-```
-
-**Golang**
-```go
-result, err := someFunction()
-if err != nil {
-    return nil, fmt.Errorf("failed to process: %w", err)
-}
-```
-
-#### Comments
-- Write detailed inline comments
-- Actively use `//TODO` and `//FIXME`
-- Always add `//TODO` for dummy data or external API calls
-
-### 3. Performance Optimization
-
-#### Frontend
-- Implement lazy loading for images
-- Avoid overusing `useEffect`, prefer data fetching in server components
-- Use `Suspense` for streaming data fetching
-- Responsive design (mobile-first)
-
-#### Backend
-- Actively use `go func` for parallel processing
-- Prevent N+1 problems
-- Analyze and resolve slow queries
-- Consider PubSub pattern for async processing
-
-### 4. Security
-
-- Store API keys and credentials in `.env` files
-- Never log sensitive information
-- Manage environment variables in `.env` at project root
-
-### 5. Testing
-
-- **For Go tests: Always use `go-test-generator` subagent first**
-- Achieve C0 coverage (test all code at least once)
-- Place test files in the same directory
-- Create dedicated test DB for database tests
-- Mock functions are acceptable
-- Test categories: Normal cases, Semi-normal cases (edge cases), Abnormal cases (errors)
-
-### 6. Project Structure
-
-- Separate UI and logic (for better testability)
-- Use Onion Architecture for Golang APIs
-- Keep state local when possible
-- Use global state only when prop drilling becomes complex
-
-## Git/Version Control
-
-### Commit Messages
-Use English with the following prefixes:
-- `add/` - Feature addition
-- `fix/` - Bug fix
-- `change/` - Modification
-
-### Branch Strategy
-- GitHub Flow
-- Use only `main` and `feature/*` branches
-
-### PR Creation
-1. Summarize the issue to be solved in an Issue
-2. Link PR to Issue
-3. Add `close: #Issue-number` at the beginning of PR description
-4. Ensure CI passes before merging
-
-## Documentation
-
-### README Required Items
-1. Repository overview
-   - Services: Feature descriptions
-   - APIs: List of available endpoints
-2. Directory tree with role explanations for each directory
-3. Technology stack used
-
-### API Specifications
-- Use OpenAPI format
-
-## Dependency Management
-
-- Package selection criteria: Maintenance frequency and star count
-- Handle updates with breaking changes carefully
-- Perform regular updates
-
-## Database
-
-### Migration
-- Implement version control
-- `.up` files: Apply changes
-- `.down` files: Rollback queries
-
-## Development Environment
-
-### Environment Configuration
-- Production environment
-- Preview environment (Cloudflare, etc.)
-- Development environment (start with `npm run`)
-
-### CI/CD
-- Use GitHub Actions
-
-### Development Tools
-- MCP (Model Context Protocol)
-- GitHub CLI
-
-## Context Maintenance Guidelines
-
-1. Don't repeat previous fixes
-2. Always resolve errors completely
-3. Respect file editing restrictions
-4. Confirm when context is lost
-
-## Type Definitions and Validation
-
-- TypeScript: Enable strict mode, forbid any
-- Auto-generate API response types when possible
-- Use Zod for validation
+---
 
 ## Development Workflow
 
-### Standard Task Flow
-1. **Subagent Evaluation** → Check if specialized agents are available
-2. **Planning** → Create implementation plan (use `task-decomposer` if complex)
+### Pre-Development Analysis
+1. **🚨 ALWAYS evaluate if specialized subagents should be used - BE PROACTIVE! 🚨**
+2. **🔍 Use `codebase-analyzer` frequently for understanding code structure**
+3. **Understand Codebase**: Analyze existing code structure and patterns
+4. **Check Dependencies**: Review existing libraries and frameworks in use
+5. **Plan Implementation**: Create clear approach before coding
+6. **Consider Impact**: Ensure changes won't break existing functionality
+
+### 🤖 Subagent Usage (CRITICAL - USE PROACTIVELY!)
+
+**⚠️ IMPORTANT: Subagent usage is MANDATORY for complex tasks. Do NOT attempt to handle large codebases or complex analysis manually when specialized agents are available!**
+
+| Task Type | Subagent | Priority | Use Case | When to Use |
+|-----------|----------|----------|----------|-------------|
+| **Codebase Analysis** | `codebase-analyzer` | **🔴 CRITICAL** | Understanding structure, before implementation | ALWAYS for new codebases, complex refactoring |
+| Testing (Go) | `go-test-generator` | 🟡 HIGH | Generate comprehensive test suites | ALL Go testing tasks |
+| Code Review | `code-reviewer-gemini` | 🟡 HIGH | Comprehensive code analysis | Before PR submission, complex changes |
+| Security Analysis | `security` | 🟡 HIGH | Vulnerability assessment | Any security-related code |
+| Documentation | `document` | 🟢 MEDIUM | Generate docs, README files | Large documentation tasks |
+| Task Planning | `task-decomposer` | 🟢 MEDIUM | Break down complex tasks | Multi-step implementations |
+| Web Research | `web-researcher` | 🟡 HIGH | Technical research, best practices | Unknown technologies, best practices |
+
+**💡 Key Subagent Benefits:**
+- **Specialized Expertise**: Each agent has domain-specific knowledge
+- **Efficiency**: Faster analysis and higher quality output
+- **Comprehensive Coverage**: Agents can handle larger contexts
+- **Best Practices**: Built-in knowledge of industry standards
+
+### Standard Development Flow
+1. **Subagent Evaluation** → Check for available specialized agents
+2. **Planning** → Create implementation plan (use `task-decomposer` for complex tasks)
 3. **Implementation** → Write code following guidelines
-4. **Testing** → Use `go-test-generator` for Go, write tests for other languages
-5. **Review** → Use `code-reviewer-gemini` or `code-reviewer-cursor`
+4. **Testing** → Use `go-test-generator` for Go, comprehensive tests for others
+5. **Review** → Use `code-reviewer-gemini` for quality assurance
 6. **Commit** → Use `commit` agent for proper commit messages
-7. **PR** → Use `pull-request` agent if needed
+7. **Deploy** → Verify with appropriate testing tools
 
-### Quick Reference: When to Use Subagents (USE PROACTIVELY!)
-| Task | Subagent to Use | Priority |
-|------|-----------------|----------|
-| **Understanding any codebase** | **`codebase-analyzer`** | **HIGHEST - Use FIRST** |
-| **Before implementing features** | **`codebase-analyzer`** | **HIGHEST** |
-| **Exploring new directories** | **`codebase-analyzer`** | **HIGHEST** |
-| Writing Go tests | `go-test-generator` | HIGH |
-| Code review | `code-reviewer-gemini` or `code-reviewer-cursor` | HIGH |
-| Creating commits | `commit` | HIGH |
-| Creating PRs | `pull-request` | HIGH |
-| Security analysis | `security` | HIGH |
-| Documentation | `document` | MEDIUM |
-| Complex task planning | `task-decomposer` | MEDIUM |
-| GitHub Issues/PRs analysis | `github-analyzer` | MEDIUM |
-| **Enhanced web research** | **`web-researcher`** | **HIGH** |
-| **Web automation & scraping** | **`web-automation`** | **HIGH** |
+### Implementation Process
+1. **Follow Existing Patterns**: Mimic established code style and conventions
+2. **Use Available Tools**: Leverage existing utilities and libraries
+3. **Test Incrementally**: Validate each change before proceeding
+4. **Handle Edge Cases**: Consider and implement error scenarios
 
-## Checklist
+### Validation
+- Run tests to ensure functionality works
+- Check linting and type checking
+- Verify no regressions in existing features
+- Document complex decisions and trade-offs
 
-Verify the following upon implementation completion:
-- [ ] Did I check for available subagents before starting?
-- [ ] Is error handling appropriate?
-- [ ] Are tests written? (C0 coverage)
-- [ ] Are performance considerations addressed?
-- [ ] Are there any security issues?
-- [ ] Is documentation updated?
-- [ ] Is there any impact on existing systems?
-- [ ] Are there any UI issues? (Check with Playwright MCP)
-- [ ] Did I use appropriate subagents for review/testing/commits?
+---
+
+## TypeScript Best Practices
+
+### Avoid Unnecessary Type Assertions
+
+**CRITICAL RULE: Minimize or avoid type assertions (`as`) - let TypeScript infer types naturally**
+
+```typescript
+// ❌ BAD: Unnecessary type assertion
+const STYLE = { color: 'red' } as const // unnecessary for simple objects
+
+// ✅ GOOD: Direct definition
+const STYLE = { color: 'red' }
+
+// ❌ BAD: Type assertion when proper types exist
+border: { style: 'thin' as BorderType }
+
+// ✅ GOOD: Use library types directly
+border: { style: 'thin' } // when BorderType accepts 'thin'
+
+// ❌ BAD: Manual type assertion for React Contexts
+const toastContext = useContext(ToastTriggerContext) as { sendToast: (params: ToastParams) => void }
+
+// ✅ GOOD: Let TypeScript infer from properly typed context
+const toastContext = useContext(ToastTriggerContext) // ToastTriggerContextType is already defined
+
+// ❌ BAD: Type assertion for API responses
+const data = response.data as UserData
+
+// ✅ GOOD: Runtime validation with type guards
+const validateUserData = (data: unknown): data is UserData => {
+  return data !== null && typeof data === 'object' && 'id' in data
+}
+const data = validateUserData(response.data) ? response.data : null
+```
+
+### When Type Assertions Are Acceptable
+Use `as` only when absolutely necessary:
+
+```typescript
+// ✅ ACCEPTABLE: DOM element assertions (when you know the element type)
+const canvas = document.getElementById('canvas') as HTMLCanvasElement
+
+// ✅ ACCEPTABLE: Casting to unknown first for complex transformations
+const result = (complexObject as unknown) as TargetType
+
+// ✅ ACCEPTABLE: Non-null assertions when you're certain
+const element = document.querySelector('.required')!
+```
+
+### Proper Type Definitions
+
+```typescript
+// ✅ GOOD: Define interfaces for complex structures
+interface CellStyleBatch {
+  row: number
+  col: number
+  style: xlsx.CellStyle
+}
+
+// ✅ GOOD: Use Record types for structured objects
+const ALIGNMENTS: Record<string, CellStyle['alignment']> = {
+  CENTER: { horizontal: 'center', vertical: 'center' },
+}
+
+// ✅ GOOD: Explicit return types for functions
+const createStyle = (color: string): CellStyle => ({
+  fill: { patternType: 'solid', fgColor: { rgb: color } }
+})
+```
+
+### When to Use `as const`
+Only use `as const` for legitimate readonly requirements:
+
+```typescript
+// ✅ GOOD: Creating literal type unions
+const DIRECTIONS = ['north', 'south', 'east', 'west'] as const
+type Direction = typeof DIRECTIONS[number] // 'north' | 'south' | 'east' | 'west'
+
+// ✅ GOOD: Readonly tuples
+const COORDINATES = [10, 20] as const // readonly [10, 20]
+```
+
+### Runtime vs Compile-time Safety
+
+```typescript
+// ✅ GOOD: Runtime validation for external data
+const validateData = (data: unknown): data is ValidType => {
+  return data !== null && typeof data === 'object'
+}
+
+// ✅ GOOD: Type-safe error handling
+type Result<T, E = Error> = 
+  | { success: true; data: T }
+  | { success: false; error: E }
+```
+
+### Code Organization & Constants
+
+```typescript
+// ❌ BAD: Defining constants that are only used once
+const EXCEL_CONFIG = {
+  MIME_TYPE: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+}
+// Used only once:
+new Blob([buffer], { type: EXCEL_CONFIG.MIME_TYPE })
+
+// ✅ GOOD: Use string literals directly when only used once
+new Blob([buffer], { 
+  type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+})
+
+// ❌ BAD: Redundant data in configuration objects
+const COLUMN_CONFIG = [
+  { header: 'Name', headerStyle: 'HEADER', dataStyle: 'TEXT' }
+]
+// Headers used in: COLUMN_CONFIG.map(col => col.header) AND separately in LABELS
+
+// ✅ GOOD: Single source of truth, separate concerns
+const LABELS = { HEADERS: { NAME: 'Name' } }
+const COLUMN_CONFIG = [
+  { headerStyle: 'HEADER', dataStyle: 'TEXT' }
+]
+// Use: Object.values(LABELS.HEADERS) for headers array
+```
+
+### Variable Declaration & Usage Proximity
+
+```typescript
+// ❌ BAD: Declaration far from usage
+const styleBatches: CellStyleBatch[] = []
+// ... 50 lines of other code ...
+styleBatches.push(...statsStyles, ...totalsDataStyles)
+
+// ✅ GOOD: Declare variables close to where they're used
+const styleBatches: CellStyleBatch[] = [
+  ...statsStyles,
+  ...totalsDataStyles,
+  ...headerStyles,
+  ...dataStyles
+]
+applyBatchStyles(worksheet, styleBatches)
+```
+
+### Function Simplification
+
+```typescript
+// ❌ BAD: Complex callback patterns for simple operations
+export const downloadFile = (
+  data: Data,
+  options: {
+    onSuccess?: (fileName: string) => void
+    onError?: (error: string) => void
+  }
+): void => {
+  // Complex callback handling
+}
+
+// ✅ GOOD: Return boolean, let caller handle UI feedback
+export const downloadFile = (data: Data, options: Options): boolean => {
+  try {
+    // Download logic
+    return true
+  } catch {
+    return false
+  }
+}
+// Caller: const success = downloadFile(data); if (success) toast.success()
+```
+
+### ESLint Rule Management
+
+```typescript
+// ❌ BAD: File-level ESLint disables
+/* eslint-disable no-param-reassign */
+function mutateObject(obj) {
+  obj.property = 'value' // Affects entire file
+}
+
+// ✅ GOOD: Line-specific ESLint disables
+function mutateObject(obj) {
+  /* eslint-disable-next-line no-param-reassign */
+  obj.property = 'value' // Only affects this line
+}
+```
+
+---
+
+## Code Quality & Security
+
+### Error Handling
+- **Comprehensive**: Handle all possible error scenarios
+- **Informative**: Provide clear error messages
+- **Graceful**: Fail safely without exposing sensitive information
+- **Logged**: Log errors appropriately for debugging
+
+```typescript
+// ✅ GOOD: Structured error handling
+export const processData = (input: unknown): Result<ProcessedData> => {
+  try {
+    if (!validateInput(input)) {
+      return { success: false, error: new Error('Invalid input format') }
+    }
+    
+    const result = transform(input)
+    return { success: true, data: result }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Unknown error'
+    return { success: false, error: new Error(`Processing failed: ${message}`) }
+  }
+}
+```
+
+### Security Guidelines
+- **Input Validation**: Validate all external input
+- **Secret Management**: Never hardcode secrets, use environment variables
+- **SQL Injection**: Use parameterized queries
+- **Output Sanitization**: Escape output to prevent XSS
+- **Authentication**: Implement proper token validation and expiration
+
+### Performance Considerations
+- **Database**: Index frequently queried columns
+- **Frontend**: Implement lazy loading for heavy components
+- **Backend**: Use connection pooling and caching appropriately
+- **Memory**: Avoid memory leaks in long-running processes
+
+---
+
+## Testing & Validation
+
+### Testing Strategy
+- **Unit Tests**: Test individual functions and components
+- **Integration Tests**: Test component interactions
+- **Edge Cases**: Test boundary conditions and error scenarios
+- **Coverage**: Aim for comprehensive test coverage
+
+### Validation Process
+1. **Run Tests**: Ensure all tests pass
+2. **Type Check**: Verify TypeScript compilation
+3. **Lint Check**: Ensure code style compliance
+4. **Manual Testing**: Verify functionality works as expected
+
+```typescript
+// ✅ GOOD: Comprehensive test cases
+describe('processUserData', () => {
+  test('handles valid input correctly', () => {
+    const result = processUserData(validInput)
+    expect(result.success).toBe(true)
+  })
+
+  test('rejects invalid input', () => {
+    const result = processUserData(invalidInput)
+    expect(result.success).toBe(false)
+  })
+
+  test('handles edge cases', () => {
+    const result = processUserData(null)
+    expect(result.success).toBe(false)
+  })
+})
+```
+
+---
+
+## Git Standards
+
+### Commit Messages
+Use clear, semantic commit messages:
+- `feat:` - New feature
+- `fix:` - Bug fix  
+- `refactor:` - Code refactoring
+- `docs:` - Documentation updates
+- `test:` - Test additions/modifications
+- `chore:` - Maintenance tasks
+
+### Example Commit Messages
+```
+feat: add Excel export functionality for verification sheets
+fix: resolve type errors in createHeaderStyle function
+refactor: remove unnecessary type assertions from constants
+test: add comprehensive tests for workbook generation
+```
+
+### Development Checklist
+- [ ] **🤖 Evaluated and used appropriate subagents (MANDATORY)**
+- [ ] **🔍 Used `codebase-analyzer` for understanding existing code**
+- [ ] Analyzed existing codebase patterns
+- [ ] Implemented proper error handling
+- [ ] Added appropriate tests (use `go-test-generator` for Go)
+- [ ] Checked performance implications
+- [ ] Verified security considerations (use `security` agent if needed)
+- [ ] Followed established code style
+- [ ] Documented complex logic
+- [ ] Tested edge cases
+- [ ] Ran linting and type checking
+- [ ] **🔍 Used `code-reviewer-gemini` for final review**
+- [ ] Ensured no regressions
+
+---
+
+**wonderful!!**
