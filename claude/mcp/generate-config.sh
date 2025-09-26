@@ -16,11 +16,11 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CLAUDE_DIR="$(dirname "$SCRIPT_DIR")"
 
 # Check for .env.local file
-ENV_FILE="${CLAUDE_DIR}/environments/.env.local"
+ENV_FILE="${SCRIPT_DIR}/environments/.env.local"
 if [ ! -f "$ENV_FILE" ]; then
     echo -e "${YELLOW}Warning: .env.local not found!${NC}"
     echo "Creating .env.local from .env.example..."
-    cp "${CLAUDE_DIR}/environments/.env.example" "$ENV_FILE"
+    cp "${SCRIPT_DIR}/environments/.env.example" "$ENV_FILE"
     echo -e "${GREEN}Created .env.local - Please edit it with your values${NC}"
     exit 1
 fi
@@ -35,27 +35,39 @@ replace_vars() {
     
     echo "Processing: $template → $output"
     
-    # Read template and replace variables
-    content=$(cat "$template")
-    
-    # Replace common variables with proper defaults
+    # Set defaults for variables
     USER_HOME="${USER_HOME:-$HOME}"
     MCP_FS_PATH_1="${MCP_FS_PATH_1:-$HOME/Desktop}"
     MCP_FS_PATH_2="${MCP_FS_PATH_2:-$HOME/Downloads}"
     
-    content="${content//\$\{USER_HOME\}/${USER_HOME}}"
-    content="${content//\$\{MCP_FS_PATH_1\}/${MCP_FS_PATH_1}}"
-    content="${content//\$\{MCP_FS_PATH_2\}/${MCP_FS_PATH_2}}"
-    content="${content//\${GITHUB_TOKEN}/${GITHUB_TOKEN}}"
-    content="${content//\${NOTION_API_KEY}/${NOTION_API_KEY}}"
-    content="${content//\${AWS_ACCESS_KEY_ID}/${AWS_ACCESS_KEY_ID}}"
-    content="${content//\${AWS_SECRET_ACCESS_KEY}/${AWS_SECRET_ACCESS_KEY}}"
-    content="${content//\${AWS_REGION}/${AWS_REGION}}"
-    content="${content//\${CONTEXT7_API_KEY}/${CONTEXT7_API_KEY}}"
-    content="${content//\${BRAVE_API_KEY}/${BRAVE_API_KEY}}"
+    # PostgreSQL configuration with defaults
+    POSTGRES_HOST="${POSTGRES_HOST:-localhost}"
+    POSTGRES_PORT="${POSTGRES_PORT:-5432}"
+    POSTGRES_DB="${POSTGRES_DB:-postgres}"
+    POSTGRES_USER="${POSTGRES_USER:-postgres}"
+    POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-}"
     
-    # Write output
-    echo "$content" > "$output"
+    # Construct PostgreSQL connection string
+    if [ -n "$POSTGRES_USER" ] && [ -n "$POSTGRES_HOST" ] && [ -n "$POSTGRES_DB" ]; then
+        if [ -n "$POSTGRES_PASSWORD" ]; then
+            POSTGRES_CONNECTION_STRING="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+        else
+            POSTGRES_CONNECTION_STRING="postgresql://${POSTGRES_USER}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}"
+        fi
+    else
+        POSTGRES_CONNECTION_STRING=""
+    fi
+    
+    # Use envsubst for proper variable substitution
+    export USER_HOME MCP_FS_PATH_1 MCP_FS_PATH_2
+    export GITHUB_TOKEN NOTION_API_KEY
+    export AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY AWS_REGION
+    export CONTEXT7_API_KEY BRAVE_API_KEY
+    export POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD
+    export POSTGRES_CONNECTION_STRING
+    
+    # Use envsubst to replace variables and write output
+    envsubst < "$template" > "$output"
 }
 
 # Generate Claude Desktop config
