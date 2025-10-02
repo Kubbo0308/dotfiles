@@ -99,24 +99,38 @@ fi
 # Set up MCP configuration for Claude
 if [ -d "$DOTFILES_DIR/claude/mcp" ]; then
     echo "⚙️  Setting up MCP configuration..."
-    
+
     # Check if .env.local exists
     if [ ! -f "$DOTFILES_DIR/claude/environments/.env.local" ]; then
         echo "📝 Creating .env.local from template..."
         cp "$DOTFILES_DIR/claude/environments/.env.example" "$DOTFILES_DIR/claude/environments/.env.local"
         echo "⚠️  Please edit $DOTFILES_DIR/claude/environments/.env.local with your values"
     fi
-    
+
     # Generate MCP configs from templates
     if [ -f "$DOTFILES_DIR/claude/mcp/generate-config.sh" ]; then
         echo "🔧 Generating MCP configurations..."
         "$DOTFILES_DIR/claude/mcp/generate-config.sh"
     fi
-    
+
     # Set up symbolic links
     if [ -f "$DOTFILES_DIR/claude/mcp/setup-links.sh" ]; then
         echo "🔗 Creating MCP configuration symbolic links..."
         "$DOTFILES_DIR/claude/mcp/setup-links.sh"
+    fi
+fi
+
+# Install Homebrew packages
+if [ -f "$DOTFILES_DIR/.homebrew/Brewfile" ]; then
+    echo "🍺 Installing Homebrew packages..."
+
+    # Check if Homebrew is installed
+    if ! command -v brew &> /dev/null; then
+        echo "⚠️  Homebrew is not installed. Please install it first:"
+        echo "   /bin/bash -c \"\$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)\""
+    else
+        echo "📦 Installing packages from Brewfile..."
+        brew bundle install --file="$DOTFILES_DIR/.homebrew/Brewfile"
     fi
 fi
 

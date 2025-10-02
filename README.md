@@ -6,6 +6,9 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 
 ```
 ~/.dotfiles/
+├── .homebrew/                   # Homebrew package management
+│   ├── Brewfile                # Homebrew Bundle configuration
+│   └── README.md               # Homebrew usage documentation
 ├── claude/                      # Claude AI configuration (sensitive files ignored)
 ├── config/
 │   ├── nvim/                   # Neovim configuration
@@ -40,9 +43,9 @@ This will create symbolic links:
 - `~/.config/wezterm` → `~/.dotfiles/config/wezterm`
 - `~/.config/nvim` → `~/.dotfiles/config/nvim`
 
-And install Oh-My-Zsh customizations:
-- Custom themes and zsh files
-- External plugins (zsh-autosuggestions, zsh-syntax-highlighting, etc.)
+And install:
+- Oh-My-Zsh customizations (themes, plugins)
+- Homebrew packages from Brewfile
 
 ## Security
 
