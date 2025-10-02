@@ -10,13 +10,19 @@ This is a **dotfiles repository** that manages personal development environment 
 
 ### Installation & Setup
 ```bash
-# Initial installation
+# One-command full environment setup (Recommended for new machines)
+~/.dotfiles/.scripts/setup-environment.sh
+
+# Manual installation (dotfiles only)
 ~/.dotfiles/.scripts/install.sh
 
-# Install Oh-My-Zsh plugins
-~/.dotfiles/.scripts/install-oh-my-zsh-plugins.sh
+# Backup current configurations to dotfiles repo
+~/.dotfiles/.scripts/sync-to-dotfiles.sh
 
-# Update dotfiles
+# Restore configurations from dotfiles repo
+~/.dotfiles/.scripts/restore-from-dotfiles.sh
+
+# Update dotfiles from remote
 cd ~/.dotfiles && git pull
 
 # Remove dotfiles (cleanup)

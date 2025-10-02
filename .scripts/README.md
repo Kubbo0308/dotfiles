@@ -1,79 +1,142 @@
-# PR Review Scripts
+# Scripts Directory
 
-このディレクトリには、GitHub Pull Request のレビューを効率化するためのスクリプトが含まれています。
+このディレクトリには、dotfiles環境の管理とセットアップに関するスクリプトが含まれています。
 
-## pr-review-wezterm.zsh
+## 🚀 環境セットアップスクリプト
 
-WezTerm 内で3つのAIツール（Claude Code、Cursor Agent、Gemini CLI）を使用して、同時並行でPRレビューを実行するスクリプトです。
+### setup-environment.sh
+**全環境を一括でセットアップする統合スクリプト**
 
-### 機能
-
-- WezTerm を3つの垂直ペインに分割
-- 各ペインで異なるAIツールを起動してPRレビューを実行
-  - **左ペイン**: Claude Code
-  - **中央ペイン**: Cursor Agent
-  - **右ペイン**: Gemini CLI
-- GitHub CLI (`gh`) を使用してPR情報を取得
-- 日本語でのレビュー実行
-
-### 前提条件
-
-1. **WezTerm** がインストールされていること
-2. **GitHub CLI (`gh`)** がインストールされ、認証済みであること
-3. 以下のAIツールがインストールされていること（オプション）:
-   - Claude Code (`claude` コマンド)
-   - Cursor Agent (`cursor-agent` コマンド)
-   - Gemini CLI (`gemini` コマンド)
-4. `pr-review-prompt.md` ファイルが同じディレクトリに存在すること
-
-### 使用方法
-
-WezTerm 内で以下のコマンドを実行します：
+新しいマシンで開発環境を構築する際に、このスクリプト1つで全てをセットアップできます。
 
 ```bash
-# PRの番号のみを指定（現在のGitリポジトリから自動的にリポジトリ情報を取得）
-./pr-review-wezterm.zsh 123
-
-# PRの番号とリポジトリを指定
-./pr-review-wezterm.zsh 123 owner/repo
-
-# GitHub PR の URL を直接指定
-./pr-review-wezterm.zsh https://github.com/owner/repo/pull/123
+~/.dotfiles/.scripts/setup-environment.sh
 ```
 
-### 動作の流れ
+**実行内容:**
+1. Homebrewのインストール（未インストールの場合）
+2. Brewfileからパッケージをインストール
+3. Oh-My-Zshのインストール（未インストールの場合）
+4. dotfilesのシンボリックリンク作成
+5. シェル設定の適用
 
-1. PR番号とリポジトリ情報を解析
-2. `pr-review-prompt.md` のテンプレートを読み込み
-3. WezTerm の現在のペインを3つに垂直分割
-4. 各ペインで対応するAIツールを起動
-5. 各AIツールが以下のコマンドを実行してPRをレビュー:
-   - `gh pr view` - PR の詳細情報を取得
-   - `gh pr diff` - PR の差分を取得
+### install.sh
+**dotfilesのシンボリックリンクを作成するスクリプト**
 
-### エラーハンドリング
+```bash
+~/.dotfiles/.scripts/install.sh
+```
 
-- WezTerm 外で実行された場合はエラーを表示
-- リポジトリ情報が取得できない場合は手動指定を要求
-- AIツールが見つからない場合は、該当ペインにインストール方法を表示
+**機能:**
+- `~/.zshrc` → `~/.dotfiles/zshrc` のシンボリックリンク作成
+- `~/.config/nvim` → `~/.dotfiles/config/nvim` のシンボリックリンク作成
+- Oh-My-Zshプラグインのインストール
+- MCPコンフィグのセットアップ
+- Homebrewパッケージのインストール
 
-### カスタマイズ
+### install-oh-my-zsh-plugins.sh
+**Oh-My-Zshプラグインを個別にインストール**
 
-`pr-review-prompt.md` ファイルを編集することで、レビューのプロンプトをカスタマイズできます。
+```bash
+~/.dotfiles/.scripts/install-oh-my-zsh-plugins.sh
+```
 
-### トラブルシューティング
+### uninstall.sh
+**dotfilesのシンボリックリンクを削除**
 
-- **「Error: This script must be run from within WezTerm」が表示される場合**
-  - WezTerm 内でスクリプトを実行してください
+```bash
+~/.dotfiles/.scripts/uninstall.sh
+```
 
-- **リポジトリが自動検出されない場合**
-  - 第2引数として `owner/repo` 形式でリポジトリを指定してください
+## 🔄 バックアップ・同期スクリプト
 
-- **AIツールが起動しない場合**
-  - 各ツールが正しくインストールされ、PATH に含まれていることを確認してください
+### sync-to-dotfiles.sh
+**現在のシステム設定をdotfilesリポジトリにバックアップ**
 
-### 注意事項
+システムの設定ファイルをdotfilesリポジトリに同期します。設定を変更した後、リポジトリに反映させたい場合に使用します。
 
-- このスクリプトは WezTerm 専用です
-- 一時ファイルがセッション中に `/tmp` に作成されます
-- 各AIツールのレスポンス時間は異なる場合があります
+```bash
+~/.dotfiles/.scripts/sync-to-dotfiles.sh
+```
+
+**同期される項目:**
+- `.zshrc`
+- `.config/nvim`
+- `.config/wezterm`
+- `.claude/settings.json`
+- `.claude/CLAUDE.md`
+- `.claude/commands`
+- `.claude/agents`
+- Brewfile（現在のインストール状況を反映）
+
+### restore-from-dotfiles.sh
+**dotfilesリポジトリからシステムに設定を復元**
+
+dotfilesリポジトリの内容を`$HOME`にコピーして復元します。
+
+```bash
+~/.dotfiles/.scripts/restore-from-dotfiles.sh
+```
+
+## 🔧 その他のツール
+
+### pr-review-wezterm.zsh
+**GitHub Pull Requestの並列AIレビュー**
+
+WezTerm内で3つのAIツール（Claude Code、Cursor Agent、Gemini CLI）を使用して、同時並行でPRレビューを実行します。
+
+```bash
+~/.dotfiles/.scripts/pr-review-wezterm.zsh 123
+```
+
+詳細は以前のREADME内容を参照してください。
+
+## 📝 使用フロー
+
+### 新しいマシンでのセットアップ
+```bash
+# 1. dotfilesリポジトリをクローン
+git clone <repository-url> ~/.dotfiles
+
+# 2. 統合セットアップスクリプトを実行
+~/.dotfiles/.scripts/setup-environment.sh
+
+# 3. ターミナルを再起動
+```
+
+### 設定変更後のバックアップ
+```bash
+# 1. 現在の設定をdotfilesに同期
+~/.dotfiles/.scripts/sync-to-dotfiles.sh
+
+# 2. 変更を確認してコミット
+cd ~/.dotfiles
+git status
+git add .
+git commit -m "update: sync configurations"
+git push
+```
+
+### 別マシンでの設定復元
+```bash
+# 1. dotfilesをクローン
+git clone <repository-url> ~/.dotfiles
+
+# 2. 設定を復元
+~/.dotfiles/.scripts/restore-from-dotfiles.sh
+
+# 3. 不足しているパッケージをインストール
+~/.dotfiles/.scripts/setup-environment.sh
+```
+
+## ⚙️ カスタマイズ
+
+各スクリプトは環境変数で動作をカスタマイズできます:
+
+```bash
+# dotfilesディレクトリのパスを変更
+export DOTFILES_DIR="$HOME/my-custom-dotfiles"
+
+# スクリプトを実行
+~/.dotfiles/.scripts/setup-environment.sh
+```

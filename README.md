@@ -26,7 +26,26 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 └── README.md                   # This file
 ```
 
-## Installation
+## Quick Start
+
+### One-Command Setup (Recommended)
+For new machines, use the unified setup script that handles everything:
+
+```bash
+git clone <repository-url> ~/.dotfiles
+~/.dotfiles/.scripts/setup-environment.sh
+```
+
+This will automatically:
+- Install Homebrew (if not installed)
+- Install all packages from Brewfile
+- Install Oh-My-Zsh (if not installed)
+- Create symbolic links for all dotfiles
+- Set up MCP configurations
+
+### Manual Installation
+
+If you prefer step-by-step installation:
 
 1. Clone this repository:
    ```bash
@@ -64,9 +83,26 @@ To remove all symbolic links:
 ~/.dotfiles/.scripts/uninstall.sh
 ```
 
-## Updates
+## Workflow
 
-To update your dotfiles:
+### Backup Current Configurations
+Save your current system settings to the dotfiles repository:
+```bash
+~/.dotfiles/.scripts/sync-to-dotfiles.sh
+cd ~/.dotfiles
+git add .
+git commit -m "update: sync configurations"
+git push
+```
+
+### Restore Configurations
+Restore dotfiles to your home directory:
+```bash
+~/.dotfiles/.scripts/restore-from-dotfiles.sh
+```
+
+### Update Dotfiles
+Pull latest changes from the repository:
 ```bash
 cd ~/.dotfiles
 git pull
