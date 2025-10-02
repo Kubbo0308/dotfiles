@@ -90,9 +90,9 @@ if [ -d "$DOTFILES_DIR/oh-my-zsh-custom" ]; then
     fi
     
     # Install plugins from plugins.txt
-    if [ -f "$DOTFILES_DIR/install-oh-my-zsh-plugins.sh" ]; then
+    if [ -f "$DOTFILES_DIR/.scripts/install-oh-my-zsh-plugins.sh" ]; then
         echo "📦 Installing Oh-My-Zsh plugins..."
-        "$DOTFILES_DIR/install-oh-my-zsh-plugins.sh"
+        "$DOTFILES_DIR/.scripts/install-oh-my-zsh-plugins.sh"
     fi
 fi
 

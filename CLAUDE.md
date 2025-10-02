@@ -11,16 +11,16 @@ This is a **dotfiles repository** that manages personal development environment 
 ### Installation & Setup
 ```bash
 # Initial installation
-~/.dotfiles/install.sh
+~/.dotfiles/.scripts/install.sh
 
-# Install Oh-My-Zsh plugins 
-~/.dotfiles/install-oh-my-zsh-plugins.sh
+# Install Oh-My-Zsh plugins
+~/.dotfiles/.scripts/install-oh-my-zsh-plugins.sh
 
 # Update dotfiles
 cd ~/.dotfiles && git pull
 
 # Remove dotfiles (cleanup)
-~/.dotfiles/uninstall.sh
+~/.dotfiles/.scripts/uninstall.sh
 ```
 
 ### Git Workflow

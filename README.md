@@ -9,6 +9,10 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 ├── .homebrew/                   # Homebrew package management
 │   ├── Brewfile                # Homebrew Bundle configuration
 │   └── README.md               # Homebrew usage documentation
+├── .scripts/                    # Shell scripts
+│   ├── install.sh              # Installation script
+│   ├── install-oh-my-zsh-plugins.sh # Oh My Zsh plugins installer
+│   └── uninstall.sh            # Uninstallation script
 ├── claude/                      # Claude AI configuration (sensitive files ignored)
 ├── config/
 │   ├── nvim/                   # Neovim configuration
@@ -19,9 +23,6 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 │   └── *.zsh                   # Custom zsh files
 ├── zshrc                       # Zsh shell configuration
 ├── .gitignore                  # Ignores sensitive files and cache
-├── install.sh                  # Installation script
-├── install-oh-my-zsh-plugins.sh # Oh My Zsh plugins installer
-├── uninstall.sh                # Uninstallation script
 └── README.md                   # This file
 ```
 
@@ -34,7 +35,7 @@ Git-managed configuration files with symbolic link setup for easy synchronizatio
 
 2. Run the installation script:
    ```bash
-   ~/.dotfiles/install.sh
+   ~/.dotfiles/.scripts/install.sh
    ```
 
 This will create symbolic links:
@@ -60,7 +61,7 @@ Sensitive files are automatically ignored via `.gitignore`:
 
 To remove all symbolic links:
 ```bash
-~/.dotfiles/uninstall.sh
+~/.dotfiles/.scripts/uninstall.sh
 ```
 
 ## Updates
