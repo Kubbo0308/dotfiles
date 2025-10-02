@@ -39,11 +39,31 @@
 
 ### Pre-Development Analysis
 1. **🚨 ALWAYS evaluate if specialized subagents should be used - BE PROACTIVE! 🚨**
-2. **🔍 Use `codebase-analyzer` frequently for understanding code structure**
-3. **Understand Codebase**: Analyze existing code structure and patterns
-4. **Check Dependencies**: Review existing libraries and frameworks in use
-5. **Plan Implementation**: Create clear approach before coding
-6. **Consider Impact**: Ensure changes won't break existing functionality
+2. **🧠 ALWAYS use `serena-context` to load project context and memories FIRST**
+3. **🔍 Use `codebase-analyzer` frequently for understanding code structure**
+4. **Understand Codebase**: Analyze existing code structure and patterns
+5. **Check Dependencies**: Review existing libraries and frameworks in use
+6. **Plan Implementation**: Create clear approach before coding
+7. **Consider Impact**: Ensure changes won't break existing functionality
+
+### 🧠 Serena MCP Integration (MANDATORY)
+
+**⚠️ CRITICAL: Serena MCP provides persistent project memory and semantic understanding. Use it for ALL ongoing work!**
+
+#### When to Use Serena MCP:
+- **Every Development Session**: Load context at the start, save patterns at the end
+- **New Features**: Maintain consistency with existing patterns
+- **Code Reviews**: Apply project-specific standards and conventions
+- **Refactoring**: Preserve architectural decisions and patterns
+- **Bug Fixes**: Understand context of related code and previous decisions
+- **Documentation**: Access and update project knowledge base
+
+#### Serena MCP Benefits:
+- **Token Efficiency**: 60-80% reduction in context size
+- **Consistent Patterns**: Maintains architectural consistency across sessions
+- **Institutional Memory**: Preserves team knowledge and decisions
+- **Intelligent Search**: Semantic code understanding beyond string matching
+- **Cross-Session Continuity**: Context survives restarts and team handoffs
 
 ### 🤖 Subagent Usage (CRITICAL - USE PROACTIVELY!)
 
@@ -51,8 +71,10 @@
 
 | Task Type | Subagent | Priority | Use Case | When to Use |
 |-----------|----------|----------|----------|-------------|
+| **Context & Memory** | `serena-context` | **🔴 CRITICAL** | Persistent project memory, context-aware development | ALWAYS for ongoing projects, maintain consistency |
 | **Codebase Analysis** | `codebase-analyzer` | **🔴 CRITICAL** | Understanding structure, before implementation | ALWAYS for new codebases, complex refactoring |
 | Testing (Go) | `go-test-generator` | 🟡 HIGH | Generate comprehensive test suites | ALL Go testing tasks |
+| **Testing (TypeScript/React)** | `typescript-test-generator` | 🟡 HIGH | Generate comprehensive TypeScript/React tests | ALL TypeScript/React testing tasks |
 | Code Review | `code-reviewer-gemini` | 🟡 HIGH | Comprehensive code analysis | Before PR submission, complex changes |
 | Security Analysis | `security` | 🟡 HIGH | Vulnerability assessment | Any security-related code |
 | Documentation | `document` | 🟢 MEDIUM | Generate docs, README files | Large documentation tasks |
@@ -64,15 +86,19 @@
 - **Efficiency**: Faster analysis and higher quality output
 - **Comprehensive Coverage**: Agents can handle larger contexts
 - **Best Practices**: Built-in knowledge of industry standards
+- **🧠 Persistent Memory (Serena MCP)**: Long-term project context and semantic understanding
+- **🔍 Intelligent Context**: 60-80% token reduction through semantic code analysis
 
 ### Standard Development Flow
-1. **Subagent Evaluation** → Check for available specialized agents
-2. **Planning** → Create implementation plan (use `task-decomposer` for complex tasks)
-3. **Implementation** → Write code following guidelines
-4. **Testing** → Use `go-test-generator` for Go, comprehensive tests for others
-5. **Review** → Use `code-reviewer-gemini` for quality assurance
-6. **Commit** → Use `commit` agent for proper commit messages
-7. **Deploy** → Verify with appropriate testing tools
+1. **Context Loading** → Use `serena-context` to establish project context and load memories
+2. **Subagent Evaluation** → Check for available specialized agents
+3. **Planning** → Create implementation plan (use `task-decomposer` for complex tasks)
+4. **Implementation** → Write code following guidelines with context awareness
+5. **Testing** → Use `go-test-generator` for Go, `typescript-test-generator` for TypeScript/React
+6. **Review** → Use `code-reviewer-gemini` for quality assurance
+7. **Context Update** → Use `serena-context` to save new patterns and decisions
+8. **Commit** → Use `commit` agent for proper commit messages
+9. **Deploy** → Verify with appropriate testing tools
 
 ### Implementation Process
 1. **Follow Existing Patterns**: Mimic established code style and conventions
@@ -371,11 +397,12 @@ test: add comprehensive tests for workbook generation
 ```
 
 ### Development Checklist
+- [ ] **🧠 Used `serena-context` to load project context at start (MANDATORY)**
 - [ ] **🤖 Evaluated and used appropriate subagents (MANDATORY)**
 - [ ] **🔍 Used `codebase-analyzer` for understanding existing code**
 - [ ] Analyzed existing codebase patterns
 - [ ] Implemented proper error handling
-- [ ] Added appropriate tests (use `go-test-generator` for Go)
+- [ ] Added appropriate tests (use `go-test-generator` for Go, `typescript-test-generator` for TypeScript/React)
 - [ ] Checked performance implications
 - [ ] Verified security considerations (use `security` agent if needed)
 - [ ] Followed established code style
@@ -383,7 +410,112 @@ test: add comprehensive tests for workbook generation
 - [ ] Tested edge cases
 - [ ] Ran linting and type checking
 - [ ] **🔍 Used `code-reviewer-gemini` for final review**
+- [ ] **🧠 Used `serena-context` to save new patterns and context**
 - [ ] Ensured no regressions
+
+---
+
+## TypeScript/React Testing Guidelines
+
+### Using `typescript-test-generator` Subagent
+
+The `typescript-test-generator` agent is specialized for creating high-quality TypeScript and React tests. Use it for:
+
+- **Jest test files** for TypeScript functions and classes
+- **React component tests** using React Testing Library
+- **Test optimization** and refactoring existing tests
+- **Helper function creation** to reduce test duplication
+
+#### When to Use
+
+- ✅ Creating new test files for TypeScript/React code
+- ✅ Adding comprehensive test coverage
+- ✅ Refactoring duplicate test assertions
+- ✅ Reviewing and improving existing tests
+- ✅ Creating test helper functions
+
+#### Key Features
+
+1. **DRY Principles**
+   - Creates reusable assertion helpers
+   - Eliminates redundant test code
+   - Organizes tests with describe blocks
+
+2. **Type Safety**
+   - Minimal use of type assertions (`as`)
+   - Leverages TypeScript type inference
+   - Runtime validation for external data
+
+3. **Best Practices**
+   - Reads implementation before writing tests
+   - Accurate test descriptions
+   - Proper edge case coverage
+   - No duplicate test cases
+
+#### Quick Example
+
+```typescript
+// The agent will create helper functions like:
+const expectValidWorkbook = (result: ExcelGenerationResult) => {
+  expect(result.workbook).toBeTruthy()
+  expect(result.workbook.SheetNames).toContain('Sheet1')
+}
+
+// And use them in tests:
+it('should generate valid workbook', () => {
+  const result = generateWorkbook(data)
+  expect(result.success).toBe(true)
+  expectValidWorkbook(result)  // DRY!
+})
+```
+
+#### Common Anti-Patterns to Avoid
+
+❌ **Don't assume validation behavior - read the code first**
+```typescript
+// BAD: Assuming empty array fails
+it('should fail with empty data', () => {
+  expect(validate({ items: [] })).toBe(false)
+})
+
+// GOOD: Verify actual behavior
+it('should pass with empty array', () => {
+  expect(validate({ items: [] })).toBe(true)  // Empty is valid!
+})
+```
+
+❌ **Don't repeat assertions across multiple tests**
+```typescript
+// BAD: Same assertions everywhere
+it('test 1', () => {
+  expect(result.success).toBe(true)
+  expect(result.data).toBeDefined()
+})
+
+it('test 2', () => {
+  expect(result.success).toBe(true)
+  expect(result.data).toBeDefined()
+})
+
+// GOOD: Use helper
+const expectSuccess = (result) => {
+  expect(result.success).toBe(true)
+  expect(result.data).toBeDefined()
+}
+```
+
+❌ **Don't create duplicate test cases**
+```typescript
+// BAD: Tests verify same behavior
+it('should use default sheet name', () => { /* ... */ })
+it('should generate basic workbook', () => { /* ... */ })  // Same test!
+
+// GOOD: Each test is unique
+it('should generate basic workbook', () => { /* ... */ })
+it('should use custom sheet name when specified', () => { /* ... */ })
+```
+
+For detailed guidelines, see: `~/.dotfiles/claude/agents/typescript-test-generator.md`
 
 ---
 
