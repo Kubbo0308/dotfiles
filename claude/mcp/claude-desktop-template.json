@@ -33,6 +33,19 @@
         "--project",
         "${SERENA_PROJECT_PATH}"
       ]
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+        "--isolated=true",
+        "--headless=${CHROME_HEADLESS}",
+        "--viewport=${CHROME_VIEWPORT}"
+      ],
+      "env": {
+        "CHROME_DEBUG_PORT": "${CHROME_DEBUG_PORT}"
+      }
     }
   }
 }

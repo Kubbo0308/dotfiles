@@ -97,6 +97,31 @@ servers/playwright-data/
 - Uses npx for zero-install execution
 - Stores screenshots in `servers/playwright-data/`
 
+### Chrome DevTools MCP Server
+
+Chrome DevTools MCP provides browser automation and debugging capabilities.
+
+**Configuration:**
+- Template: `servers/chrome-devtools-template.json`
+- Uses npx for zero-install execution
+- Environment variables:
+  - `CHROME_HEADLESS`: Run in headless mode (true/false)
+  - `CHROME_VIEWPORT`: Viewport size (e.g., 1280x720)
+  - `CHROME_DEBUG_PORT`: Debug port (default: 9222)
+
+**Features:**
+- Browser automation (click, type, scroll, etc.)
+- Navigation control (page transitions, reload, history)
+- Device and network emulation
+- Performance tracing and analysis
+- Network request monitoring
+- Console logs and screenshots
+
+**Security:**
+- Always uses isolated browser instance (`--isolated=true`)
+- Separate Chrome profile to protect personal data
+- No access to existing cookies or sessions
+
 ## 🔧 Scripts
 
 ### generate-config.sh

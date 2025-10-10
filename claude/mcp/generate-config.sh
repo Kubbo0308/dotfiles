@@ -62,6 +62,11 @@ replace_vars() {
     UVX_PATH="${UVX_PATH:-$HOME/.local/bin/uvx}"
     SERENA_PROJECT_PATH="${SERENA_PROJECT_PATH:-$HOME/.dotfiles/claude/mcp/servers/serena}"
 
+    # Chrome DevTools MCP configuration with defaults
+    CHROME_HEADLESS="${CHROME_HEADLESS:-false}"
+    CHROME_VIEWPORT="${CHROME_VIEWPORT:-1280x720}"
+    CHROME_DEBUG_PORT="${CHROME_DEBUG_PORT:-9222}"
+
     # Use envsubst for proper variable substitution
     export USER_HOME MCP_FS_PATH_1 MCP_FS_PATH_2
     export GITHUB_TOKEN NOTION_API_KEY
@@ -70,6 +75,7 @@ replace_vars() {
     export POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD
     export POSTGRES_CONNECTION_STRING
     export UVX_PATH SERENA_PROJECT_PATH
+    export CHROME_HEADLESS CHROME_VIEWPORT CHROME_DEBUG_PORT
     
     # Use envsubst to replace variables and write output
     envsubst < "$template" > "$output"
