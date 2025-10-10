@@ -57,6 +57,46 @@ Template for Claude Desktop's MCP server configuration. Uses environment variabl
 3. Add the variables to `.env.example`
 4. Run `generate-config.sh` to generate the actual config
 
+### Serena MCP Server
+
+Serena MCP provides semantic code understanding and symbol-level editing capabilities.
+
+**Directory Structure:**
+```
+servers/serena/
+├── project.yml      # Serena project configuration
+└── memories/        # Project-specific memories (auto-generated)
+```
+
+**Configuration:**
+- Template: `servers/serena-template.json`
+- Project config: `servers/serena/project.yml`
+- Language: bash (for dotfiles repository)
+- Mode: ide-assistant (optimized for IDE-like features)
+
+**Features:**
+- Semantic code search and understanding
+- Symbol-level code editing
+- Project memory and context
+- Multi-language support
+
+**Note:** The Serena project path is set to `servers/serena/` directory to keep all MCP-related data centralized.
+
+### Playwright MCP Server
+
+Playwright MCP enables web automation and browser interaction.
+
+**Directory Structure:**
+```
+servers/playwright-data/
+└── *.png            # Screenshots and automation artifacts (gitignored)
+```
+
+**Configuration:**
+- Template: `servers/playwright-template.json`
+- Uses npx for zero-install execution
+- Stores screenshots in `servers/playwright-data/`
+
 ## 🔧 Scripts
 
 ### generate-config.sh

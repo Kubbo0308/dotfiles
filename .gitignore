@@ -27,6 +27,18 @@ claude/mcp/cursor.json
 claude/mcp/servers/*.json
 !claude/mcp/servers/*-template.json
 
+# Serena MCP cache and index files
+.serena/
+claude/mcp/servers/serena/index/
+claude/mcp/servers/serena/.serena_cache/
+
+# Playwright MCP data files (screenshots, traces, etc.)
+.playwright-mcp/
+claude/mcp/servers/playwright-data/*.png
+claude/mcp/servers/playwright-data/*.jpg
+claude/mcp/servers/playwright-data/*.zip
+claude/mcp/servers/playwright-data/traces/
+
 # API keys and tokens
 *.key
 *.pem

@@ -58,6 +58,10 @@ replace_vars() {
         POSTGRES_CONNECTION_STRING=""
     fi
     
+    # Serena MCP configuration with defaults
+    UVX_PATH="${UVX_PATH:-$HOME/.local/bin/uvx}"
+    SERENA_PROJECT_PATH="${SERENA_PROJECT_PATH:-$HOME/.dotfiles/claude/mcp/servers/serena}"
+
     # Use envsubst for proper variable substitution
     export USER_HOME MCP_FS_PATH_1 MCP_FS_PATH_2
     export GITHUB_TOKEN NOTION_API_KEY
@@ -65,6 +69,7 @@ replace_vars() {
     export CONTEXT7_API_KEY BRAVE_API_KEY
     export POSTGRES_HOST POSTGRES_PORT POSTGRES_DB POSTGRES_USER POSTGRES_PASSWORD
     export POSTGRES_CONNECTION_STRING
+    export UVX_PATH SERENA_PROJECT_PATH
     
     # Use envsubst to replace variables and write output
     envsubst < "$template" > "$output"

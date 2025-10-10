@@ -20,6 +20,19 @@
     "postgres": {
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-postgres", "${POSTGRES_CONNECTION_STRING}"]
+    },
+    "serena": {
+      "command": "${UVX_PATH}",
+      "args": [
+        "--from",
+        "git+https://github.com/oraios/serena",
+        "serena",
+        "start-mcp-server",
+        "--context",
+        "ide-assistant",
+        "--project",
+        "${SERENA_PROJECT_PATH}"
+      ]
     }
   }
 }
