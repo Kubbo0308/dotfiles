@@ -1,172 +1,183 @@
-# MCP (Model Context Protocol) Configuration
+# MCP (Model Context Protocol) Configuration for Claude Code CLI
 
-This directory manages MCP server configurations for Claude Desktop and other Claude-compatible tools.
+This directory manages MCP server configurations for **Claude Code CLI**.
 
 ## 📁 Directory Structure
 
 ```
 claude/mcp/
-├── README.md                    # This file
-├── claude-desktop-template.json # Template for Claude Desktop MCP config
-├── generate-config.sh           # Script to generate configs from templates
-├── setup-links.sh              # Script to create symbolic links
-└── servers/                    # Directory for additional server templates
+├── README.md                # This file
+├── setup-cli-mcp.sh        # Setup script for Claude Code CLI
+├── environments/           # Environment variables
+│   ├── .env.example       # Example environment variables
+│   └── .env.local         # Local environment variables (gitignored)
+└── servers/               # MCP server data directories
+    ├── serena/           # Serena MCP project data
+    │   ├── project.yml   # Serena project configuration
+    │   └── memories/     # Project-specific memories
+    └── playwright-data/  # Playwright screenshots/artifacts (gitignored)
 ```
-
-## 🔐 Security Notes
-
-- **This is a public repository** - never commit files with absolute paths or API keys
-- All generated config files (`.json` without `-template` suffix) are gitignored
-- Use environment variables for sensitive information
 
 ## 🚀 Quick Start
 
 ### 1. Set up environment variables
 
 ```bash
-cd ~/.dotfiles/claude/environments
+cd ~/.dotfiles/claude/mcp/environments
 cp .env.example .env.local
 # Edit .env.local with your values
 vim .env.local
 ```
 
-### 2. Generate configurations
+### 2. Run the setup script
 
 ```bash
 cd ~/.dotfiles/claude/mcp
-./generate-config.sh
+./setup-cli-mcp.sh
 ```
 
-### 3. Create symbolic links
+This script will configure all MCP servers for Claude Code CLI.
 
-```bash
-./setup-links.sh
-```
-
-## 📝 Configuration Templates
-
-### claude-desktop-template.json
-Template for Claude Desktop's MCP server configuration. Uses environment variables:
-- `${MCP_FS_PATH_1}` - First filesystem path (default: ~/Desktop)
-- `${MCP_FS_PATH_2}` - Second filesystem path (default: ~/Downloads)
-
-### Adding New MCP Servers
-
-1. Create a template file: `servers/myserver-template.json`
-2. Use environment variables for any sensitive data
-3. Add the variables to `.env.example`
-4. Run `generate-config.sh` to generate the actual config
+## 📝 Configured MCP Servers
 
 ### Serena MCP Server
 
-Serena MCP provides semantic code understanding and symbol-level editing capabilities.
+**Semantic code understanding and symbol-level editing capabilities.**
 
-**Directory Structure:**
-```
-servers/serena/
-├── project.yml      # Serena project configuration
-└── memories/        # Project-specific memories (auto-generated)
-```
+- **Template**: Configured via `setup-cli-mcp.sh`
+- **Project config**: `servers/serena/project.yml`
+- **Language**: bash (for dotfiles repository)
+- **Features**:
+  - Semantic code search and understanding
+  - Symbol-level code editing
+  - Project memory and context
+  - Multi-language support
 
-**Configuration:**
-- Template: `servers/serena-template.json`
-- Project config: `servers/serena/project.yml`
-- Language: bash (for dotfiles repository)
-- Mode: ide-assistant (optimized for IDE-like features)
-
-**Features:**
-- Semantic code search and understanding
-- Symbol-level code editing
-- Project memory and context
-- Multi-language support
-
-**Note:** The Serena project path is set to `servers/serena/` directory to keep all MCP-related data centralized.
+**Environment Variables:**
+- `UVX_PATH`: Absolute path to uvx command (default: `$HOME/.local/bin/uvx`)
+- `SERENA_PROJECT_PATH`: Serena project path (default: `$HOME/.dotfiles`)
 
 ### Playwright MCP Server
 
-Playwright MCP enables web automation and browser interaction.
+**Web automation and browser interaction.**
 
-**Directory Structure:**
-```
-servers/playwright-data/
-└── *.png            # Screenshots and automation artifacts (gitignored)
-```
-
-**Configuration:**
-- Template: `servers/playwright-template.json`
-- Uses npx for zero-install execution
-- Stores screenshots in `servers/playwright-data/`
+- **Command**: `npx -y @playwright/mcp@latest`
+- **Data directory**: `servers/playwright-data/`
+- **Features**:
+  - Web automation
+  - Browser screenshots
+  - Page navigation
 
 ### Chrome DevTools MCP Server
 
-Chrome DevTools MCP provides browser automation and debugging capabilities.
+**Browser automation and debugging capabilities.**
 
-**Configuration:**
-- Template: `servers/chrome-devtools-template.json`
-- Uses npx for zero-install execution
-- Environment variables:
-  - `CHROME_HEADLESS`: Run in headless mode (true/false)
-  - `CHROME_VIEWPORT`: Viewport size (e.g., 1280x720)
-  - `CHROME_DEBUG_PORT`: Debug port (default: 9222)
+- **Command**: `npx -y chrome-devtools-mcp@latest`
+- **Features**:
+  - Browser automation (26 tools)
+  - Performance tracing and analysis
+  - Network request monitoring
+  - Device and network emulation
+  - Isolated browser instance for security
 
-**Features:**
-- Browser automation (click, type, scroll, etc.)
-- Navigation control (page transitions, reload, history)
-- Device and network emulation
-- Performance tracing and analysis
-- Network request monitoring
-- Console logs and screenshots
+**Environment Variables:**
+- `CHROME_HEADLESS`: Run in headless mode (default: `false`)
+- `CHROME_VIEWPORT`: Viewport size (default: `1280x720`)
+- `CHROME_DEBUG_PORT`: Debug port (default: `9222`)
 
 **Security:**
-- Always uses isolated browser instance (`--isolated=true`)
-- Separate Chrome profile to protect personal data
+- Uses `--isolated=true` flag
+- Separate Chrome profile
 - No access to existing cookies or sessions
 
-## 🔧 Scripts
+### Filesystem MCP Server
 
-### generate-config.sh
-- Reads templates and replaces environment variables
-- Generates actual config files (gitignored)
-- Must be run before `setup-links.sh`
+**File system access for specific directories.**
 
-### setup-links.sh
-- Creates symbolic links from generated configs to actual locations
-- Backs up existing configs if they're not already symlinks
-- Locations:
-  - Claude Desktop: `~/Library/Application Support/Claude/claude_desktop_config.json`
-  - Cursor: `~/.cursor/mcp.json` (if config exists)
+- **Command**: `npx -y @modelcontextprotocol/server-filesystem`
+- **Paths**: `~/Desktop`, `~/Downloads`
+
+### Context7 MCP Server
+
+**Context search and retrieval.**
+
+- **Command**: `npx -y @upstash/context7-mcp`
+
+### PostgreSQL MCP Server
+
+**Database access and queries.**
+
+- **Command**: `npx -y @modelcontextprotocol/server-postgres`
+- **Connection**: Configured via `.env.local`
+
+**Environment Variable:**
+- `POSTGRES_CONNECTION_STRING`: PostgreSQL connection string
+
+## 🔧 Manual MCP Management
+
+### Add a new MCP server
+
+```bash
+claude mcp add <name> -- <command> [args...]
+```
+
+### List all MCP servers
+
+```bash
+claude mcp list
+```
+
+### Get server details
+
+```bash
+claude mcp get <server-name>
+```
+
+### Remove a server
+
+```bash
+claude mcp remove <server-name> -s local
+```
 
 ## 🔄 Updating Configuration
 
-After modifying templates or environment variables:
+After modifying environment variables in `.env.local`:
 
 ```bash
-# Regenerate configs
-./generate-config.sh
-
-# Restart Claude Desktop to apply changes
-# (Claude Desktop needs to be restarted to pick up MCP config changes)
+cd ~/.dotfiles/claude/mcp
+./setup-cli-mcp.sh
 ```
+
+The script will re-add all MCP servers with updated configuration.
 
 ## ⚠️ Important Notes
 
-1. **Never edit generated files directly** - they will be overwritten
-2. **Always use templates** for configuration changes
-3. **Keep sensitive data in .env.local** (gitignored)
-4. **Generated files are gitignored** to prevent leaking paths/tokens
+1. **CLI-only configuration** - This setup is for Claude Code CLI, not Claude Desktop
+2. **Local scope** - MCP servers are configured at project level
+3. **Environment variables** - Keep sensitive data in `.env.local` (gitignored)
+4. **Serena project data** - Stored in `servers/serena/` directory
 
 ## 🐛 Troubleshooting
 
-### Config not working?
-1. Check if .env.local exists and has correct values
-2. Run `generate-config.sh` to regenerate configs
-3. Run `setup-links.sh` to update symlinks
-4. Restart Claude Desktop
+### MCP servers not showing?
+
+1. Run the setup script: `./setup-cli-mcp.sh`
+2. Check server status: `claude mcp list`
+3. Restart Claude Code
+
+### Connection errors?
+
+1. Verify environment variables in `.env.local`
+2. Check if required tools are installed (uvx, npx, etc.)
+3. Review server logs with `claude mcp get <server-name>`
 
 ### Permission errors?
-- Ensure scripts are executable: `chmod +x *.sh`
-- Check directory permissions for Claude config directory
 
-### Changes not taking effect?
-- Claude Desktop must be restarted after config changes
-- Verify symlinks: `ls -la ~/Library/Application\ Support/Claude/`
+- Ensure the setup script is executable: `chmod +x setup-cli-mcp.sh`
+- Check file permissions in `servers/` directory
+
+## 📚 Additional Resources
+
+- [Claude Code Documentation](https://docs.claude.com/en/docs/claude-code)
+- [MCP Protocol Specification](https://modelcontextprotocol.io)
+- [Serena MCP GitHub](https://github.com/oraios/serena)

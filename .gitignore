@@ -21,11 +21,8 @@ claude/shell-snapshots/
 claude/plugins/config.json.backup
 log/
 
-# MCP generated config files (contain absolute paths)
-claude/mcp/claude-desktop.json
-claude/mcp/cursor.json
+# MCP server data directories
 claude/mcp/servers/*.json
-!claude/mcp/servers/*-template.json
 
 # Serena MCP cache and index files
 .serena/
