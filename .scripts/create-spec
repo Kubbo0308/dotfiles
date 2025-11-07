@@ -1,0 +1,966 @@
+#!/opt/homebrew/bin/bash
+
+# AI対話型 機能追加設計ツール（Claude Code統合版）
+# 対話を繰り返して仕様を固めていく形式
+# Usage: create-spec
+
+set -e
+
+# カラー定義
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+MAGENTA='\033[0;35m'
+NC='\033[0m' # No Color
+
+# 入力データ保存用
+declare -A SPEC_DATA
+declare -a QA_HISTORY  # Q&Aの履歴を保存
+declare -a REPOSITORIES  # 対象リポジトリのパスリスト
+declare -A REPO_ANALYSIS  # 各リポジトリの分析結果
+
+# 一時ファイル
+TEMP_DIR=$(mktemp -d)
+CLAUDE_RESPONSE_FILE="${TEMP_DIR}/claude_response.txt"
+PROMPT_FILE="${TEMP_DIR}/prompt.txt"
+trap 'rm -rf "${TEMP_DIR}"' EXIT
+
+# ヘッダー表示
+show_header() {
+    echo -e "${MAGENTA}========================================${NC}"
+    echo -e "${MAGENTA}  AI対話型 機能設計ツール (Claude Code)${NC}"
+    echo -e "${MAGENTA}========================================${NC}"
+    echo ""
+}
+
+# Claude Codeが利用可能か確認
+check_claude_code() {
+    if ! command -v claude &> /dev/null; then
+        echo -e "${RED}✗ Claude Code がインストールされていません${NC}"
+        exit 1
+    fi
+    echo -e "${GREEN}✓ Claude Code を検出${NC}\n"
+}
+
+# 質問関数
+ask_question() {
+    local var_name=$1
+    local question=$2
+    local hint=$3
+
+    echo -e "${GREEN}📝 ${question}${NC}"
+    if [ -n "$hint" ]; then
+        echo -e "${YELLOW}   ヒント: ${hint}${NC}"
+    fi
+    echo -n "> "
+    read -r answer
+    SPEC_DATA[$var_name]="$answer"
+    echo ""
+}
+
+# 複数行入力関数
+ask_multiline() {
+    local var_name=$1
+    local question=$2
+    local hint=$3
+
+    echo -e "${GREEN}📝 ${question}${NC}"
+    if [ -n "$hint" ]; then
+        echo -e "${YELLOW}   ヒント: ${hint}${NC}"
+    fi
+    echo -e "${YELLOW}   (入力を終えるには空行を入力してください)${NC}"
+
+    local lines=""
+    local first_line=true
+    while IFS= read -r line; do
+        [ -z "$line" ] && break
+        if [ "$first_line" = true ]; then
+            lines="$line"
+            first_line=false
+        else
+            lines="${lines}"$'\n'"${line}"
+        fi
+    done
+
+    SPEC_DATA[$var_name]="$lines"
+    echo ""
+}
+
+# ディレクトリ選択（複数対応）
+ask_directories() {
+    echo -e "${CYAN}📁 分析対象のプロジェクトディレクトリを指定してください${NC}"
+    echo -e "${YELLOW}   (複数指定する場合はカンマ区切り。例: ./repo1,./repo2)${NC}"
+    echo -e "${YELLOW}   (相対パスまたは絶対パス。デフォルト: カレントディレクトリ)${NC}"
+    echo -n "> "
+    read -r target_dirs
+
+    if [ -z "$target_dirs" ]; then
+        target_dirs="."
+    fi
+
+    # カンマ区切りで分割
+    IFS=',' read -ra DIR_ARRAY <<< "$target_dirs"
+
+    for dir in "${DIR_ARRAY[@]}"; do
+        # トリム（前後の空白削除）
+        dir=$(echo "$dir" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+
+        if [ ! -d "$dir" ]; then
+            echo -e "${RED}   ✗ ディレクトリが存在しません: ${dir}${NC}"
+            exit 1
+        fi
+
+        # 絶対パスに変換
+        abs_dir=$(cd "$dir" && pwd)
+        REPOSITORIES+=("$abs_dir")
+
+        echo -e "${GREEN}   ✓ 対象ディレクトリ追加: ${abs_dir}${NC}"
+    done
+
+    # メインディレクトリ（最初の1つ）を保存（後方互換性のため）
+    SPEC_DATA[target_directory]="${REPOSITORIES[0]}"
+
+    echo ""
+}
+
+# Claude Codeにコードベース分析を依頼（Serena MCP統合・複数リポジトリ対応）
+analyze_codebase_with_claude() {
+    echo -e "${MAGENTA}🧠 Serena MCP & Claude Code でリポジトリを分析中...${NC}\n"
+
+    local all_analysis=""
+
+    for repo_path in "${REPOSITORIES[@]}"; do
+        local repo_name=$(basename "$repo_path")
+        echo -e "${CYAN}📦 リポジトリ分析中: ${repo_name}${NC}"
+
+        cat > "$PROMPT_FILE" <<EOF
+【重要】Serena MCPを活用したコードベース分析を実行してください。
+
+## 指示
+
+1. **Serena MCPメモリの確認**
+   - まず、このリポジトリ (${repo_name}) に関する既存のメモリがあるか確認してください
+   - メモリがあれば、それを活用して高速に分析を完了してください
+
+2. **コードベース分析** (メモリがない場合)
+   - Serena MCPの \`get_symbols_overview\` を使ってプロジェクト全体の構造を把握
+   - 主要なシンボル（関数、クラス、インターフェース）を特定
+   - アーキテクチャパターンを推測
+
+3. **分析結果の記憶** (重要!)
+   - 分析結果をSerena MCPの \`create_memory\` または \`update_memory\` で保存
+   - メモリ名: \`${repo_name}-project-overview\`
+   - これにより、次回から高速に分析可能になります
+
+4. **出力フォーマット**
+   以下の形式で日本語で出力してください:
+
+## プロジェクト概要
+- **プロジェクト名**: [自動検出]
+- **プロジェクトタイプ**: [Web API / Mobile App / CLI / Library など]
+- **主な技術スタック**: [言語、フレームワーク、主要ライブラリ]
+- **ビルドツール**: [npm, yarn, poetry, cargo など]
+
+## 現在の主要機能
+[箇条書きで主要な機能を5-10個列挙]
+
+## アーキテクチャ
+- **アーキテクチャパターン**: [MVC、レイヤードアーキテクチャ、マイクロサービスなど]
+- **主要なコンポーネント**: [ディレクトリ構造から重要なコンポーネントを説明]
+- **状態管理**: [該当する場合、状態管理の方法]
+
+## 主要なエンティティ・モデル
+[システムで扱う主要なデータモデルを列挙]
+
+## 外部サービス・API連携
+[他のサービスやAPIとの連携があれば具体的に記載]
+
+## テスト環境
+[テストフレームワーク、カバレッジツールなど]
+
+---
+
+**注意**: Serena MCPを積極的に活用し、分析結果を必ず記憶させてください。
+EOF
+
+        cd "$repo_path"
+        claude --print "$(cat "$PROMPT_FILE")" > "$CLAUDE_RESPONSE_FILE" 2>&1 || {
+            echo -e "${RED}✗ Claude Code の実行に失敗しました (${repo_name})${NC}"
+            cat "$CLAUDE_RESPONSE_FILE"
+            return 1
+        }
+
+        local analysis_result=$(cat "$CLAUDE_RESPONSE_FILE")
+        REPO_ANALYSIS["$repo_name"]="$analysis_result"
+
+        echo -e "${GREEN}✓ ${repo_name} 分析完了 (Serena MCPで記憶済み)${NC}\n"
+
+        # 全体の分析結果に追加
+        all_analysis="${all_analysis}### リポジトリ: ${repo_name} (${repo_path})\n\n${analysis_result}\n\n---\n\n"
+    done
+
+    # 後方互換性のため、統合した分析結果を保存
+    SPEC_DATA[claude_analysis]="$all_analysis"
+
+    echo -e "${CYAN}=== 全リポジトリの分析結果 (Serena MCP記憶済み) ===${NC}"
+    echo -e "${SPEC_DATA[claude_analysis]}"
+    echo ""
+}
+
+# リポジトリ間の依存関係を分析（複数リポジトリの場合のみ）
+analyze_repository_dependencies() {
+    if [ ${#REPOSITORIES[@]} -le 1 ]; then
+        # 単一リポジトリの場合はスキップ
+        SPEC_DATA[repo_dependencies]="単一リポジトリのため、依存関係分析はスキップしました。"
+        return 0
+    fi
+
+    echo -e "${MAGENTA}🔗 Claude Code がリポジトリ間の依存関係を分析中...${NC}\n"
+
+    local repo_list=""
+    for repo_path in "${REPOSITORIES[@]}"; do
+        local repo_name=$(basename "$repo_path")
+        repo_list="${repo_list}- ${repo_name} (${repo_path})\n"
+    done
+
+    cat > "$PROMPT_FILE" <<EOF
+以下の複数リポジトリ間の依存関係を分析してください:
+
+## 対象リポジトリ
+${repo_list}
+
+## 各リポジトリの分析結果
+${SPEC_DATA[claude_analysis]}
+
+以下の観点で依存関係を日本語で簡潔にまとめてください:
+1. リポジトリ間のAPI呼び出しやデータのやり取り
+2. 共通で使用しているライブラリやサービス
+3. デプロイ時の依存関係（どのリポジトリがどのリポジトリに依存しているか）
+4. データベースやキャッシュなど、共有リソース
+
+簡潔に箇条書きでまとめてください。
+EOF
+
+    # 最初のリポジトリで実行（どこから実行しても良い）
+    cd "${REPOSITORIES[0]}"
+    claude --print "$(cat "$PROMPT_FILE")" > "$CLAUDE_RESPONSE_FILE" 2>&1 || {
+        echo -e "${RED}✗ Claude Code の実行に失敗しました（依存関係分析）${NC}"
+        cat "$CLAUDE_RESPONSE_FILE"
+        SPEC_DATA[repo_dependencies]="分析に失敗しました。"
+        return 1
+    }
+
+    SPEC_DATA[repo_dependencies]=$(cat "$CLAUDE_RESPONSE_FILE")
+
+    echo -e "${GREEN}✓ 依存関係分析完了${NC}\n"
+    echo -e "${CYAN}=== リポジトリ間の依存関係 ===${NC}"
+    echo -e "${SPEC_DATA[repo_dependencies]}"
+    echo ""
+}
+
+# Claude Codeに質問を生成してもらう
+generate_questions_from_claude() {
+    local iteration=$1
+
+    echo -e "${MAGENTA}🤖 Claude Code が質問を考えています...${NC}\n"
+
+    # これまでのQ&A履歴を整形
+    local qa_context=""
+    if [ ${#QA_HISTORY[@]} -gt 0 ]; then
+        qa_context="## これまでの対話履歴\n"
+        for qa in "${QA_HISTORY[@]}"; do
+            qa_context="${qa_context}${qa}\n\n"
+        done
+    fi
+
+    # 複数リポジトリの場合は依存関係情報も含める
+    local repo_context=""
+    if [ ${#REPOSITORIES[@]} -gt 1 ]; then
+        repo_context="## リポジトリ間の依存関係\n${SPEC_DATA[repo_dependencies]}\n\n"
+    fi
+
+    cat > "$PROMPT_FILE" <<EOF
+あなたは、機能追加の要件定義をサポートするアシスタントです。
+ユーザーと対話しながら、仕様を固めていきます。
+
+## プロジェクト分析
+${SPEC_DATA[claude_analysis]}
+
+${repo_context}## 追加したい機能
+- 概要: ${SPEC_DATA[new_feature_overview]}
+- 挙動: ${SPEC_DATA[feature_behavior]}
+
+${qa_context}
+
+次に確認すべき重要な質問を**3つまで**、日本語で提示してください。
+各質問は以下の観点から選んでください:
+- 技術的な実装方法
+- データの扱い方
+- エラーハンドリング
+- パフォーマンスへの影響
+- セキュリティ上の考慮点
+- 既存コードへの影響（複数リポジトリの場合は、どのリポジトリに影響があるかも考慮）
+- リポジトリ間の連携方法（複数リポジトリの場合）
+- テスト方法
+
+質問する際は、具体的なリポジトリ名を挙げて質問してください（複数リポジトリの場合）。
+
+以下の形式で出力してください:
+
+---
+質問1: [質問内容]
+---
+質問2: [質問内容]
+---
+質問3: [質問内容]
+---
+
+簡潔で具体的な質問にしてください。
+EOF
+
+    cd "${SPEC_DATA[target_directory]}"
+    claude --print "$(cat "$PROMPT_FILE")" > "$CLAUDE_RESPONSE_FILE" 2>&1
+
+    # 質問を抽出
+    local questions=$(grep -A 1 "^質問[0-9]:" "$CLAUDE_RESPONSE_FILE" | grep -v "^--$" | grep -v "^質問[0-9]:" || echo "")
+
+    if [ -z "$questions" ]; then
+        # フォールバック: 全体を返す
+        questions=$(cat "$CLAUDE_RESPONSE_FILE")
+    fi
+
+    echo "$questions"
+}
+
+# 対話ループ: Claude Codeからの質問に答える
+interactive_qa_loop() {
+    local max_iterations=5
+    local iteration=1
+
+    echo -e "${BLUE}=== 対話セッション開始 ===${NC}\n"
+    echo -e "${CYAN}Claude Code があなたに質問をします。${NC}"
+    echo -e "${CYAN}「分からない」「未決定」「スキップ」などの選択肢も選べます。${NC}\n"
+
+    while [ $iteration -le $max_iterations ]; do
+        echo -e "${YELLOW}--- ラウンド ${iteration} / ${max_iterations} ---${NC}\n"
+
+        # Claude Codeに質問を生成させる（完了を待つ）
+        echo -e "${MAGENTA}🤖 Claude Code が質問を考えています... (少々お待ちください)${NC}\n"
+        local questions=$(generate_questions_from_claude $iteration)
+
+        # Claude Codeの応答が完了したことを明示
+        echo -e "${GREEN}✓ Claude Code からの応答が完了しました${NC}\n"
+        sleep 0.5  # 短い待機時間を入れて、バッファをクリア
+
+        # 入力バッファをクリア（溜まったEnterキーを消去）
+        while read -r -t 0; do read -r; done
+
+        echo -e "${MAGENTA}🤖 Claude Code からの質問:${NC}\n"
+        echo -e "${questions}\n"
+
+        # 各質問に対して回答を収集
+        local question_count=1
+        while [ $question_count -le 3 ]; do
+            echo -e "${GREEN}📝 質問${question_count}への回答を選んでください:${NC}"
+            echo "  1) 具体的な回答を入力"
+            echo "  2) 分からない / 未決定"
+            echo "  3) 後で決める"
+            echo "  4) スキップ"
+            echo -n "> "
+
+            # 入力前に再度バッファをクリア
+            while read -r -t 0; do read -r; done
+
+            read -r choice
+
+            local answer=""
+            case $choice in
+                1)
+                    echo -e "${CYAN}回答を入力してください (空行で終了):${NC}"
+                    local lines=""
+                    local first_line=true
+                    while IFS= read -r line; do
+                        [ -z "$line" ] && break
+                        if [ "$first_line" = true ]; then
+                            lines="$line"
+                            first_line=false
+                        else
+                            lines="${lines}"$'\n'"${line}"
+                        fi
+                    done
+                    answer="$lines"
+                    ;;
+                2)
+                    answer="【未決定】分からない / まだ決まっていない"
+                    ;;
+                3)
+                    answer="【後で決定】後で決める"
+                    ;;
+                4)
+                    answer="【スキップ】"
+                    ;;
+                *)
+                    echo -e "${RED}無効な選択です。スキップします。${NC}"
+                    answer="【スキップ】"
+                    ;;
+            esac
+
+            # Q&A履歴に追加（ANSIカラーコードを除去）
+            local question_text=$(echo "$questions" | sed -n "${question_count}p" | sed 's/\x1b\[[0-9;]*m//g')
+            QA_HISTORY+=("Q${iteration}-${question_count}: ${question_text}\nA: ${answer}")
+
+            echo ""
+            ((question_count++))
+        done
+
+        # 続けるか確認
+        echo -e "${YELLOW}さらに質問を続けますか？ (y/n)${NC}"
+        echo -n "> "
+        read -r continue_qa
+
+        if [[ ! "$continue_qa" =~ ^[Yy] ]]; then
+            echo -e "${GREEN}✓ 対話セッションを終了します${NC}\n"
+            break
+        fi
+
+        ((iteration++))
+        echo ""
+    done
+
+    echo -e "${BLUE}=== 対話セッション完了 ===${NC}\n"
+}
+
+# Claude Codeに最終設計書を生成させる（kairoスタイル）
+generate_final_design_doc() {
+    echo -e "${MAGENTA}🤖 Claude Code が詳細な設計書を生成中...${NC}\n"
+
+    # Q&A履歴を整形
+    local qa_summary=""
+    for qa in "${QA_HISTORY[@]}"; do
+        qa_summary="${qa_summary}${qa}\n\n"
+    done
+
+    # 複数リポジトリの場合は依存関係情報も含める
+    local repo_dependencies_section=""
+    if [ ${#REPOSITORIES[@]} -gt 1 ]; then
+        repo_dependencies_section="## リポジトリ間の依存関係\n${SPEC_DATA[repo_dependencies]}\n\n"
+    fi
+
+    # 対象リポジトリ一覧
+    local repo_list_section=""
+    if [ ${#REPOSITORIES[@]} -gt 1 ]; then
+        repo_list_section="## 対象リポジトリ\n"
+        for repo_path in "${REPOSITORIES[@]}"; do
+            local repo_name=$(basename "$repo_path")
+            repo_list_section="${repo_list_section}- ${repo_name} (${repo_path})\n"
+        done
+        repo_list_section="${repo_list_section}\n"
+    fi
+
+    cat > "$PROMPT_FILE" <<'PROMPT_EOF'
+あなたは技術設計のエキスパートです。以下の情報をもとに、実装可能な詳細設計書を作成してください。
+
+## 入力情報
+
+### プロジェクト分析
+PROMPT_EOF
+
+    echo "${SPEC_DATA[claude_analysis]}" >> "$PROMPT_FILE"
+
+    if [ ${#REPOSITORIES[@]} -gt 1 ]; then
+        echo -e "\n### リポジトリ間の依存関係" >> "$PROMPT_FILE"
+        echo "${SPEC_DATA[repo_dependencies]}" >> "$PROMPT_FILE"
+    fi
+
+    cat >> "$PROMPT_FILE" <<PROMPT_EOF2
+
+### 追加したい機能
+- **概要**: ${SPEC_DATA[new_feature_overview]}
+- **挙動**: ${SPEC_DATA[feature_behavior]}
+
+### 対話で明らかになった内容
+${qa_summary}
+
+---
+
+## 出力形式
+
+以下の形式で、日本語のMarkdownで**具体的かつ詳細な**設計書を作成してください。
+各セクションは実際の内容で埋めてください。[説明]のようなプレースホルダーは使わないでください。
+
+\`\`\`markdown
+# 機能追加設計書: ${SPEC_DATA[project_name]}
+
+**作成日:** $(date '+%Y年%m月%d日')
+**対象システム:** $(if [ ${#REPOSITORIES[@]} -gt 1 ]; then echo "複数リポジトリ"; else echo "単一リポジトリ"; fi)
+
+---
+
+## 1. 概要
+
+### 1.1 背景と目的
+現在のシステムの状況を踏まえ、なぜこの機能が必要なのかを具体的に説明してください。
+
+### 1.2 機能の概要
+追加する機能の全体像を、ユーザー視点で説明してください。
+
+### 1.3 期待される効果
+この機能によって得られるビジネス価値やユーザー体験の向上を記載してください。
+
+---
+
+## 2. ユーザーストーリー
+
+各機能について、以下の形式でユーザーストーリーを記載してください：
+
+### ストーリー1: [機能名]
+- **として** [ユーザー種別]
+- **私は** [実現したいこと]
+- **そうすることで** [得られる価値]
+
+（必要に応じて複数のストーリーを追加）
+
+---
+
+## 3. 機能要件（EARS記法）
+
+### 3.1 通常要件（SHALL）
+システムが通常実行すべき動作を記載してください。
+
+- REQ-001: システムは [具体的な動作] しなければならない
+- REQ-002: システムは [具体的な動作] しなければならない
+
+### 3.2 条件付き要件（WHEN/IF-THEN）
+特定の条件下での動作を記載してください。
+
+- REQ-101: [条件] の場合、システムは [動作] しなければならない
+- REQ-102: [条件] の場合、システムは [動作] しなければならない
+
+### 3.3 状態要件（WHERE）
+特定の状態での動作を記載してください。
+
+- REQ-201: [状態] にある場合、システムは [動作] しなければならない
+
+### 3.4 オプション要件（MAY）
+任意の機能を記載してください。
+
+- REQ-301: システムは [オプション機能] してもよい
+
+### 3.5 制約要件（MUST）
+システムの制約事項を記載してください。
+
+- REQ-401: システムは [制約事項] しなければならない
+
+### 3.6 決定事項
+対話で確定した仕様を具体的に記載してください。
+
+### 3.7 未決定事項
+まだ決まっていない項目と、その理由、調査が必要な内容を記載してください。
+
+---
+
+## 4. 技術設計
+
+### 4.1 アーキテクチャ概要
+システム全体のアーキテクチャパターンと、今回の機能がどこに位置するかを説明してください。
+
+### 4.2 データフロー
+Mermaid記法でデータフローを可視化してください。
+
+\\\`\\\`\\\`mermaid
+sequenceDiagram
+    participant User
+    participant Frontend
+    participant Backend
+    participant Database
+
+    User->>Frontend: [アクション]
+    Frontend->>Backend: [APIリクエスト]
+    Backend->>Database: [データ操作]
+    Database-->>Backend: [結果]
+    Backend-->>Frontend: [レスポンス]
+    Frontend-->>User: [UI更新]
+\\\`\\\`\\\`
+
+### 4.3 TypeScript型定義
+追加・変更が必要な型定義を記載してください。
+
+\\\`\\\`\\\`typescript
+// エンティティ定義
+export interface NewEntity {
+  id: string;
+  // 必要なフィールドを追加
+}
+
+// APIリクエスト
+export interface CreateRequest {
+  // リクエストパラメータ
+}
+
+// APIレスポンス
+export interface CreateResponse {
+  success: boolean;
+  data?: NewEntity;
+  error?: ErrorDetail;
+}
+\\\`\\\`\\\`
+
+### 4.4 データベーススキーマ
+新規テーブルや変更が必要なテーブルを記載してください。
+
+\\\`\\\`\\\`sql
+-- 新規テーブル
+CREATE TABLE IF NOT EXISTS table_name (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    -- カラム定義
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- インデックス
+CREATE INDEX idx_table_column ON table_name(column);
+\\\`\\\`\\\`
+
+### 4.5 APIエンドポイント
+追加・変更が必要なAPIエンドポイントを記載してください。
+
+#### POST /api/endpoint
+**概要:** [エンドポイントの説明]
+
+**リクエスト:**
+\\\`\\\`\\\`json
+{
+  "field": "value"
+}
+\\\`\\\`\\\`
+
+**レスポンス（成功時）:**
+\\\`\\\`\\\`json
+{
+  "success": true,
+  "data": { }
+}
+\\\`\\\`\\\`
+
+**レスポンス（失敗時）:**
+\\\`\\\`\\\`json
+{
+  "success": false,
+  "error": {
+    "code": "ERROR_CODE",
+    "message": "エラーメッセージ"
+  }
+}
+\\\`\\\`\\\`
+
+---
+
+## 5. 影響範囲
+
+### 5.1 変更が必要なファイル・モジュール
+具体的なファイルパスとその変更内容を記載してください。
+
+- \`path/to/file.ts\`: [変更内容]
+- \`path/to/another.ts\`: [変更内容]
+
+$(if [ ${#REPOSITORIES[@]} -gt 1 ]; then echo "### 5.2 リポジトリ別の変更内容
+各リポジトリごとに、具体的な変更を記載してください。
+
+#### リポジトリA
+- [変更内容]
+
+#### リポジトリB
+- [変更内容]
+
+### 5.3 リポジトリ間の連携
+リポジトリ間のAPI呼び出しやデータのやり取りを記載してください。"; fi)
+
+---
+
+## 6. 実装計画
+
+### 6.1 実装の優先順位
+実装する順序と、その理由を記載してください。
+
+1. [Phase 1]: [実装内容] - 理由: [なぜ最初に実装するか]
+2. [Phase 2]: [実装内容] - 理由: [依存関係や理由]
+3. [Phase 3]: [実装内容] - 理由: [理由]
+
+### 6.2 作業項目
+具体的なタスクをチェックリスト形式で記載してください。
+
+#### フロントエンド
+- [ ] [タスク1]
+- [ ] [タスク2]
+
+#### バックエンド
+- [ ] [タスク1]
+- [ ] [タスク2]
+
+#### データベース
+- [ ] [タスク1]
+- [ ] [タスク2]
+
+### 6.3 スケジュール目安
+各フェーズの想定工数を記載してください。
+
+- Phase 1: [X日]
+- Phase 2: [Y日]
+- Phase 3: [Z日]
+
+---
+
+## 7. テスト戦略
+
+### 7.1 単体テスト
+テスト対象と、テストすべき項目を記載してください。
+
+- [関数/コンポーネント名]: [テスト項目]
+
+### 7.2 統合テスト
+システム間の連携をテストする項目を記載してください。
+
+- [テストシナリオ]
+
+### 7.3 E2Eテスト
+ユーザーの操作フローをテストする項目を記載してください。
+
+- [テストシナリオ]
+
+### 7.4 受け入れ基準
+機能が完成したと判断する基準を記載してください。
+
+- [ ] [基準1]
+- [ ] [基準2]
+
+---
+
+## 8. エッジケースとエラーハンドリング
+
+### 8.1 異常系の処理
+想定されるエラーとその対処を記載してください。
+
+- **エラーケース**: [エラーの説明]
+  - **対処**: [どう処理するか]
+
+### 8.2 境界値の処理
+入力の境界値とその処理を記載してください。
+
+- **境界値**: [境界値の説明]
+  - **処理**: [どう処理するか]
+
+### 8.3 パフォーマンス考慮事項
+パフォーマンスに影響する項目と対策を記載してください。
+
+---
+
+## 9. リスクと対策
+
+### 9.1 技術的リスク
+技術的な課題とその対策を記載してください。
+
+- **リスク**: [リスクの説明]
+  - **対策**: [どう対処するか]
+  - **影響度**: [高/中/低]
+
+### 9.2 パフォーマンスリスク
+パフォーマンスに関するリスクと対策を記載してください。
+
+### 9.3 セキュリティリスク
+セキュリティに関するリスクと対策を記載してください。
+
+$(if [ ${#REPOSITORIES[@]} -gt 1 ]; then echo "### 9.4 リポジトリ間の整合性リスク
+複数リポジトリにまたがる変更による整合性リスクと対策を記載してください。"; fi)
+
+---
+
+## 10. 完了条件
+
+以下の条件がすべて満たされた時点で、機能追加が完了したと判断します。
+
+- [ ] すべての機能要件が実装されている
+- [ ] すべてのテストが通過している
+- [ ] コードレビューが完了している
+- [ ] ドキュメントが更新されている
+- [ ] [その他の条件]
+
+---
+
+## 11. 次のステップ
+
+### 11.1 未決定事項の解決
+未決定事項を解決するために必要なアクションを記載してください。
+
+1. [アクション1]: [誰が、いつまでに、何をするか]
+2. [アクション2]: [誰が、いつまでに、何をするか]
+
+### 11.2 実装開始前の準備
+実装を開始する前に必要な準備作業を記載してください。
+
+- [ ] [準備作業1]
+- [ ] [準備作業2]
+
+---
+
+## 付録A: 対話履歴
+
+${qa_summary}
+
+---
+
+## 付録B: 生成情報
+
+- **生成日時:** $(date '+%Y年%m月%d日 %H:%M:%S')
+- **対象ディレクトリ:** ${SPEC_DATA[target_directory]}
+- **生成ツール:** AI対話型機能設計ツール (Claude Code統合版 v2.0)
+- **対話回数:** ${#QA_HISTORY[@]} 回
+
+\`\`\`
+
+---
+
+## 重要事項
+
+1. **具体性**: すべてのセクションを具体的な内容で埋めてください。[説明]のようなプレースホルダーは使用しないでください。
+2. **実装可能性**: 実装者がこのドキュメントを見て、すぐに作業を開始できるレベルの詳細さを保ってください。
+3. **決定事項と未決定事項**: 対話で確定した内容と、まだ決まっていない内容を明確に区別してください。
+4. **コード例**: 型定義、SQLスキーマ、APIエンドポイントは、実際に使えるコード例を示してください。
+5. **データフロー図**: Mermaid記法で、実際のデータの流れを可視化してください。
+
+対話履歴と提供された情報を基に、実装可能な設計書を生成してください。
+PROMPT_EOF2
+
+    cd "${SPEC_DATA[target_directory]}"
+    claude --print "$(cat "$PROMPT_FILE")" > "$CLAUDE_RESPONSE_FILE" 2>&1
+
+    SPEC_DATA[final_design_doc]=$(cat "$CLAUDE_RESPONSE_FILE")
+
+    echo -e "${GREEN}✓ 詳細設計書の生成が完了しました${NC}\n"
+}
+
+# 保存先ディレクトリ選択
+ask_save_directory() {
+    echo -e "${GREEN}💾 ドキュメントの保存先ディレクトリを指定してください${NC}"
+    echo -e "${YELLOW}   (相対パスまたは絶対パス。デフォルト: ./docs)${NC}"
+    echo -n "> "
+    read -r save_dir
+
+    if [ -z "$save_dir" ]; then
+        save_dir="./docs"
+    fi
+
+    if [ ! -d "$save_dir" ]; then
+        echo -e "${YELLOW}   ディレクトリが存在しません。作成しますか? (y/n)${NC}"
+        echo -n "> "
+        read -r create_dir
+        if [[ "$create_dir" =~ ^[Yy] ]]; then
+            mkdir -p "$save_dir"
+            echo -e "${GREEN}   ✓ ディレクトリを作成しました: ${save_dir}${NC}"
+        else
+            echo -e "${RED}   ✗ 保存をキャンセルしました${NC}"
+            exit 1
+        fi
+    fi
+
+    SPEC_DATA[save_directory]="$save_dir"
+    echo ""
+}
+
+# 最終ドキュメント保存
+save_final_document() {
+    local project_name="${SPEC_DATA[project_name]// /_}"
+    local filename="${SPEC_DATA[save_directory]}/feature_design_${project_name}_$(date +%Y%m%d_%H%M%S).md"
+
+    # Claude Codeが生成した設計書を保存
+    echo "${SPEC_DATA[final_design_doc]}" > "$filename"
+
+    # Q&A履歴を付録として追加
+    cat >> "$filename" <<EOF
+
+---
+
+## 付録A: 対話履歴
+
+以下は、Claude Code との対話で明らかになった内容です。
+
+EOF
+
+    for qa in "${QA_HISTORY[@]}"; do
+        echo -e "$qa" >> "$filename"
+        echo "" >> "$filename"
+    done
+
+    # メタデータを追加
+    cat >> "$filename" <<EOF
+
+---
+
+## 付録B: 生成情報
+
+- **生成日時:** $(date '+%Y年%m月%d日 %H:%M:%S')
+- **対象ディレクトリ:** ${SPEC_DATA[target_directory]}
+- **生成ツール:** AI対話型機能設計ツール (Claude Code統合版)
+- **対話回数:** ${#QA_HISTORY[@]} 回
+
+EOF
+
+    echo -e "${GREEN}✅ 設計書を保存しました: ${filename}${NC}"
+    SPEC_DATA[output_file]="$filename"
+}
+
+# メイン処理
+main() {
+    show_header
+    check_claude_code
+
+    echo -e "${BLUE}=== ステップ1: プロジェクト選択 ===${NC}\n"
+    ask_directories
+
+    echo -e "${BLUE}=== ステップ2: コードベース分析 ===${NC}\n"
+    analyze_codebase_with_claude
+
+    echo -e "${BLUE}=== ステップ3: リポジトリ間の依存関係分析 ===${NC}\n"
+    analyze_repository_dependencies
+
+    echo -e "${BLUE}=== ステップ4: 基本情報 ===${NC}\n"
+    ask_question "project_name" "プロジェクト名を教えてください" "例: boba-flash"
+    ask_multiline "new_feature_overview" "追加したい機能の概要を教えてください" "何を実現したいか"
+    ask_multiline "feature_behavior" "追加したい機能の挙動を教えてください" "どう動くべきか、入力・出力など"
+
+    echo -e "${BLUE}=== ステップ5: Claude Code との対話 ===${NC}\n"
+    interactive_qa_loop
+
+    echo -e "${BLUE}=== ステップ6: 最終設計書生成 ===${NC}\n"
+    generate_final_design_doc
+
+    echo -e "${BLUE}=== ステップ7: 保存 ===${NC}\n"
+    ask_save_directory
+
+    # 確認
+    echo -e "${YELLOW}AI生成の設計書を保存します。よろしいですか？ (y/n)${NC}"
+    echo -n "> "
+    read -r confirm
+
+    if [[ "$confirm" =~ ^[Yy] ]]; then
+        echo ""
+        save_final_document
+
+        echo ""
+        echo -e "${GREEN}========================================${NC}"
+        echo -e "${GREEN}  ✅ 設計書の生成が完了しました！${NC}"
+        echo -e "${GREEN}========================================${NC}"
+        echo -e "\n保存先: ${SPEC_DATA[output_file]}\n"
+        echo -e "${CYAN}💡 未決定事項がある場合は、設計書を確認して次のアクションを決めてください。${NC}\n"
+    else
+        echo -e "${RED}✗ 保存をキャンセルしました${NC}"
+        exit 1
+    fi
+}
+
+# エラーハンドリング
+trap 'echo -e "\n${RED}✗ エラーが発生しました${NC}"; exit 1' ERR
+
+# 実行
+main

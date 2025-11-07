@@ -1,142 +1,225 @@
-# Scripts Directory
+# 対話型 要件定義書・仕様書作成ツール
 
-このディレクトリには、dotfiles環境の管理とセットアップに関するスクリプトが含まれています。
+## 概要
 
-## 🚀 環境セットアップスクリプト
+このツールは、対話形式で段階的に質問を進めながら、要件定義書と仕様書を自動生成するシェルスクリプトです。
 
-### setup-environment.sh
-**全環境を一括でセットアップする統合スクリプト**
+## 特徴
 
-新しいマシンで開発環境を構築する際に、このスクリプト1つで全てをセットアップできます。
+- 📝 **段階的な質問フロー**: 7つのステップで段階的に必要な情報を収集
+- 🎨 **カラフルなUI**: 見やすいカラー表示で質問・ヒントを提示
+- 💾 **柔軟な保存先**: ドキュメントの保存先を自由に指定可能
+- 📄 **2種類のドキュメント生成**:
+  - 要件定義書 (requirements_*.md)
+  - 仕様書 (specification_*.md) ※オプション
 
-```bash
-~/.dotfiles/.scripts/setup-environment.sh
-```
+## インストール
 
-**実行内容:**
-1. Homebrewのインストール（未インストールの場合）
-2. Brewfileからパッケージをインストール
-3. Oh-My-Zshのインストール（未インストールの場合）
-4. dotfilesのシンボリックリンク作成
-5. シェル設定の適用
+### 1. スクリプトをPATHに追加
 
-### install.sh
-**dotfilesのシンボリックリンクを作成するスクリプト**
+`.zshrc` または `.bashrc` に以下を追加:
 
 ```bash
-~/.dotfiles/.scripts/install.sh
+export PATH="$HOME/.dotfiles/.scripts:$PATH"
 ```
 
-**機能:**
-- `~/.zshrc` → `~/.dotfiles/zshrc` のシンボリックリンク作成
-- `~/.config/nvim` → `~/.dotfiles/config/nvim` のシンボリックリンク作成
-- Oh-My-Zshプラグインのインストール
-- MCPコンフィグのセットアップ
-- Homebrewパッケージのインストール
-
-### install-oh-my-zsh-plugins.sh
-**Oh-My-Zshプラグインを個別にインストール**
+設定を反映:
 
 ```bash
-~/.dotfiles/.scripts/install-oh-my-zsh-plugins.sh
+source ~/.zshrc  # または source ~/.bashrc
 ```
 
-### uninstall.sh
-**dotfilesのシンボリックリンクを削除**
+### 2. 実行権限の確認
 
 ```bash
-~/.dotfiles/.scripts/uninstall.sh
+chmod +x ~/.dotfiles/.scripts/create-spec
 ```
 
-## 🔄 バックアップ・同期スクリプト
+## 使い方
 
-### sync-to-dotfiles.sh
-**現在のシステム設定をdotfilesリポジトリにバックアップ**
+### 基本的な使い方
 
-システムの設定ファイルをdotfilesリポジトリに同期します。設定を変更した後、リポジトリに反映させたい場合に使用します。
+ターミナルで以下のコマンドを実行:
 
 ```bash
-~/.dotfiles/.scripts/sync-to-dotfiles.sh
+create-spec
 ```
 
-**同期される項目:**
-- `.zshrc`
-- `.config/nvim`
-- `.config/wezterm`
-- `.claude/settings.json`
-- `.claude/CLAUDE.md`
-- `.claude/commands`
-- `.claude/agents`
-- Brewfile（現在のインストール状況を反映）
+### 質問の流れ
 
-### restore-from-dotfiles.sh
-**dotfilesリポジトリからシステムに設定を復元**
+#### ステップ1: 基本情報
+- プロジェクト名
+- プロジェクト種別 (Webアプリ、モバイルアプリ、API/バックエンドなど)
+- プロジェクトの目的
+- プロジェクトの背景
 
-dotfilesリポジトリの内容を`$HOME`にコピーして復元します。
+#### ステップ2: ユーザーと機能
+- 対象ユーザー
+- 主要な機能
+- 副次的な機能 (オプション)
+
+#### ステップ3: 非機能要件
+- 性能要件
+- セキュリティ要件
+- 可用性・保守性
+
+#### ステップ4: 制約事項
+- 技術的制約
+- スケジュール制約
+- 予算・リソース制約
+
+#### ステップ5: 仕様詳細 (オプション)
+詳細な仕様書を作成する場合、以下の項目を入力:
+- 機能一覧
+- 画面仕様
+- API仕様
+- データモデル
+- データベース設計
+- 外部連携
+- 入出力仕様
+- 技術スタック
+- 開発環境・本番環境
+- セキュリティ仕様
+- テスト仕様
+- 運用仕様
+
+#### ステップ6: その他
+- 成果物
+- その他考慮事項
+
+#### ステップ7: 保存
+- 保存先ディレクトリの指定
+- 最終確認
+
+## 入力のコツ
+
+### 単一行入力
+質問に対して1行で回答します。Enterキーで次の質問へ進みます。
+
+```
+> レシートOCRシステム
+```
+
+### 複数行入力
+複数行での回答が必要な場合、空行 (Enter のみ) で入力を終了します。
+
+```
+> ユーザーがレシート画像をアップロードすると、
+> OCRで自動的にテキストを抽出し、
+> 購入日、店舗名、商品、金額を構造化データとして取得する。
+>
+```
+
+### リスト入力
+カンマ区切りで複数の項目を入力できます。
+
+```
+> Python, FastAPI, PostgreSQL, React, Docker
+```
+
+### 選択肢入力
+番号を選ぶか、直接テキストを入力できます。
+
+```
+1) Webアプリケーション
+2) モバイルアプリ
+3) API/バックエンド
+4) CLI/ツール
+5) その他
+> 3
+```
+
+### Yes/No質問
+`y` または `n` で回答します。
+
+```
+> y
+```
+
+## 生成されるドキュメント
+
+### 要件定義書 (requirements_*.md)
+- プロジェクト概要
+- 機能要件
+- 非機能要件
+- 制約事項
+- 成果物
+- その他の考慮事項
+
+### 仕様書 (specification_*.md) ※オプション
+- システム概要
+- 機能仕様
+- データ仕様
+- インターフェース仕様
+- 技術仕様
+- セキュリティ仕様
+- テスト仕様
+- 運用仕様
+
+## 使用例
 
 ```bash
-~/.dotfiles/.scripts/restore-from-dotfiles.sh
+$ create-spec
+========================================
+  対話型 要件定義書・仕様書作成ツール
+========================================
+
+=== ステップ1: 基本情報 ===
+
+📝 プロジェクト名を教えてください
+   ヒント: 例: レシートOCRシステム
+> レシートOCRシステム
+
+🔍 プロジェクトの種別を選んでください
+  1) Webアプリケーション
+  2) モバイルアプリ
+  3) API/バックエンド
+  4) CLI/ツール
+  5) その他
+> 3
+
+📝 このプロジェクトの目的を教えてください
+   ヒント: 何を実現したいか、どんな問題を解決するか
+   (入力を終えるには空行を入力してください)
+> レシート画像から自動的にデータを抽出し、
+> 経費精算を効率化する
+>
+
+...（以下、質問が続く）
 ```
 
-## 🔧 その他のツール
+## トラブルシューティング
 
-### pr-review-wezterm.zsh
-**GitHub Pull Requestの並列AIレビュー**
-
-WezTerm内で3つのAIツール（Claude Code、Cursor Agent、Gemini CLI）を使用して、同時並行でPRレビューを実行します。
+### コマンドが見つからない場合
+PATHが正しく設定されているか確認してください:
 
 ```bash
-~/.dotfiles/.scripts/pr-review-wezterm.zsh 123
+echo $PATH | grep .dotfiles/.scripts
 ```
 
-詳細は以前のREADME内容を参照してください。
-
-## 📝 使用フロー
-
-### 新しいマシンでのセットアップ
-```bash
-# 1. dotfilesリポジトリをクローン
-git clone <repository-url> ~/.dotfiles
-
-# 2. 統合セットアップスクリプトを実行
-~/.dotfiles/.scripts/setup-environment.sh
-
-# 3. ターミナルを再起動
-```
-
-### 設定変更後のバックアップ
-```bash
-# 1. 現在の設定をdotfilesに同期
-~/.dotfiles/.scripts/sync-to-dotfiles.sh
-
-# 2. 変更を確認してコミット
-cd ~/.dotfiles
-git status
-git add .
-git commit -m "update: sync configurations"
-git push
-```
-
-### 別マシンでの設定復元
-```bash
-# 1. dotfilesをクローン
-git clone <repository-url> ~/.dotfiles
-
-# 2. 設定を復元
-~/.dotfiles/.scripts/restore-from-dotfiles.sh
-
-# 3. 不足しているパッケージをインストール
-~/.dotfiles/.scripts/setup-environment.sh
-```
-
-## ⚙️ カスタマイズ
-
-各スクリプトは環境変数で動作をカスタマイズできます:
+### 実行権限エラー
+スクリプトに実行権限を付与してください:
 
 ```bash
-# dotfilesディレクトリのパスを変更
-export DOTFILES_DIR="$HOME/my-custom-dotfiles"
-
-# スクリプトを実行
-~/.dotfiles/.scripts/setup-environment.sh
+chmod +x ~/.dotfiles/.scripts/create-spec
 ```
+
+### 保存先ディレクトリが作成できない
+指定したディレクトリへの書き込み権限を確認してください。
+
+## カスタマイズ
+
+スクリプトは自由にカスタマイズできます。質問項目の追加・削除、テンプレートの変更などが可能です。
+
+編集:
+```bash
+vim ~/.dotfiles/.scripts/create-spec
+```
+
+## ライセンス
+
+MIT License
+
+## 作成者
+
+Claude Code による自動生成ツール
