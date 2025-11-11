@@ -125,87 +125,133 @@ ask_directories() {
     echo ""
 }
 
-# Claude Codeにコードベース分析を依頼（Serena MCP統合・複数リポジトリ対応）
-analyze_codebase_with_claude() {
-    echo -e "${MAGENTA}🧠 Serena MCP & Claude Code でリポジトリを分析中...${NC}\n"
+# 最適化されたコードベース分析（CLAUDE.md/.cursorrules優先）
+analyze_codebase_smart() {
+    echo -e "${MAGENTA}🧠 リポジトリを効率的に分析中（CLAUDE.md/.cursorrules優先）...${NC}\n"
 
     local all_analysis=""
 
     for repo_path in "${REPOSITORIES[@]}"; do
         local repo_name=$(basename "$repo_path")
-        echo -e "${CYAN}📦 リポジトリ分析中: ${repo_name}${NC}"
+        echo -e "${CYAN}📦 リポジトリ: ${repo_name}${NC}"
 
-        cat > "$PROMPT_FILE" <<EOF
-【重要】Serena MCPを活用したコードベース分析を実行してください。
+        local context_found=false
+        local analysis_result=""
 
-## 指示
+        # Step 1: CLAUDE.md を探す（最優先）
+        if [ -f "$repo_path/CLAUDE.md" ]; then
+            echo -e "${GREEN}   ✓ CLAUDE.md 検出（高速読み込み）${NC}"
+            analysis_result="## プロジェクト概要（CLAUDE.mdより）\n\n\`\`\`markdown\n$(cat "$repo_path/CLAUDE.md")\n\`\`\`"
+            context_found=true
+        # Step 2: .cursorrules を探す
+        elif [ -f "$repo_path/.cursorrules" ]; then
+            echo -e "${GREEN}   ✓ .cursorrules 検出（高速読み込み）${NC}"
+            analysis_result="## プロジェクト概要（.cursorrulesより）\n\n\`\`\`\n$(cat "$repo_path/.cursorrules")\n\`\`\`"
+            context_found=true
+        fi
 
-1. **Serena MCPメモリの確認**
-   - まず、このリポジトリ (${repo_name}) に関する既存のメモリがあるか確認してください
-   - メモリがあれば、それを活用して高速に分析を完了してください
+        # Step 3: 軽量分析（package.json, README等）
+        if [ "$context_found" = false ]; then
+            echo -e "${YELLOW}   ⚡ 軽量コンテキスト読み込み中...${NC}"
+            local light_context=""
 
-2. **コードベース分析** (メモリがない場合)
-   - Serena MCPの \`get_symbols_overview\` を使ってプロジェクト全体の構造を把握
-   - 主要なシンボル（関数、クラス、インターフェース）を特定
-   - アーキテクチャパターンを推測
+            # ディレクトリ構造の簡易確認
+            if [ -d "$repo_path" ]; then
+                light_context="${light_context}\n### ディレクトリ構造（トップレベル）\n\`\`\`\n$(ls -1 "$repo_path" | head -15)\n\`\`\`\n"
+            fi
 
-3. **分析結果の記憶** (重要!)
-   - 分析結果をSerena MCPの \`create_memory\` または \`update_memory\` で保存
-   - メモリ名: \`${repo_name}-project-overview\`
-   - これにより、次回から高速に分析可能になります
+            # package.json or pyproject.toml or go.mod etc
+            if [ -f "$repo_path/package.json" ]; then
+                light_context="${light_context}\n### package.json\n\`\`\`json\n$(head -20 "$repo_path/package.json")\n\`\`\`\n"
+            elif [ -f "$repo_path/go.mod" ]; then
+                light_context="${light_context}\n### go.mod\n\`\`\`\n$(cat "$repo_path/go.mod")\n\`\`\`\n"
+            elif [ -f "$repo_path/pyproject.toml" ]; then
+                light_context="${light_context}\n### pyproject.toml\n\`\`\`toml\n$(head -20 "$repo_path/pyproject.toml")\n\`\`\`\n"
+            elif [ -f "$repo_path/Cargo.toml" ]; then
+                light_context="${light_context}\n### Cargo.toml\n\`\`\`toml\n$(head -20 "$repo_path/Cargo.toml")\n\`\`\`\n"
+            fi
 
-4. **出力フォーマット**
-   以下の形式で日本語で出力してください:
+            # README
+            if [ -f "$repo_path/README.md" ]; then
+                light_context="${light_context}\n### README.md (抜粋)\n\`\`\`markdown\n$(head -30 "$repo_path/README.md")\n\`\`\`\n"
+            fi
 
-## プロジェクト概要
-- **プロジェクト名**: [自動検出]
-- **プロジェクトタイプ**: [Web API / Mobile App / CLI / Library など]
-- **主な技術スタック**: [言語、フレームワーク、主要ライブラリ]
-- **ビルドツール**: [npm, yarn, poetry, cargo など]
+            analysis_result="## 軽量コンテキスト\n${light_context}\n\n**【注記】** 詳細な分析が必要な場合は、対話中に「\`${repo_name}\`の詳細を確認したい」と入力してください。"
+            echo -e "${GREEN}   ✓ 軽量コンテキスト読み込み完了${NC}"
+        fi
 
-## 現在の主要機能
-[箇条書きで主要な機能を5-10個列挙]
-
-## アーキテクチャ
-- **アーキテクチャパターン**: [MVC、レイヤードアーキテクチャ、マイクロサービスなど]
-- **主要なコンポーネント**: [ディレクトリ構造から重要なコンポーネントを説明]
-- **状態管理**: [該当する場合、状態管理の方法]
-
-## 主要なエンティティ・モデル
-[システムで扱う主要なデータモデルを列挙]
-
-## 外部サービス・API連携
-[他のサービスやAPIとの連携があれば具体的に記載]
-
-## テスト環境
-[テストフレームワーク、カバレッジツールなど]
-
----
-
-**注意**: Serena MCPを積極的に活用し、分析結果を必ず記憶させてください。
-EOF
-
-        cd "$repo_path"
-        claude --print "$(cat "$PROMPT_FILE")" > "$CLAUDE_RESPONSE_FILE" 2>&1 || {
-            echo -e "${RED}✗ Claude Code の実行に失敗しました (${repo_name})${NC}"
-            cat "$CLAUDE_RESPONSE_FILE"
-            return 1
-        }
-
-        local analysis_result=$(cat "$CLAUDE_RESPONSE_FILE")
         REPO_ANALYSIS["$repo_name"]="$analysis_result"
-
-        echo -e "${GREEN}✓ ${repo_name} 分析完了 (Serena MCPで記憶済み)${NC}\n"
-
-        # 全体の分析結果に追加
         all_analysis="${all_analysis}### リポジトリ: ${repo_name} (${repo_path})\n\n${analysis_result}\n\n---\n\n"
+        echo ""
     done
 
-    # 後方互換性のため、統合した分析結果を保存
     SPEC_DATA[claude_analysis]="$all_analysis"
 
-    echo -e "${CYAN}=== 全リポジトリの分析結果 (Serena MCP記憶済み) ===${NC}"
+    echo -e "${CYAN}=== 全リポジトリのコンテキスト読み込み完了 ===${NC}"
     echo -e "${SPEC_DATA[claude_analysis]}"
+    echo ""
+}
+
+# オンデマンドでリポジトリを詳細分析（Serena MCP）
+explore_repository_on_demand() {
+    local repo_name=$1
+    local repo_path=""
+
+    # リポジトリパスを検索
+    for rp in "${REPOSITORIES[@]}"; do
+        if [ "$(basename "$rp")" = "$repo_name" ]; then
+            repo_path="$rp"
+            break
+        fi
+    done
+
+    if [ -z "$repo_path" ]; then
+        echo -e "${RED}✗ リポジトリが見つかりません: ${repo_name}${NC}"
+        return 1
+    fi
+
+    echo -e "${MAGENTA}🔍 ${repo_name} の詳細分析を実行中（Serena MCP）...${NC}\n"
+
+    cat > "$PROMPT_FILE" <<EOF
+【Serena MCP詳細分析】
+
+リポジトリ: ${repo_name}
+パス: ${repo_path}
+
+以下の観点で詳細に分析してください:
+
+1. **Serena MCPメモリの確認**
+   - 既存のメモリがあれば活用
+
+2. **コードベース構造分析**
+   - 主要なシンボル（関数、クラス、インターフェース）
+   - アーキテクチャパターン
+   - 主要な機能とディレクトリ構造
+
+3. **分析結果の記憶**
+   - \`create_memory\` または \`update_memory\` で保存
+   - メモリ名: \`${repo_name}-detailed-analysis\`
+
+簡潔に日本語で出力してください。
+EOF
+
+    cd "$repo_path"
+    claude --print "$(cat "$PROMPT_FILE")" > "$CLAUDE_RESPONSE_FILE" 2>&1 || {
+        echo -e "${RED}✗ 詳細分析に失敗しました${NC}"
+        cat "$CLAUDE_RESPONSE_FILE"
+        return 1
+    }
+
+    local detailed_result=$(cat "$CLAUDE_RESPONSE_FILE")
+
+    # 既存の分析結果を更新
+    REPO_ANALYSIS["$repo_name"]="${REPO_ANALYSIS[$repo_name]}\n\n## 詳細分析結果（Serena MCP）\n\n${detailed_result}"
+
+    # 統合分析結果も更新
+    SPEC_DATA[claude_analysis]=$(echo -e "${SPEC_DATA[claude_analysis]}" | sed "s|### リポジトリ: ${repo_name}.*|### リポジトリ: ${repo_name} (${repo_path})\n\n${REPO_ANALYSIS[$repo_name]}\n\n---|")
+
+    echo -e "${GREEN}✓ ${repo_name} の詳細分析完了${NC}\n"
+    echo -e "${detailed_result}"
     echo ""
 }
 
@@ -305,6 +351,12 @@ ${qa_context}
 - リポジトリ間の連携方法（複数リポジトリの場合）
 - テスト方法
 
+**【重要】軽量コンテキストでの質問生成について:**
+- 現在のコンテキストは軽量版（CLAUDE.md/.cursorrules優先、または基本情報のみ）です
+- 軽量コンテキストでも答えられる質問を優先してください
+- 詳細なコード構造の確認が必要な場合は、「〇〇リポジトリの△△について詳細確認が必要」と明示してください
+- ユーザーが詳細確認を希望した場合、該当リポジトリをSerena MCPで詳細分析します
+
 質問する際は、具体的なリポジトリ名を挙げて質問してください（複数リポジトリの場合）。
 
 以下の形式で出力してください:
@@ -368,6 +420,7 @@ interactive_qa_loop() {
             echo "  2) 分からない / 未決定"
             echo "  3) 後で決める"
             echo "  4) スキップ"
+            echo "  5) リポジトリの詳細を確認したい（Serena MCP分析）"
             echo -n "> "
 
             # 入力前に再度バッファをクリア
@@ -400,6 +453,29 @@ interactive_qa_loop() {
                     ;;
                 4)
                     answer="【スキップ】"
+                    ;;
+                5)
+                    echo -e "${CYAN}詳細分析したいリポジトリ名を入力してください:${NC}"
+                    echo -n "> "
+                    read -r repo_name
+
+                    # リポジトリの詳細分析を実行
+                    explore_repository_on_demand "$repo_name"
+
+                    # 分析後、改めて回答を入力
+                    echo -e "${CYAN}分析結果を踏まえて、質問${question_count}への回答を入力してください (空行で終了):${NC}"
+                    local lines=""
+                    local first_line=true
+                    while IFS= read -r line; do
+                        [ -z "$line" ] && break
+                        if [ "$first_line" = true ]; then
+                            lines="$line"
+                            first_line=false
+                        else
+                            lines="${lines}"$'\n'"${line}"
+                        fi
+                    done
+                    answer="$lines"
                     ;;
                 *)
                     echo -e "${RED}無効な選択です。スキップします。${NC}"
@@ -918,8 +994,8 @@ main() {
     echo -e "${BLUE}=== ステップ1: プロジェクト選択 ===${NC}\n"
     ask_directories
 
-    echo -e "${BLUE}=== ステップ2: コードベース分析 ===${NC}\n"
-    analyze_codebase_with_claude
+    echo -e "${BLUE}=== ステップ2: コードベース分析（最適化版）===${NC}\n"
+    analyze_codebase_smart
 
     echo -e "${BLUE}=== ステップ3: リポジトリ間の依存関係分析 ===${NC}\n"
     analyze_repository_dependencies
