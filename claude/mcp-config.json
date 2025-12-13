@@ -8,7 +8,11 @@
         "git+https://github.com/oraios/serena",
         "serena-mcp-server",
         "--context",
-        "ide-assistant"
+        "claude-code",
+        "--mode",
+        "interactive",
+        "--mode",
+        "no-editing"
       ],
       "env": {}
     }
