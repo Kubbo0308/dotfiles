@@ -112,6 +112,36 @@
 - Verify no regressions in existing features
 - Document complex decisions and trade-offs
 
+### 🔍 Diff Review with difit (MANDATORY)
+
+**⚠️ CRITICAL: After making file edits in a session, ALWAYS use `npx difit` to review changes!**
+
+#### When to Use difit:
+- **After first file edit in session**: Run `npx difit .` to start diff review server
+- **Before commits**: Review all changes visually
+- **Complex refactoring**: Use side-by-side diff view
+- **Code review preparation**: Add comments for AI feedback
+
+#### Common Commands:
+| Command | Description |
+|---------|-------------|
+| `npx difit .` | All uncommitted changes (staged + unstaged) |
+| `npx difit staged` | Only staged changes |
+| `npx difit @ main` | Compare HEAD with main branch |
+| `npx difit branch1 branch2` | Compare two branches |
+
+#### Options:
+- `--mode side-by-side` (default): 横並び表示
+- `--mode inline`: インライン表示
+- `--tui`: ターミナルUIモード
+
+#### Workflow Integration:
+1. Make file edits
+2. Run `npx difit .` to review changes in browser
+3. Add comments on diff lines if needed
+4. Use "Copy Prompt" for AI feedback
+5. Proceed with commit
+
 ---
 
 ## TypeScript Best Practices
