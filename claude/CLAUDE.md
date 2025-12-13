@@ -1,14 +1,58 @@
 # CLAUDE.md - Development Standards
 
-**Last Updated:** 2025-09-25
+**Last Updated:** 2025-12-13
 
 ## Table of Contents
-1. [Core Principles](#core-principles)
-2. [Development Workflow](#development-workflow)
-3. [TypeScript Best Practices](#typescript-best-practices)
-4. [Code Quality & Security](#code-quality--security)
-5. [Testing & Validation](#testing--validation)
-6. [Git Standards](#git-standards)
+1. [🚨 CRITICAL: Subagent First Policy](#-critical-subagent-first-policy)
+2. [Core Principles](#core-principles)
+3. [Development Workflow](#development-workflow)
+4. [TypeScript Best Practices](#typescript-best-practices)
+5. [Code Quality & Security](#code-quality--security)
+6. [Testing & Validation](#testing--validation)
+7. [Git Standards](#git-standards)
+
+---
+
+## 🚨 CRITICAL: Subagent First Policy
+
+> **⛔ STOP! Before doing ANYTHING, you MUST use subagents!**
+>
+> **This is the #1 most important rule. Violating this wastes context tokens and produces inferior results.**
+
+### Mandatory Subagent Invocations
+
+| Priority | Subagent | When to Use | Consequence of Skipping |
+|----------|----------|-------------|-------------------------|
+| **🔴 ALWAYS** | `serena-context` | **START of EVERY session** | Lost project context, inconsistent code |
+| **🔴 ALWAYS** | `codebase-analyzer` | Before understanding ANY codebase | Wasted tokens reading files manually |
+| **🔴 ALWAYS** | `Explore` | For ANY code/file search | Slow, incomplete search results |
+| **🟡 HIGH** | `typescript-test-generator` | ALL TypeScript/React tests | Poor test quality, duplicated assertions |
+| **🟡 HIGH** | `go-test-generater` | ALL Go tests | Missing edge cases |
+| **🟡 HIGH** | `code-reviewer-gemini` | Before ANY PR | Missed code quality issues |
+| **🟡 HIGH** | `security` | Any security-related code | Potential vulnerabilities |
+| **🟡 HIGH** | `web-researcher` | Unknown technologies | Outdated/incorrect information |
+| **🟢 MEDIUM** | `task-decomposer` | Complex multi-step tasks | Poor planning, missed steps |
+| **🟢 MEDIUM** | `document` | Large documentation | Incomplete docs |
+| **🟢 MEDIUM** | `commit` | Git commits | Poor commit messages |
+| **🟢 MEDIUM** | `pull-request` | PR creation | Missing context in PR |
+
+### Quick Reference: Session Start Checklist
+
+```
+□ 1. Call `serena-context` to load project memories
+□ 2. Review context summary
+□ 3. Evaluate which subagents are needed for the task
+□ 4. Use `Explore` or `codebase-analyzer` for code understanding
+□ 5. NEVER read files manually when subagents can do it better
+```
+
+### Why This Matters
+
+- **Token Efficiency**: Subagents reduce context usage by 60-80%
+- **Quality**: Specialized agents produce better results
+- **Speed**: Parallel execution is faster than sequential manual work
+- **Consistency**: Maintains patterns across sessions
+- **Memory**: Serena MCP preserves institutional knowledge
 
 ---
 
