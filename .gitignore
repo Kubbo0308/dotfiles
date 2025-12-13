@@ -23,6 +23,8 @@ log/
 
 # MCP server data directories
 claude/mcp/servers/*.json
+!claude/mcp/servers/*-template.json
+codex/mcp/config.toml
 
 # Serena MCP cache and index files
 .serena/
@@ -82,3 +84,4 @@ config/nvim/*_FIX_*.md
 # Wezterm logs and temporary files
 wezterm/.claude/
 wezterm/logs/
+claude/.claude.json

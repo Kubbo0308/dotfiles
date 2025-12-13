@@ -120,6 +120,29 @@ if [ -d "$DOTFILES_DIR/claude/mcp" ]; then
     fi
 fi
 
+# Merge global MCP settings into ~/.claude.json
+if [ -f "$DOTFILES_DIR/claude/mcp-config.json" ]; then
+    echo "🔧 Merging global MCP settings into ~/.claude.json..."
+
+    CLAUDE_JSON="$HOME/.claude.json"
+    MCP_CONFIG="$DOTFILES_DIR/claude/mcp-config.json"
+
+    if command -v jq &> /dev/null; then
+        if [ -f "$CLAUDE_JSON" ]; then
+            # Merge mcpServers from mcp-config.json into existing ~/.claude.json
+            jq -s '.[0] * .[1]' "$CLAUDE_JSON" "$MCP_CONFIG" > "$CLAUDE_JSON.tmp" && mv "$CLAUDE_JSON.tmp" "$CLAUDE_JSON"
+            echo "✅ MCP settings merged into $CLAUDE_JSON"
+        else
+            # Create new ~/.claude.json with MCP settings
+            cp "$MCP_CONFIG" "$CLAUDE_JSON"
+            echo "✅ Created $CLAUDE_JSON with MCP settings"
+        fi
+    else
+        echo "⚠️  jq is not installed. Please install it to merge MCP settings:"
+        echo "   brew install jq"
+    fi
+fi
+
 # Install Homebrew packages
 if [ -f "$DOTFILES_DIR/.homebrew/Brewfile" ]; then
     echo "🍺 Installing Homebrew packages..."
@@ -131,6 +154,21 @@ if [ -f "$DOTFILES_DIR/.homebrew/Brewfile" ]; then
     else
         echo "📦 Installing packages from Brewfile..."
         brew bundle install --file="$DOTFILES_DIR/.homebrew/Brewfile"
+    fi
+fi
+
+# Set up MCP configuration for Codex
+if [ -d "$DOTFILES_DIR/codex/mcp" ]; then
+    echo "⚙️  Setting up Codex MCP configuration..."
+
+    if [ -f "$DOTFILES_DIR/codex/mcp/generate-config.sh" ]; then
+        echo "🔧 Generating Codex MCP configuration..."
+        "$DOTFILES_DIR/codex/mcp/generate-config.sh"
+    fi
+
+    if [ -f "$DOTFILES_DIR/codex/mcp/setup-links.sh" ]; then
+        echo "🔗 Creating Codex MCP configuration symbolic links..."
+        "$DOTFILES_DIR/codex/mcp/setup-links.sh"
     fi
 fi
 
