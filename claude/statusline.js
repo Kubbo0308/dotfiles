@@ -3,6 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 const readline = require('readline');
+const { execSync } = require('child_process');
 
 // Constants
 const COMPACTION_THRESHOLD = 200000 * 0.8
@@ -22,8 +23,10 @@ process.stdin.on('end', async () => {
 
     // Extract values with better fallbacks
     const model = data.model?.display_name || data.model?.id || 'Unknown';
-    const currentDir = path.basename(data.workspace?.current_dir || data.cwd || process.cwd());
+    const workingDir = data.workspace?.current_dir || data.cwd || process.cwd();
+    const currentDir = path.basename(workingDir);
     const sessionId = data.session_id;
+    const branch = getGitBranch(workingDir);
 
     // Calculate token usage for current session
     let totalTokens = 0;
@@ -67,7 +70,8 @@ process.stdin.on('end', async () => {
     }
 
     // Create status line
-    const statusLine = `📁 ${currentDir} | 🤖 ${model} | 🎫 ${tokenDisplay} (${percentageDisplay})`;
+    const branchPart = branch ? ` | 🌿 ${branch}` : '';
+    const statusLine = `📁 ${currentDir}${branchPart} | 🤖 ${model} | 🎫 ${tokenDisplay} (${percentageDisplay})`;
 
     console.log(statusLine);
   } catch (error) {
@@ -127,4 +131,17 @@ function formatTokens(tokens) {
     return `${(tokens / 1000).toFixed(1)}K`;
   }
   return tokens.toString();
+}
+
+function getGitBranch(cwd) {
+  try {
+    const branch = execSync('git branch --show-current', {
+      cwd,
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe']
+    }).trim();
+    return branch || null;
+  } catch {
+    return null;
+  }
 }
