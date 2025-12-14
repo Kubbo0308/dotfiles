@@ -33,19 +33,20 @@ fi
 
 echo ""
 
-# Function to add MCP server
+# Function to add MCP server (user scope for global availability)
 add_mcp_server() {
     local name=$1
     shift
     local command=("$@")
 
-    echo -e "${GREEN}Adding MCP server: ${name}${NC}"
+    echo -e "${GREEN}Adding MCP server: ${name} (user scope)${NC}"
 
-    # Remove existing server if it exists
+    # Remove existing server if it exists (check both scopes)
+    claude mcp remove "${name}" -s user 2>/dev/null || true
     claude mcp remove "${name}" -s local 2>/dev/null || true
 
-    # Add the server
-    if claude mcp add "${name}" -- "${command[@]}"; then
+    # Add the server with user scope (available in all projects)
+    if claude mcp add --scope user "${name}" -- "${command[@]}"; then
         echo -e "${GREEN}✓ Successfully added ${name}${NC}\n"
     else
         echo -e "${RED}✗ Failed to add ${name}${NC}\n"

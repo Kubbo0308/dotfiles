@@ -153,9 +153,10 @@ The script will re-add all MCP servers with updated configuration.
 ## ⚠️ Important Notes
 
 1. **CLI-only configuration** - This setup is for Claude Code CLI, not Claude Desktop
-2. **Local scope** - MCP servers are configured at project level
+2. **User scope (Global)** - MCP servers are configured at user level, available in all projects
 3. **Environment variables** - Keep sensitive data in `.env.local` (gitignored)
 4. **Serena project data** - Stored in `servers/serena/` directory
+5. **Restart required** - After running setup script, restart Claude Code for changes to take effect
 
 ## 🐛 Troubleshooting
 
