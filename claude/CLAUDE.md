@@ -1,15 +1,52 @@
 # CLAUDE.md - Development Standards
 
-**Last Updated:** 2025-12-13
+**Last Updated:** 2025-12-15
 
 ## Table of Contents
-1. [🚨 CRITICAL: Subagent First Policy](#-critical-subagent-first-policy)
-2. [Core Principles](#core-principles)
-3. [Development Workflow](#development-workflow)
-4. [TypeScript Best Practices](#typescript-best-practices)
-5. [Code Quality & Security](#code-quality--security)
-6. [Testing & Validation](#testing--validation)
-7. [Git Standards](#git-standards)
+1. [⛔ CRITICAL: Pre-Task Verification (MUST READ FIRST)](#-critical-pre-task-verification-must-read-first)
+2. [🚨 CRITICAL: Subagent First Policy](#-critical-subagent-first-policy)
+3. [Core Principles](#core-principles)
+4. [Development Workflow](#development-workflow)
+5. [TypeScript Best Practices](#typescript-best-practices)
+6. [Code Quality & Security](#code-quality--security)
+7. [Testing & Validation](#testing--validation)
+8. [Git Standards](#git-standards)
+
+---
+
+## ⛔ CRITICAL: Pre-Task Verification (MUST READ FIRST)
+
+> **🛑 STOP! Before EVERY action, you MUST verify:**
+>
+> 1. **Can a Subagent (Task tool) handle this?** → If yes, USE IT!
+> 2. **Can a Skill handle this?** → If yes, USE IT!
+>
+> **This verification is MANDATORY for EVERY operation. No exceptions.**
+
+### Pre-Action Checklist (EVERY TIME)
+
+Before executing ANY task, ask yourself:
+
+```
+□ Is there a Subagent that can do this better?
+  - git commit → Use `commit` subagent
+  - code review → Use `code-reviewer-gemini` subagent
+  - PR creation → Use `pull-request` subagent
+  - testing → Use `go-test-generator` or `typescript-test-generator`
+  - exploration → Use `Explore` or `codebase-analyzer`
+
+□ Is there a Skill that can help?
+  - code-review skill
+  - go-testing skill
+  - database-admin skill
+  - drawio skill
+
+□ Only proceed with direct tool use if NO subagent/skill applies!
+```
+
+### Why This Exists
+
+This rule was added because even after writing "ALWAYS use commit subagent for git commits", the agent still used Bash directly. **Explicit verification prevents this mistake.**
 
 ---
 
