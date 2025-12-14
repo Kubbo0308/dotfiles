@@ -10,8 +10,8 @@ claude/settings.local.json
 _docs/
 *.gif
 
-# Confidential files - Claude settings and sensitive data
-claude/settings.json
+# Confidential files (except settings.json for git management)
+!claude/settings.json
 claude/projects/*/
 claude/todos/
 claude/.claude/
