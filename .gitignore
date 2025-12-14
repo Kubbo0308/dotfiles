@@ -85,3 +85,10 @@ config/nvim/*_FIX_*.md
 wezterm/.claude/
 wezterm/logs/
 claude/.claude.json
+
+# Claude Code cache and log files
+claude/debug/
+claude/file-history/
+claude/history.jsonl
+claude/stats-cache.json
+claude/plugins/marketplaces/
