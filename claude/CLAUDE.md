@@ -6,7 +6,6 @@
 1. [⛔ CRITICAL: Pre-Task Verification (MUST READ FIRST)](#-critical-pre-task-verification-must-read-first)
 2. [🚨 CRITICAL: Subagent First Policy](#-critical-subagent-first-policy)
 3. [Communication Style](#communication-style)
-4. [Diff Review with difit](#diff-review-with-difit)
 
 ---
 
@@ -36,6 +35,10 @@ Before executing ANY task, ask yourself:
   - go-testing skill
   - database-admin skill
   - drawio skill
+
+□ Before committing: Did you run `pre-commit-checker` subagent?
+  - MUST call `pre-commit-checker` before EVERY `commit` subagent
+  - User must review diff before commit proceeds
 
 □ Only proceed with direct tool use if NO subagent/skill applies!
 ```
@@ -68,6 +71,7 @@ This rule was added because even after writing "ALWAYS use commit subagent for g
 | **🟢 MEDIUM** | `document` | Large documentation | Incomplete docs |
 | **🟢 MEDIUM** | `commit` | Git commits | Poor commit messages |
 | **🟢 MEDIUM** | `pull-request` | PR creation | Missing context in PR |
+| **🔴 ALWAYS** | `pre-commit-checker` | **BEFORE every commit** | User cannot review changes |
 
 ### Quick Reference: Session Start Checklist
 
@@ -103,33 +107,6 @@ This rule was added because even after writing "ALWAYS use commit subagent for g
 ### Communication Principles
 - **Clarity**: If unsure about requirements, ask rather than assume
 - **Honesty**: Say "I don't know" instead of guessing
-
----
-
-## Diff Review with difit
-
-**⚠️ After making file edits in a session, use `npx difit` to review changes!**
-
-### Common Commands
-
-| Command | Description |
-|---------|-------------|
-| `npx difit .` | All uncommitted changes (staged + unstaged) |
-| `npx difit staged` | Only staged changes |
-| `npx difit @ main` | Compare HEAD with main branch |
-| `npx difit branch1 branch2` | Compare two branches |
-
-### Options
-- `--mode side-by-side` (default): 横並び表示
-- `--mode inline`: インライン表示
-- `--tui`: ターミナルUIモード
-
-### Workflow Integration
-1. Make file edits
-2. Run `npx difit .` to review changes in browser
-3. Add comments on diff lines if needed
-4. Use "Copy Prompt" for AI feedback
-5. Proceed with commit (use `commit` subagent!)
 
 ---
 
