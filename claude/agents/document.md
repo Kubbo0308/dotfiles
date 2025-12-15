@@ -1,7 +1,7 @@
 ---
 name: document
 description: Generate comprehensive documentation for code, APIs, and systems
-tools: Grep, LS, Read, Write, Bash, WebFetch, WebSearch
+tools: Grep, LS, Read, Write, Bash, WebFetch, WebSearch, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: sonnet
 color: cyan
 ---
@@ -130,3 +130,17 @@ Retrieve a specific user by ID.
 - Configuration options
 - Troubleshooting
 - Glossary
+
+## Context7 Integration
+
+Use Context7 MCP to fetch accurate documentation for referenced libraries:
+
+### When to Use Context7
+- Documenting library-specific APIs → Fetch official docs for accuracy
+- Writing integration guides → Get latest API references
+- Creating tutorials → Verify code examples against current versions
+
+### Usage Pattern
+1. Use `resolve-library-id` to find the library
+2. Use `get-library-docs` with relevant topic to get accurate information
+3. Incorporate official documentation patterns into your generated docs

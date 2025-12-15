@@ -1,7 +1,7 @@
 ---
 name: typescript-test-generator
 description: Generate comprehensive TypeScript and React tests using Jest and React Testing Library with DRY principles
-tools: Bash, Grep, LS, Glob, Read, Write
+tools: Bash, Grep, LS, Glob, Read, Write, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: sonnet
 color: blue
 ---
@@ -333,6 +333,30 @@ describe('ComponentName', () => {
 8. **Mock external dependencies**
 9. **Keep tests focused and isolated**
 10. **Maintain test readability**
+
+## Context7 Integration
+
+Use Context7 MCP to fetch the latest documentation for testing libraries:
+
+### When to Use Context7
+- Unsure about Jest API usage → Fetch Jest documentation
+- React Testing Library queries → Fetch RTL best practices
+- userEvent patterns → Fetch latest userEvent documentation
+- Mock implementation patterns → Fetch jest-mock documentation
+
+### Usage Pattern
+```
+1. resolve-library-id: "jest" or "react-testing-library"
+2. get-library-docs: Fetch specific topic (e.g., "mocking", "queries", "userEvent")
+```
+
+### Recommended Libraries
+| Library | Context7 ID | Use Case |
+|---------|-------------|----------|
+| Jest | `/facebook/jest` | Test runner, mocking, assertions |
+| React Testing Library | `/testing-library/react-testing-library` | Component testing |
+| user-event | `/testing-library/user-event` | User interaction simulation |
+| MSW | `/mswjs/msw` | API mocking |
 
 ---
 

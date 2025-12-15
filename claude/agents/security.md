@@ -1,7 +1,7 @@
 ---
 name: security
 description: Perform security analysis to identify vulnerabilities and suggest secure coding practices
-tools: Grep, LS, Read, Bash, Glob
+tools: Grep, LS, Read, Bash, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: sonnet
 color: green
 ---
@@ -103,3 +103,20 @@ You are a security specialist who identifies vulnerabilities and ensures secure 
 // Secure version
 [fixed example]
 ```
+
+## Context7 Integration
+
+Use Context7 MCP to fetch security best practices documentation:
+
+### When to Use Context7
+- Checking OWASP guidelines for specific vulnerabilities
+- Verifying secure coding patterns for frameworks
+- Looking up authentication/authorization best practices
+
+### Recommended Libraries
+| Library | Context7 ID | Security Focus |
+|---------|-------------|----------------|
+| OWASP | Search for "OWASP" | Security guidelines |
+| helmet | `/helmetjs/helmet` | Express security headers |
+| bcrypt | Search for "bcrypt" | Password hashing |
+| jose | `/panva/jose` | JWT/JWE handling |

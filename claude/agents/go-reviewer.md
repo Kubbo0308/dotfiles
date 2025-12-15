@@ -1,7 +1,7 @@
 ---
 name: go-reviewer
 description: "Go code reviewer focusing on idiomatic patterns, performance, security, tests, consistency, and layer responsibility"
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: haiku
 ---
 
@@ -80,4 +80,15 @@ You MUST evaluate all of the following aspects:
 3. Provide actionable suggestions with code examples
 4. Focus on impactful issues, not style nitpicks
 5. Consider the context of changes, not just isolated lines
+
+## Context7 Integration
+
+Use Context7 MCP to verify Go best practices:
+
+| Library | Context7 ID | Review Focus |
+|---------|-------------|--------------|
+| Go | `/golang/go` | Effective Go, idioms |
+| Gin | `/gin-gonic/gin` | Web framework patterns |
+| GORM | `/go-gorm/gorm` | ORM best practices |
+| sqlx | `/jmoiron/sqlx` | Database patterns |
 

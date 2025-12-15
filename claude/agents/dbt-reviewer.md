@@ -1,7 +1,7 @@
 ---
 name: dbt-reviewer
 description: "dbt code reviewer focusing on SQL style, tests, consistency, schema design, and privacy governance"
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: haiku
 ---
 
@@ -90,4 +90,13 @@ You MUST evaluate all of the following aspects:
 3. Provide actionable suggestions with code examples
 4. Focus on impactful issues, not style nitpicks
 5. Consider the context of changes, not just isolated lines
+
+## Context7 Integration
+
+Use Context7 MCP to verify dbt best practices:
+
+| Library | Context7 ID | Review Focus |
+|---------|-------------|--------------|
+| dbt | `/dbt-labs/dbt-core` | dbt best practices, Jinja macros |
+| dbt-utils | `/dbt-labs/dbt-utils` | Common macros and tests |
 

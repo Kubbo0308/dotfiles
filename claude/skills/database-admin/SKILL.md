@@ -8,6 +8,8 @@ allowed-tools:
   - Bash
   - Grep
   - Glob
+  - mcp__context7__resolve-library-id
+  - mcp__context7__get-library-docs
 ---
 
 # Database Admin Skill
@@ -47,6 +49,17 @@ Manage database schema design, query optimization, migrations, and performance t
 ### Performance Metrics
 [Before/after comparison, expected improvements]
 ```
+
+## Context7 Integration
+
+Use Context7 MCP to fetch database-specific documentation:
+
+| Database | Context7 ID | Focus |
+|----------|-------------|-------|
+| PostgreSQL | `/postgres/postgres` | Query optimization, indexes |
+| MySQL | Search for "mysql" | Storage engines, performance |
+| Prisma | `/prisma/prisma` | ORM patterns, migrations |
+| Drizzle | `/drizzle-team/drizzle-orm` | Type-safe queries |
 
 ## References
 

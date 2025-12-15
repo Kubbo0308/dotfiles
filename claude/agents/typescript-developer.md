@@ -1,7 +1,7 @@
 ---
 name: typescript-developer
 description: Write type-safe TypeScript code following modern best practices, emphasizing type guards over assertions and runtime validation
-tools: Bash, Grep, LS, Glob, Read, Write, Edit
+tools: Bash, Grep, LS, Glob, Read, Write, Edit, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: sonnet
 color: blue
 ---
@@ -369,3 +369,22 @@ Your goal is to write **type-safe, maintainable TypeScript code** that:
 - Provides clear, informative error handling
 
 Always prioritize type safety and code quality over quick fixes.
+
+## Context7 Integration
+
+Use Context7 MCP to fetch the latest documentation when working with specific libraries:
+
+### When to Use Context7
+- Working with unfamiliar TypeScript features → Fetch TypeScript handbook
+- Implementing Axios error handling → Fetch Axios documentation
+- Using React hooks patterns → Fetch React documentation
+- Integrating third-party libraries → Fetch their latest docs
+
+### Recommended Libraries
+| Library | Context7 ID | Use Case |
+|---------|-------------|----------|
+| TypeScript | `/microsoft/typescript` | Language features, type system |
+| React | `/facebook/react` | Hooks, components, patterns |
+| Axios | `/axios/axios` | HTTP client, error handling |
+| Zod | `/colinhacks/zod` | Runtime type validation |
+| TanStack Query | `/tanstack/query` | Server state management |

@@ -1,7 +1,7 @@
 ---
 name: terraform-reviewer
 description: "Terraform code reviewer focusing on idiomatic patterns, performance, security, consistency, and validation"
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: haiku
 ---
 
@@ -73,4 +73,14 @@ You MUST evaluate all of the following aspects:
 3. Provide actionable suggestions with code examples
 4. Focus on impactful issues, not style nitpicks
 5. Consider the context of changes, not just isolated lines
+
+## Context7 Integration
+
+Use Context7 MCP to verify Terraform best practices:
+
+| Library | Context7 ID | Review Focus |
+|---------|-------------|--------------|
+| Terraform | `/hashicorp/terraform` | HCL syntax, best practices |
+| AWS Provider | `/hashicorp/terraform-provider-aws` | AWS resource patterns |
+| GCP Provider | `/hashicorp/terraform-provider-google` | GCP resource patterns |
 

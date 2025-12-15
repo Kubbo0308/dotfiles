@@ -1,7 +1,7 @@
 ---
 name: go-test-generater
 description: Generate comprehensive Go test code using table-driven patterns with proper test case organization
-tools: Bash, Grep, LS, Glob, Read, Write
+tools: Bash, Grep, LS, Glob, Read, Write, mcp__context7__resolve-library-id, mcp__context7__get-library-docs
 model: sonnet
 color: blue
 ---
@@ -210,3 +210,21 @@ func assertExpectedBehavior(t *testing.T, got, want interface{}) {
 - Ensure tests are deterministic and repeatable
 - **NEVER use test case name string comparisons (like checking tt.name) for branching logic** - this makes tests fragile to changes
 - **Do NOT use defer with gomock.NewController** - it's unnecessary and can complicate test flow
+
+## Context7 Integration
+
+Use Context7 MCP to fetch the latest Go testing documentation:
+
+### When to Use Context7
+- Unfamiliar with testing package APIs → Fetch Go testing docs
+- Using gomock for the first time → Fetch gomock documentation
+- Need testify assertion patterns → Fetch testify docs
+- Working with httptest → Fetch net/http/httptest docs
+
+### Recommended Libraries
+| Library | Context7 ID | Use Case |
+|---------|-------------|----------|
+| Go testing | `/golang/go` | Standard testing package |
+| gomock | `/uber-go/mock` | Mock generation |
+| testify | `/stretchr/testify` | Assertions and mocking |
+| sqlmock | `/data-dog/go-sqlmock` | SQL mocking |

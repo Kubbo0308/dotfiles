@@ -8,6 +8,8 @@ allowed-tools:
   - Bash
   - Grep
   - Glob
+  - mcp__context7__resolve-library-id
+  - mcp__context7__get-library-docs
 ---
 
 # Go Testing Skill
@@ -45,6 +47,16 @@ Generate and review Go tests following industry best practices and idiomatic pat
 ### Coverage Report
 [Uncovered code paths, suggested test cases]
 ```
+
+## Context7 Integration
+
+Use Context7 MCP to fetch the latest testing library documentation:
+
+| Library | Context7 ID | Use Case |
+|---------|-------------|----------|
+| Go testing | `/golang/go` | Standard testing package |
+| gomock | `/uber-go/mock` | Mock generation |
+| testify | `/stretchr/testify` | Assertions and mocking |
 
 ## References
 

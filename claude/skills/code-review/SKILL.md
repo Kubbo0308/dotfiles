@@ -10,6 +10,8 @@ allowed-tools:
   - Bash(git show:*)
   - Bash(gh pr view:*)
   - Bash(gh pr diff:*)
+  - mcp__context7__resolve-library-id
+  - mcp__context7__get-library-docs
 ---
 
 # Code Review Skill
@@ -48,6 +50,17 @@ Analyze code for quality, security, performance, and maintainability issues.
 ### Positive Observations
 [Good practices observed]
 ```
+
+## Context7 Integration
+
+Use Context7 MCP to verify language-specific best practices:
+
+| Language | Context7 ID | Review Focus |
+|----------|-------------|--------------|
+| TypeScript | `/microsoft/typescript` | Type safety patterns |
+| React | `/facebook/react` | Hook rules, component patterns |
+| Go | `/golang/go` | Effective Go, idioms |
+| Python | `/python/cpython` | PEP guidelines |
 
 ## References
 
