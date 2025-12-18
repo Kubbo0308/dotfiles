@@ -343,13 +343,7 @@ return {
           { name = "Preview Hunk", cmd = "Gitsigns preview_hunk", desc = "Preview current hunk" },
           { name = "Stage Buffer", cmd = "Gitsigns stage_buffer", desc = "Stage entire buffer" },
           { name = "Reset Buffer", cmd = "Gitsigns reset_buffer", desc = "Reset entire buffer" },
-          
-          -- GitHub Integration (Octo.nvim)
-          { name = "GitHub Issues", cmd = "Octo issue list", desc = "List GitHub issues" },
-          { name = "GitHub PRs", cmd = "Octo pr list", desc = "List GitHub pull requests" },
-          { name = "GitHub Create PR", cmd = "Octo pr create", desc = "Create new pull request" },
-          { name = "GitHub Review", cmd = "Octo review start", desc = "Start PR review" },
-          
+
           -- Vim-Fugitive Commands (Only the reliable ones)
           { name = "Git Status (Interactive)", cmd = "Git", desc = "Open interactive git status" },
           { name = "Git Add All", cmd = "Git add .", desc = "Stage all changes" },
