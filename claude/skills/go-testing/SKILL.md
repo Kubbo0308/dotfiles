@@ -1,6 +1,6 @@
 ---
 name: go-testing
-description: "Generates comprehensive Go tests following best practices including table-driven tests, explicit mock typing, and proper test organization. Use when writing or reviewing Go test code."
+description: "Generates comprehensive Go tests using project-standard table-driven pattern with mock struct and want functions. Use when writing or reviewing Go test code."
 allowed-tools:
   - Read
   - Write
@@ -14,43 +14,71 @@ allowed-tools:
 
 # Go Testing Skill
 
-Generate and review Go tests following industry best practices and idiomatic patterns.
+Generate and review Go tests following project standards and idiomatic patterns.
 
 ## Quick Start
 
-1. Read the implementation code before writing tests
-2. Use table-driven tests for multiple scenarios
-3. Avoid `gomock.Any()` - use explicit types
-4. Run tests with `-race` flag to detect race conditions
+1. Analyze function signature and dependencies
+2. Identify mock requirements
+3. Design test cases (normal, semi-normal, abnormal)
+4. Generate test code using project-standard pattern
 
-## Core Principles
+## Project-Standard Pattern
 
-| Principle | Description |
-|-----------|-------------|
-| Table-Driven Tests | Use structured test cases with named scenarios |
-| Explicit Mocking | Specify exact types instead of `gomock.Any()` |
-| Parallel Execution | Use `t.Parallel()` for isolated tests |
-| Coverage Analysis | Monitor with `go test -cover` |
-| Race Detection | Always test with `-race` flag |
+**Always use this structure for tests with mocks:**
 
-## Output Format
+```go
+func TestFunctionName(t *testing.T) {
+	type mock struct {
+		dependency1 *MockDependency1
+	}
+	tests := []struct {
+		name string
+		args InputType
+		mock func(m mock)
+		want func(t *testing.T, got OutputType, err error)
+	}{
+		// test cases
+	}
 
-```markdown
-## Test Review Summary
-
-### Issues Found
-[Missing test cases, improper mocking, race conditions]
-
-### Recommendations
-[Table-driven refactoring, explicit type usage]
-
-### Coverage Report
-[Uncovered code paths, suggested test cases]
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			ctrl := gomock.NewController(t)
+			m := mock{dependency1: NewMockDependency1(ctrl)}
+			tt.mock(m)
+			// execute and assert
+			tt.want(t, result, err)
+		})
+	}
+}
 ```
 
-## Context7 Integration
+## Test Struct Fields
 
-Use Context7 MCP to fetch the latest testing library documentation:
+| Field | Purpose |
+|-------|---------|
+| `name string` | Test case description |
+| `args/cmd` | Input parameters |
+| `mock func(m mock)` | Mock setup function |
+| `want func(t, got, err)` | Assertion function |
+
+## Mandatory Rules
+
+- **t.Parallel()** in every subtest
+- **No defer ctrl.Finish()** - gomock handles cleanup
+- **Mock struct initialization** inside loop
+- **Use shared error variables** from test setup file
+
+## Test Categories
+
+| Category | Examples |
+|----------|----------|
+| **Normal** | Valid inputs, happy path |
+| **Semi-Normal** | Edge cases, boundary conditions |
+| **Abnormal** | Invalid inputs, dependency errors |
+
+## Context7 Integration
 
 | Library | Context7 ID | Use Case |
 |---------|-------------|----------|
@@ -60,7 +88,6 @@ Use Context7 MCP to fetch the latest testing library documentation:
 
 ## References
 
-- Table-driven tests: [table-driven-tests.md](table-driven-tests.md)
-- Mocking best practices: [mocking-guidelines.md](mocking-guidelines.md)
-- Test organization: [test-organization.md](test-organization.md)
-
+- Table-driven tests: [table-driven-tests.md](references/table-driven-tests.md)
+- Mocking best practices: [mocking-guidelines.md](references/mocking-guidelines.md)
+- Test organization: [test-organization.md](references/test-organization.md)
