@@ -92,3 +92,8 @@ claude/file-history/
 claude/history.jsonl
 claude/stats-cache.json
 claude/plugins/marketplaces/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
