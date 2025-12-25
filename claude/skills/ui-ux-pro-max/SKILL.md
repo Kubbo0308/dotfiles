@@ -1,3 +1,15 @@
+---
+name: ui-ux-pro-max
+description: "Searchable database of UI styles, color palettes, font pairings, chart types, product recommendations, UX guidelines, and stack-specific best practices. Use when designing or implementing UI/UX."
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Bash(python3:*)
+  - Bash(python:*)
+---
+
 # UI/UX Pro Max - Design Intelligence
 
 Searchable database of UI styles, color palettes, font pairings, chart types, product recommendations, UX guidelines, and stack-specific best practices.
