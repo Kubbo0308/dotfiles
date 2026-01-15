@@ -47,7 +47,10 @@ git diff --staged --name-only
 - `security`: セキュリティ専門分析（OWASP Top 10、脆弱性検出）
 - `code-reviewer-gemini`: Gemini Web検索で最新ベストプラクティスを取得
 - `code-reviewer-cursor`: Cursor AIによる包括的レビュー
-- `codex-reviewer`: OpenAI Codex CLIによる非インタラクティブレビュー（`codex review`）
+- `codex-reviewer`: OpenAI Codex CLIによる非インタラクティブレビュー
+  - Primary: `codex review --uncommitted` または `--base main`
+  - Fallback: `codex exec` with piped diff（認証問題時）
+  - 参照: `claude/skills/codex-integration/SKILL.md`
 
 #### 📝 言語別レビュワー（該当ファイルがある場合のみ）
 - `go-reviewer`: Go コード専門（Idiomatic, Test, Consistency, Layer）

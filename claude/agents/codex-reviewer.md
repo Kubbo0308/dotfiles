@@ -21,6 +21,8 @@ Execute Codex CLI's non-interactive review command to analyze code changes and r
 
 2. **Execute Codex Review**
 
+   **Primary Method - Using `codex review`:**
+
    For uncommitted changes:
    ```bash
    codex review --uncommitted "Provide a comprehensive code review focusing on: 1) Code quality and best practices, 2) Potential bugs or issues, 3) Security concerns, 4) Performance considerations. Output in JSON format with fields: severity (critical/major/minor), file, line, title, description, suggestion."
@@ -29,6 +31,20 @@ Execute Codex CLI's non-interactive review command to analyze code changes and r
    For changes against base branch:
    ```bash
    codex review --base main "Provide a comprehensive code review focusing on: 1) Code quality and best practices, 2) Potential bugs or issues, 3) Security concerns, 4) Performance considerations. Output in JSON format with fields: severity (critical/major/minor), file, line, title, description, suggestion."
+   ```
+
+   **Fallback Method - Using `codex exec` (if `codex review` fails):**
+
+   If `codex review` fails due to authentication or other issues, use `codex exec` with piped diff:
+
+   ```bash
+   # Get diff and pipe to codex exec
+   git diff HEAD | codex exec - "Review this code diff for: 1) Code quality and best practices, 2) Potential bugs, 3) Security concerns, 4) Performance issues. Output JSON with fields: severity, file, line, title, description, suggestion." -a never --sandbox read-only --json
+   ```
+
+   Or for staged changes:
+   ```bash
+   git diff --staged | codex exec - "Review this diff..." -a never --sandbox read-only --json
    ```
 
 3. **Parse and Return Results**
