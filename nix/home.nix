@@ -58,6 +58,7 @@
       oh-my-zsh = {
         enable = true;
         theme = "agnoster";
+        custom = "$HOME/.oh-my-zsh/custom";
         plugins = [ "git" "docker" "brew" "github" "zsh-autosuggestions" "zsh-syntax-highlighting" "zsh-completions" ];
       };
 

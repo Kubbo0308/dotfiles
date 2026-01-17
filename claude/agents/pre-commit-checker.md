@@ -63,7 +63,22 @@ After difit starts, tell the user:
 Please review the changes in your browser.
 ```
 
-### Step 5: Wait for user confirmation before proceeding
+### Step 5: Ask user for confirmation
+
+**YOU MUST use AskUserQuestion to get user's decision:**
+
+```
+Use AskUserQuestion with the following options:
+- "Proceed" - Continue with the commit
+- "Skip" - Skip pre-commit check and proceed directly to commit
+- "Cancel" - Cancel the commit entirely
+```
+
+**If user selects "Skip":** Return immediately with message "Pre-commit check skipped by user request." and allow the parent agent to proceed with commit.
+
+**If user selects "Cancel":** Return with message "Commit cancelled by user." and do not proceed.
+
+**If user selects "Proceed":** Confirm and allow parent agent to proceed with commit.
 
 ## Difit Commands Reference
 
