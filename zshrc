@@ -67,7 +67,7 @@ export PATH="$HOME/.local/bin:$PATH"
 export GOPATH="$HOME/go"
 export PATH="$GOPATH/bin:$PATH"
 
-eval "$(mise activate zsh)"
+# mise is managed by Nix home-manager (see nix/home.nix)
 
 # Added by Antigravity
 export PATH="/Users/takesupasankyu/.antigravity/antigravity/bin:$PATH"

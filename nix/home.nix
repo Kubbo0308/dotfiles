@@ -64,6 +64,12 @@
       nix-direnv.enable = true;
     };
 
+    # Mise (runtime version manager)
+    mise = {
+      enable = true;
+      enableZshIntegration = true;
+    };
+
     # Starship prompt (optional, uncomment if you want to use it)
     # starship = {
     #   enable = true;
