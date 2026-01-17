@@ -56,6 +56,7 @@
               useUserPackages = true;
               users.${username} = import ./home.nix;
               extraSpecialArgs = { inherit inputs; };
+              backupFileExtension = "backup";
             };
           }
         ];

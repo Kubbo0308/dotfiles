@@ -1,3 +1,16 @@
+# Nix initialization (must be at the top)
+if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
+  . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
+fi
+
+# nix-darwin environment (includes home-manager aliases)
+if [ -e '/etc/static/zshenv' ]; then
+  . '/etc/static/zshenv'
+fi
+if [ -e '/etc/static/zshrc' ]; then
+  . '/etc/static/zshrc'
+fi
+
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="agnoster"
