@@ -35,9 +35,13 @@
       # Development
       "wezterm"
       "visual-studio-code"
+      "cursor"
       "orbstack"
       "drawio"
       "claude-code"
+
+      # Cloud Tools
+      "google-cloud-sdk"
 
       # Utilities
       "raycast"
@@ -47,6 +51,7 @@
       "font-plemol-jp-nf"
       "font-plemol-jp-hs"
       "font-ricty-diminished"
+      "font-hack-nerd-font"
       "font-sf-mono-nerd-font-ligaturized"
     ];
 

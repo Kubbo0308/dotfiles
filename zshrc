@@ -22,8 +22,8 @@ ZSH_HIGHLIGHT_STYLES[bracket-level-5]='fg=cyan,bold'
 ZSH_HIGHLIGHT_STYLES[cursor-matchingbracket]='standout'
 # カーソル
 ZSH_HIGHLIGHT_STYLES[cursor]='bg=blue'
-# ルートユーザ
-ZSH_HIGHLIGHT_STYLES[root]='bg=red'弧の色を変える
+# ルートユーザーの色を変える
+ZSH_HIGHLIGHT_STYLES[root]='bg=red'
 
 # zsh-autosuggestions color configuration
 # Use a lighter gray for better visibility against dark backgrounds
@@ -56,7 +56,7 @@ ccopy() {
 # zoxide is initialized by Nix home-manager
 
 # bun completions
-[ -s "/Users/y-kubo/.bun/_bun" ] && source "/Users/y-kubo/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
