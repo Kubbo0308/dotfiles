@@ -40,10 +40,42 @@ end)
 -- colors
 config.color_scheme = "Tokyo Night"
 
--- font
-config.font = wezterm.font("SF Mono", {weight="Regular", stretch="Normal", style="Normal"})
+-- font: SF Mono Nerd Font with Japanese fallback
+config.font = wezterm.font_with_fallback({
+    { family = "Liga SFMono Nerd Font", weight = "Regular" },
+    { family = "SF Mono", weight = "Regular" },
+    { family = "PlemolJP Console NF" },
+    { family = "Hiragino Kaku Gothic ProN" },
+})
 config.font_size = 16.0
 config.use_ime = true
+
+-- Font rules for CJK characters (Japanese/Chinese/Korean)
+config.font_rules = {
+    {
+        intensity = "Normal",
+        italic = false,
+        font = wezterm.font_with_fallback({
+            { family = "Liga SFMono Nerd Font", weight = "Regular" },
+            { family = "SF Mono", weight = "Regular" },
+            { family = "PlemolJP Console NF" },
+            { family = "Hiragino Kaku Gothic ProN" },
+        }),
+    },
+    {
+        intensity = "Bold",
+        italic = false,
+        font = wezterm.font_with_fallback({
+            { family = "Liga SFMono Nerd Font", weight = "Bold" },
+            { family = "SF Mono", weight = "Bold" },
+            { family = "PlemolJP Console NF", weight = "Bold" },
+            { family = "Hiragino Kaku Gothic ProN", weight = "Bold" },
+        }),
+    },
+}
+
+-- Ensure CJK characters render correctly
+config.warn_about_missing_glyphs = false
 
 -- 右ステータスのカスタマイズ
 wezterm.on("update-status", function(window, pane)

@@ -2,7 +2,7 @@ export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="agnoster"
 
-plugins=(git docker brew github composer zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
+plugins=(git docker brew github zsh-autosuggestions zsh-syntax-highlighting zsh-completions)
 
 source $ZSH/oh-my-zsh.sh
 
