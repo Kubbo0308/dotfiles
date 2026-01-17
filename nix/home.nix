@@ -96,5 +96,14 @@
     gs = "git status";
     gd = "git diff";
     gl = "git log --oneline";
+    gp = "git push";
+    grsh = "git reset --soft HEAD^";
+
+    # Docker
+    dc = "docker compose";
+
+    # Editor & Tools
+    v = "nvim .";
+    c = "claude";
   };
 }

@@ -29,18 +29,7 @@ ZSH_HIGHLIGHT_STYLES[root]='bg=red'弧の色を変える
 # Use a lighter gray for better visibility against dark backgrounds
 export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
 
-# git alias
-alias grsh='git reset --soft HEAD^'
-alias gst='git status'
-alias gl='git pull'
-alias gp='git push'
-
-# docker compose
-alias dc='docker compose'
-
-# other alias
-alias v='nvim .'
-alias c='claude'
+# Aliases are managed by Nix home-manager (see nix/home.nix)
 
 # The next line updates PATH for the Google Cloud SDK.
 GCP_SDK_PATH="${GCP_SDK_PATH:-$HOME/Downloads/google-cloud-sdk}"
@@ -64,8 +53,7 @@ ccopy() {
   fi
 }
 
-# Initialize zoxide
-eval "$(zoxide init zsh)"
+# zoxide is initialized by Nix home-manager
 
 # bun completions
 [ -s "/Users/y-kubo/.bun/_bun" ] && source "/Users/y-kubo/.bun/_bun"
@@ -80,3 +68,6 @@ export GOPATH="$HOME/go"
 export PATH="$GOPATH/bin:$PATH"
 
 eval "$(mise activate zsh)"
+
+# Added by Antigravity
+export PATH="/Users/takesupasankyu/.antigravity/antigravity/bin:$PATH"
