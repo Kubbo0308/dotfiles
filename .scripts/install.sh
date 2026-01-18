@@ -157,6 +157,29 @@ if [ -f "$DOTFILES_DIR/.homebrew/Brewfile" ]; then
     fi
 fi
 
+# Install Gemini CLI configurations
+if [ -d "$DOTFILES_DIR/gemini" ]; then
+    echo "🔧 Installing Gemini CLI configurations..."
+
+    # Create gemini directories if they don't exist
+    mkdir -p "$HOME/.gemini/commands"
+    mkdir -p "$HOME/.gemini/antigravity/skills"
+
+    # Copy commands
+    if [ -d "$DOTFILES_DIR/gemini/commands" ]; then
+        echo "📝 Installing Gemini commands..."
+        cp -r "$DOTFILES_DIR/gemini/commands/"* "$HOME/.gemini/commands/" 2>/dev/null || true
+    fi
+
+    # Copy antigravity skills
+    if [ -d "$DOTFILES_DIR/gemini/antigravity/skills" ]; then
+        echo "🎯 Installing Antigravity skills..."
+        cp -r "$DOTFILES_DIR/gemini/antigravity/skills/"* "$HOME/.gemini/antigravity/skills/" 2>/dev/null || true
+    fi
+
+    echo "✅ Gemini CLI configurations installed"
+fi
+
 # Set up MCP configuration for Codex
 if [ -d "$DOTFILES_DIR/codex/mcp" ]; then
     echo "⚙️  Setting up Codex MCP configuration..."
