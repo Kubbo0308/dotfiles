@@ -45,6 +45,11 @@ git diff --staged --name-only
 
 #### 🌐 共通レビュワー（常に実行）
 - `security`: セキュリティ専門分析（OWASP Top 10、脆弱性検出）
+- `clean-code-fp-reviewer`: クリーンコード＆関数型プログラミング専門
+  - **MUST use Skills**: `clean-code`, `functional-programming`
+  - 凝集度（7レベル）、結合度（7レベル）、命名規則
+  - 純粋関数、イミュータビリティ、宣言的パターン
+  - 参照: `claude/skills/clean-code/`, `claude/skills/functional-programming/`
 - `code-reviewer-gemini`: Gemini Web検索で最新ベストプラクティスを取得
 - `code-reviewer-cursor`: Cursor AIによる包括的レビュー
 - `codex-reviewer`: OpenAI Codex CLIによる非インタラクティブレビュー
