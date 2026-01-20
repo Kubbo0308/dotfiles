@@ -1,0 +1,27 @@
+projects = { }
+# Local projects intentionally omitted from repo; set per machine
+notify = ["bash", ".codex/notify_macos.sh"]
+model = "gpt-5.2-codex"
+
+# 推論の深さ（none | low | medium | high）
+model_reasoning_effort = "high"
+
+# 推論サマリーの表示（auto | none）
+model_reasoning_summary = "auto"
+
+# 推論ログの見た目を抑える（表示制御）
+hide_agent_reasoning = true
+show_raw_agent_reasoning = false
+network_access = true
+
+[features]
+web_search_request = true
+
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp@latest"]
+
+
+[notice.model_migrations]
+gpt-5-codex = "gpt-5.2-codex"

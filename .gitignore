@@ -98,7 +98,6 @@ claude/plans/
 
 # Codex confidential files
 codex/auth.json
-codex/config.toml
 codex/history.jsonl
 codex/history.jsonl.*
 codex/internal_storage.json
@@ -106,6 +105,7 @@ codex/sessions/
 codex/log/
 codex/tmp/
 codex/version.json
+!codex/config.toml
 
 # Python cache
 __pycache__/
