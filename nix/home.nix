@@ -64,7 +64,7 @@
       };
 
       # Additional zsh configuration (from old zshrc)
-      initExtra = ''
+      initContent = ''
         # ZSH Syntax Highlighting configuration
         ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets cursor root)
 
