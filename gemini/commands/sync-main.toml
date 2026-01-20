@@ -1,0 +1,27 @@
+# Sync Main - Sync with main branch
+
+description = "Sync with main branch and prepare for fresh session"
+prompt = """
+# Sync Main Branch
+
+Mainブランチに同期してセッションをリセットする準備をします。
+
+## Steps
+
+1. Check current git status:
+!{git status}
+
+2. If there are uncommitted changes, ask user what to do:
+   - **stash**: Save changes temporarily
+   - **commit**: Commit the changes
+   - **cancel**: Abort the operation
+
+3. Switch to main branch and pull latest:
+!{git checkout main && git pull}
+
+4. Report completion status.
+
+## Notes
+- Never force push or do destructive operations
+- Always confirm with user before any action
+"""

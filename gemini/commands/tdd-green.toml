@@ -1,0 +1,32 @@
+# TDD Green Phase - Minimal implementation
+
+description = "TDD Green phase: Implement minimum code to pass tests"
+prompt = """
+# TDD Green Phase - 最小限の実装
+
+## 目的
+テストを通過する最小限のコードを書く。
+
+## プロセス
+
+1. **現在のテスト状況を確認**
+   - 失敗しているテストを特定
+   - 期待される振る舞いを理解
+
+2. **最小限の実装**
+   - テストを通過する最小のコードを書く
+   - 過剰な実装は避ける
+   - リファクタリングは後で行う
+
+3. **テスト実行**
+   - 全テストが通過することを確認
+
+## 対象
+
+{{args}}
+
+## 注意
+
+- この段階では「動くコード」を優先
+- きれいなコードはRefactorフェーズで
+"""

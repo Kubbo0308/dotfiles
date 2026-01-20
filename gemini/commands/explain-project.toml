@@ -1,0 +1,40 @@
+# Explain Project - High-level architecture overview
+
+description = "Explain project high-level architecture and structure"
+prompt = """
+# Project Architecture Overview
+
+プロジェクトの高レベルアーキテクチャを説明します。
+
+## Analysis Areas
+
+1. **Project Structure**
+   - Directory layout
+   - Key files and their purposes
+   - Configuration files
+
+2. **Technology Stack**
+   - Languages and frameworks
+   - Dependencies
+   - Build tools
+
+3. **Architecture Patterns**
+   - Design patterns used
+   - Module organization
+   - Data flow
+
+4. **Entry Points**
+   - Main entry points
+   - API endpoints
+   - Configuration options
+
+## Current Project
+
+!{ls -la}
+
+!{cat package.json 2>/dev/null || cat Cargo.toml 2>/dev/null || cat go.mod 2>/dev/null || echo "No standard project file found"}
+
+{{args}}
+
+Provide a clear, concise overview suitable for new team members.
+"""

@@ -1,0 +1,40 @@
+# Code Review - Comprehensive code review
+
+description = "Perform comprehensive code review on staged changes or specified files"
+prompt = """
+# Code Review
+
+Perform a comprehensive code review focusing on:
+
+## Review Areas
+
+1. **Code Quality**
+   - Clean code principles (cohesion, coupling)
+   - Naming conventions
+   - Single responsibility principle
+
+2. **Security**
+   - Input validation
+   - SQL injection prevention
+   - XSS prevention
+   - Sensitive data handling
+
+3. **Performance**
+   - Algorithmic efficiency
+   - Memory usage
+   - Database query optimization
+
+4. **Maintainability**
+   - Code readability
+   - Documentation
+   - Test coverage
+
+## Changes to Review
+
+!{git diff --staged}
+
+If no staged changes, review the following:
+{{args}}
+
+Provide specific, actionable feedback with line references.
+"""

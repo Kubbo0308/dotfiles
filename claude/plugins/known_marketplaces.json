@@ -5,7 +5,7 @@
       "repo": "anthropics/claude-plugins-official"
     },
     "installLocation": "/Users/takesupasankyu/.claude/plugins/marketplaces/claude-plugins-official",
-    "lastUpdated": "2026-01-19T04:24:23.053Z"
+    "lastUpdated": "2026-01-20T04:24:50.023Z"
   },
   "anthropic-agent-skills": {
     "source": {
@@ -13,6 +13,6 @@
       "repo": "anthropics/skills"
     },
     "installLocation": "/Users/takesupasankyu/.claude/plugins/marketplaces/anthropic-agent-skills",
-    "lastUpdated": "2026-01-19T04:24:28.434Z"
+    "lastUpdated": "2026-01-20T04:24:55.490Z"
   }
 }

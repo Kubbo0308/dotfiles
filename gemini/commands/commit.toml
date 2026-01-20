@@ -1,0 +1,43 @@
+# Git Commit - Create well-formatted commit
+
+description = "Create a git commit with conventional commit format"
+prompt = """
+# Git Commit
+
+Create a well-formatted git commit following conventional commits.
+
+## Current Changes
+
+!{git status}
+
+!{git diff --staged}
+
+## Commit Message Format
+
+```
+<type>: <subject>
+
+<body>
+
+Co-Authored-By: Gemini <noreply@google.com>
+```
+
+### Types
+- feat: New feature
+- fix: Bug fix
+- docs: Documentation
+- style: Formatting
+- refactor: Code refactoring
+- test: Adding tests
+- chore: Maintenance
+
+## Instructions
+
+1. Analyze the staged changes
+2. Determine the appropriate commit type
+3. Write a concise subject line (50 chars max)
+4. Add body with bullet points if needed
+5. Create the commit
+
+{{args}}
+"""

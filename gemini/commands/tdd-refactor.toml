@@ -1,0 +1,36 @@
+# TDD Refactor Phase - Improve code quality
+
+description = "TDD Refactor phase: Improve code while keeping tests green"
+prompt = """
+# TDD Refactor Phase - コード改善
+
+## 目的
+テストを維持しながらコードの品質を向上させる。
+
+## プロセス
+
+1. **現状確認**
+   - 全テストが通過していることを確認
+   - 改善すべき箇所を特定
+
+2. **リファクタリング**
+   - コードの重複を排除
+   - 命名を改善
+   - 責務を適切に分離
+   - パフォーマンスを最適化
+
+3. **テスト実行**
+   - 各変更後にテストを実行
+   - テストが通過し続けることを確認
+
+## Clean Code Principles
+
+- High Cohesion (機能的凝集)
+- Low Coupling (データ結合)
+- Single Responsibility
+- Intention-Revealing Names
+
+## 対象
+
+{{args}}
+"""

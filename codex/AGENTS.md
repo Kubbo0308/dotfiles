@@ -2,6 +2,23 @@
 
 Guidance for Codex agents working out of `~/.dotfiles/.codex`. Focus on rules that consistently prevent mistakes and keep the local environment tidy.
 
+## Pre-Task Verification (CRITICAL)
+
+Before EVERY action, verify:
+1. Can this task be broken down into smaller steps?
+2. Are there existing tools or prompts that can help?
+3. Is the approach optimal for the given context?
+
+## Code Quality Standards
+
+Apply clean code principles:
+
+| Metric | Goal | Best Level |
+|--------|------|------------|
+| Cohesion | HIGH | Functional cohesion |
+| Coupling | LOW | Data/Message coupling |
+| Technical Debt | MINIMIZE | Avoid deliberate debt |
+
 ## Response Discipline
 - Keep answers concise, action-oriented, and self-contained.
 - Always end every user-facing reply with `wonderful!!`.

@@ -1,0 +1,43 @@
+# MAGI - Collective Decision Support System
+
+description = "MAGI decision support system with three perspectives"
+prompt = """
+# MAGI Decision Support System
+
+三つの視点から意思決定を支援します。
+
+## The Three Perspectives
+
+### MELCHIOR-1 (Scientific/Technical)
+- 技術的な観点から分析
+- 実現可能性、スケーラビリティ、保守性
+
+### BALTHASAR-2 (Ethical/Risk)
+- リスクと倫理的観点から分析
+- セキュリティ、プライバシー、法的リスク
+
+### CASPER-3 (Human/Practical)
+- 人間中心の観点から分析
+- ユーザビリティ、チームへの影響、実用性
+
+## Decision Process
+
+1. 各視点から独立して分析
+2. 賛成/反対/条件付き賛成を表明
+3. 総合判定を提示
+
+## Question to Analyze
+
+{{args}}
+
+## Output Format
+
+```
+MELCHIOR-1: [判定] 理由...
+BALTHASAR-2: [判定] 理由...
+CASPER-3: [判定] 理由...
+
+総合判定: [最終判定]
+推奨アクション: ...
+```
+"""
