@@ -44,7 +44,7 @@ This script will configure all MCP servers for Claude Code CLI.
 
 **Semantic code understanding and symbol-level editing capabilities.**
 
-- **Template**: Configured via `setup-cli-mcp.sh`
+- **Transport**: SSE (Server-Sent Events) - Allows sharing across multiple Claude Code sessions
 - **Project config**: `servers/serena/project.yml`
 - **Language**: bash (for dotfiles repository)
 - **Features**:
@@ -52,10 +52,47 @@ This script will configure all MCP servers for Claude Code CLI.
   - Symbol-level code editing
   - Project memory and context
   - Multi-language support
+  - **Shared server**: Single server instance for all Claude Code sessions
+
+**Usage:**
+
+```bash
+# Start Serena server (does nothing if already running)
+~/.dotfiles/claude/mcp/serena-wrapper.sh start
+
+# Check server status
+~/.dotfiles/claude/mcp/serena-wrapper.sh status
+
+# Stop server
+~/.dotfiles/claude/mcp/serena-wrapper.sh stop
+
+# Restart server
+~/.dotfiles/claude/mcp/serena-wrapper.sh restart
+
+# Get SSE URL for MCP configuration
+~/.dotfiles/claude/mcp/serena-wrapper.sh url
+```
 
 **Environment Variables:**
 - `UVX_PATH`: Absolute path to uvx command (default: `$HOME/.local/bin/uvx`)
-- `SERENA_PROJECT_PATH`: Serena project path (default: `$HOME/.dotfiles`)
+- `SERENA_PORT`: Server port (default: `8765`)
+- `SERENA_CONTEXT`: Context type (default: `claude-code`)
+
+**Log File:** `~/.cache/serena/serena.log`
+
+**Auto-start:** Serena automatically starts in two ways:
+
+1. **On macOS login** via LaunchAgent (`~/Library/LaunchAgents/com.serena.mcp.plist`)
+2. **On Claude Code startup** via SessionStart hook (in `settings.json`)
+
+```bash
+# Manage LaunchAgent (macOS login)
+launchctl load ~/Library/LaunchAgents/com.serena.mcp.plist    # Enable
+launchctl unload ~/Library/LaunchAgents/com.serena.mcp.plist  # Disable
+launchctl list | grep serena                                   # Check status
+```
+
+Both methods are idempotent - if Serena is already running, nothing happens.
 
 ### Playwright MCP Server
 

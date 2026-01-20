@@ -1,5 +1,5 @@
 {
-  description = "takesupasankyu's dotfiles managed by Nix";
+  description = "Dotfiles managed by Nix (multi-machine support)";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
@@ -23,8 +23,21 @@
   outputs = inputs@{ self, nixpkgs, nix-darwin, home-manager, ... }:
     let
       system = "aarch64-darwin";
-      hostname = "kubbo-set";
-      username = "takesupasankyu";
+
+      # Dynamic username from environment variable (requires --impure flag)
+      # Uses SUDO_USER when running with sudo, otherwise falls back to USER
+      username = let
+        sudoUser = builtins.getEnv "SUDO_USER";
+        envUser = builtins.getEnv "USER";
+      in if sudoUser != "" then sudoUser else (if envUser != "" then envUser else "user");
+
+      # Dynamic hostname from environment variable (requires --impure flag)
+      # Falls back to "darwin" if not set
+      hostname = let
+        envHost = builtins.getEnv "HOSTNAME";
+        # Also try HOST if HOSTNAME is empty
+        envHost2 = builtins.getEnv "HOST";
+      in if envHost != "" then envHost else (if envHost2 != "" then envHost2 else "darwin");
 
       pkgs = import nixpkgs {
         inherit system;
@@ -41,12 +54,11 @@
 
       # Shared darwin configuration
       darwinConfig = import ./nix-darwin/config.nix { inherit inputs pkgs username; };
-    in
-    {
-      # nix-darwin configuration
-      darwinConfigurations.${hostname} = nix-darwin.lib.darwinSystem {
+
+      # Helper function to create darwin configuration
+      mkDarwinConfig = { hostname, username }: nix-darwin.lib.darwinSystem {
         inherit system;
-        specialArgs = { inherit inputs username; };
+        specialArgs = { inherit inputs username hostname; };
         modules = [
           darwinConfig
           home-manager.darwinModules.home-manager
@@ -55,12 +67,17 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               users.${username} = import ./home.nix;
-              extraSpecialArgs = { inherit inputs; };
+              extraSpecialArgs = { inherit inputs username; };
               backupFileExtension = "backup";
             };
           }
         ];
       };
+    in
+    {
+      # Dynamic nix-darwin configuration (use with --impure flag)
+      # Usage: darwin-rebuild switch --flake .#darwin --impure
+      darwinConfigurations.darwin = mkDarwinConfig { inherit hostname username; };
 
       # Standalone packages (for quick installs)
       packages.${system}.default = pkgs.buildEnv {
@@ -68,7 +85,7 @@
         paths = import ./pkgs.nix { inherit pkgs; };
       };
 
-      # Update script
+      # Update script (requires --impure for dynamic username)
       apps.${system}.update = {
         type = "app";
         program = toString (pkgs.writeShellScript "update" ''
@@ -77,7 +94,7 @@
           nix flake update
 
           echo "🍎 Rebuilding nix-darwin..."
-          darwin-rebuild switch --flake .#${hostname}
+          darwin-rebuild switch --flake .#darwin --impure
 
           echo "🍺 Updating Homebrew packages..."
           brew update && brew upgrade && brew cleanup

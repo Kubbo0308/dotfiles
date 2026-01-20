@@ -27,6 +27,15 @@
   "hooks": {
     "SessionStart": [
       {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.dotfiles/claude/mcp/serena-wrapper.sh start"
+          }
+        ]
+      },
+      {
         "matcher": "clear",
         "hooks": [
           {

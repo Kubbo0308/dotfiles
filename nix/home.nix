@@ -1,12 +1,13 @@
 # home-manager configuration
 # Manages user-specific configurations and dotfiles
 
-{ config, pkgs, ... }:
+{ config, pkgs, username, ... }:
 
 {
   # Home Manager needs a bit of information about you and the paths it should manage
-  home.username = "takesupasankyu";
-  home.homeDirectory = "/Users/takesupasankyu";
+  # Username is passed dynamically from flake.nix
+  home.username = username;
+  home.homeDirectory = "/Users/${username}";
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -27,9 +28,9 @@
     zsh = {
       enable = true;
       shellAliases = {
-        # Nix
-        nix-update = "cd ~/.dotfiles/nix && nix run .#update";
-        nix-rebuild = "darwin-rebuild switch --flake ~/.dotfiles/nix";
+        # Nix (--impure required for dynamic username/hostname)
+        nix-update = "cd ~/.dotfiles/nix && nix run .#update --impure";
+        nix-rebuild = "darwin-rebuild switch --flake ~/.dotfiles/nix#darwin --impure";
 
         # Modern replacements
         ls = "eza";
@@ -120,7 +121,7 @@
         export PATH="$GOPATH/bin:$PATH"
 
         # Antigravity
-        export PATH="/Users/takesupasankyu/.antigravity/antigravity/bin:$PATH"
+        export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
       '';
     };
 
@@ -128,7 +129,7 @@
     git = {
       enable = true;
       settings = {
-        user.name = "takesupasankyu";
+        user.name = username;
         # user.email = "your-email@example.com"; # Set your email
         init.defaultBranch = "main";
         push.autoSetupRemote = true;

@@ -27,12 +27,12 @@ Before executing ANY task, ask yourself:
   - git commit → Use `commit` subagent
   - code review → Use `code-reviewer-gemini` subagent
   - PR creation → Use `pull-request` subagent
-  - testing → Use `go-test-generator` or `typescript-test-generator`
+  - testing → Use `typescript-test-generator` subagent or `go-testing` skill
   - exploration → Use `Explore` or `codebase-analyzer`
 
 □ Is there a Skill that can help?
   - code-review skill
-  - go-testing skill
+  - go-testing skill (for Go tests)
   - database-admin skill
   - drawio skill
 
@@ -63,7 +63,6 @@ This rule was added because even after writing "ALWAYS use commit subagent for g
 | **🔴 ALWAYS** | `codebase-analyzer` | Before understanding ANY codebase | Wasted tokens reading files manually |
 | **🔴 ALWAYS** | `Explore` | For ANY code/file search | Slow, incomplete search results |
 | **🟡 HIGH** | `typescript-test-generator` | ALL TypeScript/React tests | Poor test quality, duplicated assertions |
-| **🟡 HIGH** | `go-test-generater` | ALL Go tests | Missing edge cases |
 | **🟡 HIGH** | `code-reviewer-gemini` | Before ANY PR | Missed code quality issues |
 | **🟡 HIGH** | `security` | Any security-related code | Potential vulnerabilities |
 | **🟡 HIGH** | `web-researcher` | Unknown technologies | Outdated/incorrect information |

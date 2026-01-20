@@ -54,12 +54,23 @@ add_mcp_server() {
     fi
 }
 
-# Add Serena MCP
-add_mcp_server "serena" \
-    "${UVX_PATH}" \
-    --from "git+https://github.com/oraios/serena" \
-    serena start-mcp-server \
-    --project "${SERENA_PROJECT_PATH}"
+# Add Serena MCP with SSE transport (allows sharing across Claude Code sessions)
+SERENA_PORT="${SERENA_PORT:-8765}"
+SERENA_URL="http://127.0.0.1:${SERENA_PORT}/sse"
+
+echo -e "${GREEN}Adding MCP server: serena (SSE transport)${NC}"
+
+# Remove existing server if it exists
+claude mcp remove "serena" -s user 2>/dev/null || true
+claude mcp remove "serena" -s local 2>/dev/null || true
+
+# Add Serena with SSE transport
+if claude mcp add --transport sse --scope user "serena" "${SERENA_URL}"; then
+    echo -e "${GREEN}✓ Successfully added serena${NC}"
+    echo -e "${YELLOW}Note: Start Serena server with: ${SCRIPT_DIR}/serena-wrapper.sh start${NC}\n"
+else
+    echo -e "${RED}✗ Failed to add serena${NC}\n"
+fi
 
 # Add Playwright MCP
 add_mcp_server "playwright" \
