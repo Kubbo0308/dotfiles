@@ -90,7 +90,7 @@
         export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
 
         # Google Cloud SDK
-        GCP_SDK_PATH="''${GCP_SDK_PATH:-$HOME/Downloads/google-cloud-sdk}"
+        GCP_SDK_PATH="''${GCP_SDK_PATH:-/opt/homebrew/share/google-cloud-sdk}"
         if [ -f "$GCP_SDK_PATH/path.zsh.inc" ]; then . "$GCP_SDK_PATH/path.zsh.inc"; fi
         if [ -f "$GCP_SDK_PATH/completion.zsh.inc" ]; then . "$GCP_SDK_PATH/completion.zsh.inc"; fi
         export PATH="$GCP_SDK_PATH/bin:$PATH"

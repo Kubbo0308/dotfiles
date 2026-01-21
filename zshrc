@@ -45,7 +45,7 @@ export ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=244'
 # Aliases are managed by Nix home-manager (see nix/home.nix)
 
 # The next line updates PATH for the Google Cloud SDK.
-GCP_SDK_PATH="${GCP_SDK_PATH:-$HOME/Downloads/google-cloud-sdk}"
+GCP_SDK_PATH="${GCP_SDK_PATH:-/opt/homebrew/share/google-cloud-sdk}"
 if [ -f "$GCP_SDK_PATH/path.zsh.inc" ]; then . "$GCP_SDK_PATH/path.zsh.inc"; fi
 
 # The next line enables shell command completion for gcloud.
