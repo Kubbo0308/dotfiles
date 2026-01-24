@@ -11,6 +11,9 @@ if [ -e '/etc/static/zshrc' ]; then
   . '/etc/static/zshrc'
 fi
 
+# Docker Desktop CLI (must be before oh-my-zsh for docker plugin)
+export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+
 export ZSH="$HOME/.oh-my-zsh"
 
 ZSH_THEME="agnoster"
@@ -75,9 +78,6 @@ ccopy() {
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
-
-# Docker Desktop CLI
-export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
 
 # Go environment
 export GOPATH="$HOME/go"
