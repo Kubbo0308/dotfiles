@@ -95,9 +95,3 @@ fi
 
 # Added by Antigravity
 export PATH="/Users/takesupasankyu/.antigravity/antigravity/bin:$PATH"
-
-# SSH接続時にtmuxを自動起動・復帰
-# セッション名はホスト名ベースで作成
-if [[ -n "$SSH_CONNECTION" ]] && [[ -z "$TMUX" ]] && command -v tmux &> /dev/null; then
-    tmux new-session -A -s "ssh-$(hostname -s)"
-fi
