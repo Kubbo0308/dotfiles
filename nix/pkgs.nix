@@ -15,6 +15,7 @@ with pkgs; [
   bat
   jq
   yq
+  carapace
 
   # Git & Version Control
   git
@@ -29,7 +30,7 @@ with pkgs; [
 
   # Languages & Runtimes
   go
-  nodejs_22
+  nodejs_24
   python3
   rustup
 

@@ -70,6 +70,14 @@ if [ -d "$DOTFILES_DIR/config/nvim" ]; then
     create_symlink "$DOTFILES_DIR/config/nvim" "$HOME/.config/nvim"
 fi
 
+if [ -d "$DOTFILES_DIR/config/ghostty" ]; then
+    create_symlink "$DOTFILES_DIR/config/ghostty" "$HOME/.config/ghostty"
+fi
+
+if [ -f "$DOTFILES_DIR/config/tmux/tmux.conf" ]; then
+    create_symlink "$DOTFILES_DIR/config/tmux/tmux.conf" "$HOME/.tmux.conf"
+fi
+
 # Install oh-my-zsh custom configurations
 if [ -d "$DOTFILES_DIR/oh-my-zsh-custom" ]; then
     echo "🔌 Setting up Oh-My-Zsh custom configurations..."

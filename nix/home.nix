@@ -30,7 +30,7 @@
       shellAliases = {
         # Nix (--impure required for dynamic username/hostname)
         nix-update = "cd ~/.dotfiles/nix && nix run .#update --impure";
-        nix-rebuild = "darwin-rebuild switch --flake ~/.dotfiles/nix#darwin --impure";
+        nix-rebuild = "sudo darwin-rebuild switch --flake ~/.dotfiles/nix#darwin --impure";
 
         # Modern replacements
         ls = "eza";
@@ -53,6 +53,9 @@
         # Editor & Tools
         v = "nvim .";
         c = "claude";
+
+        # AI Assistants
+        clawd = "npx clawdbot";
       };
 
       # Oh-My-Zsh configuration
@@ -62,6 +65,12 @@
         custom = "$HOME/.oh-my-zsh/custom";
         plugins = [ "git" "docker" "brew" "github" "zsh-autosuggestions" "zsh-syntax-highlighting" "zsh-completions" ];
       };
+
+      # Environment setup (loaded before oh-my-zsh in zshenv)
+      envExtra = ''
+        # Docker Desktop CLI (must be before oh-my-zsh for docker plugin)
+        export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
+      '';
 
       # Additional zsh configuration (from old zshrc)
       initContent = ''
@@ -122,6 +131,10 @@
 
         # Antigravity
         export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+
+        # npm global packages (Nix store is read-only)
+        export NPM_CONFIG_PREFIX="$HOME/.npm-global"
+        export PATH="$HOME/.npm-global/bin:$PATH"
       '';
     };
 

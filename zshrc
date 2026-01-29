@@ -85,5 +85,13 @@ export PATH="$GOPATH/bin:$PATH"
 
 # mise is managed by Nix home-manager (see nix/home.nix)
 
+# Carapace completion (command completion engine)
+# https://carapace-sh.github.io/carapace-bin/
+if command -v carapace &> /dev/null; then
+  export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense'
+  zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+  source <(carapace _carapace)
+fi
+
 # Added by Antigravity
 export PATH="/Users/takesupasankyu/.antigravity/antigravity/bin:$PATH"

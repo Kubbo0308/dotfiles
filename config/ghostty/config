@@ -1,0 +1,105 @@
+# Ghostty Configuration
+# https://ghostty.org/docs/config
+# tmux使用前提 + Wezterm互換キーバインド
+
+# ===== 起動時にtmuxを起動 =====
+command = tmux new-session -A -s main
+
+# ===== Theme =====
+theme = "TokyoNight Night"
+
+# ===== Font =====
+font-family = "Hack Nerd Font Mono"
+font-family = "PlemolJP Console"
+font-size = 16
+font-thicken = true
+
+# ===== Background =====
+background-image = ~/.config/wezterm/config/your_name.gif
+background-image-opacity = 0.3
+background-image-fit = cover
+background-opacity = 0.85
+background-blur = true
+
+# ===== Window =====
+macos-titlebar-style = tabs
+window-show-tab-bar = never
+window-save-state = always
+
+# ===== Cursor =====
+cursor-style = block
+cursor-style-blink = true
+
+# ===== Ghostty分割/タブ機能を無効化 =====
+keybind = super+shift+bracket_left=unbind
+keybind = super+shift+bracket_right=unbind
+keybind = super+bracket_left=unbind
+keybind = super+bracket_right=unbind
+
+# ===== Wezterm互換キーバインド → tmuxコマンド =====
+# \x01 = Ctrl+a (tmuxプリフィックス)
+
+# --- タブ/ウインドウ操作 ---
+# CMD+T: 新規ウインドウ（tmux window）
+keybind = super+t=text:\x01c
+
+# CMD+W: ウインドウを閉じる（確認あり）
+keybind = super+w=text:\x01&
+
+# Ctrl+Tab: 次のウインドウ
+keybind = ctrl+tab=text:\x01n
+
+# Ctrl+Shift+Tab: 前のウインドウ
+keybind = ctrl+shift+tab=text:\x01p
+
+# CMD+1-9: ウインドウ番号で移動
+keybind = super+one=text:\x011
+keybind = super+two=text:\x012
+keybind = super+three=text:\x013
+keybind = super+four=text:\x014
+keybind = super+five=text:\x015
+keybind = super+six=text:\x016
+keybind = super+seven=text:\x017
+keybind = super+eight=text:\x018
+keybind = super+nine=text:\x019
+
+# --- ペイン操作 ---
+# CMD+D: 水平分割（右に分割）
+keybind = super+d=text:\x01|
+
+# CMD+Shift+D: 垂直分割（下に分割）
+keybind = super+shift+d=text:\x01-
+
+# CMD+Shift+W: ペインを閉じる
+keybind = super+shift+w=text:\x01x
+
+# --- ペイン移動（Vimスタイル）---
+keybind = super+alt+h=text:\x01h
+keybind = super+alt+j=text:\x01j
+keybind = super+alt+k=text:\x01k
+keybind = super+alt+l=text:\x01l
+
+# --- ペインリサイズ ---
+keybind = super+alt+shift+h=text:\x01H
+keybind = super+alt+shift+j=text:\x01J
+keybind = super+alt+shift+k=text:\x01K
+keybind = super+alt+shift+l=text:\x01L
+
+# --- ペイン最大化 ---
+# CMD+Shift+Z: ペインズーム（トグル）
+keybind = super+shift+z=text:\x01z
+
+# ===== Ghostty固有機能 =====
+# フォントサイズ（CMD+=/-/0 はデフォルト）
+# フルスクリーン
+keybind = super+shift+enter=toggle_fullscreen
+
+# 設定リロード（CMD+Shift+,）はデフォルト
+
+# Claude Code用改行
+keybind = alt+enter=text:\n
+
+# ===== tmux設定リロード =====
+# CMD+Shift+R: tmux設定リロード
+keybind = super+shift+r=text:\x01r
+
