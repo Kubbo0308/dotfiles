@@ -3,7 +3,8 @@
 # tmux使用前提 + Wezterm互換キーバインド
 
 # ===== 起動時にtmuxを起動 =====
-command = tmux new-session -A -s main
+# Ghosttyは --noprofile --norc で起動するためPATHが最小限、フルパス必須
+command = /opt/homebrew/bin/tmux new-session -A -s main
 
 # ===== Theme =====
 theme = "TokyoNight Night"
