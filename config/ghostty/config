@@ -109,6 +109,10 @@ keybind = super+alt+shift+l=text:\x01L
 # CMD+Shift+Z: ペインズーム（トグル）
 keybind = super+shift+z=text:\x01z
 
+# --- マウストグル ---
+# CMD+M: マウスON/OFF切り替え
+keybind = super+m=text:\x01m
+
 # ===== Ghostty固有機能 =====
 # フォントサイズ（CMD+=/-/0 はデフォルト）
 # フルスクリーン
