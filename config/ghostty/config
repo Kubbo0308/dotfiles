@@ -3,8 +3,7 @@
 # tmux使用前提 + Wezterm互換キーバインド
 
 # ===== 起動時にtmuxを起動 =====
-# Homebrew版tmuxを使用（loginシェル環境でのPATH問題を回避）
-command = /opt/homebrew/bin/tmux new-session -A -s main
+command = tmux new-session -A -s main
 
 # ===== Theme =====
 theme = "TokyoNight Night"

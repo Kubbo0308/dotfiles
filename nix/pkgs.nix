@@ -25,7 +25,6 @@ with pkgs; [
 
   # Development Tools
   neovim
-  tmux
   direnv
 
   # Languages & Runtimes
