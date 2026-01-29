@@ -3,7 +3,8 @@
 # tmux使用前提 + Wezterm互換キーバインド
 
 # ===== 起動時にtmuxを起動 =====
-command = tmux new-session -A -s main
+# Homebrew版tmuxを使用（loginシェル環境でのPATH問題を回避）
+command = /opt/homebrew/bin/tmux new-session -A -s main
 
 # ===== Theme =====
 theme = "TokyoNight Night"
@@ -30,11 +31,30 @@ window-save-state = always
 cursor-style = block
 cursor-style-blink = true
 
-# ===== Ghostty分割/タブ機能を無効化 =====
+# ===== Ghostty分割/タブ機能を完全無効化（tmuxで管理）=====
+# タブ移動（Ghosttyネイティブ）を無効化
 keybind = super+shift+bracket_left=unbind
 keybind = super+shift+bracket_right=unbind
 keybind = super+bracket_left=unbind
 keybind = super+bracket_right=unbind
+
+# Ghosttyネイティブペイン移動（矢印キー）を無効化
+keybind = super+alt+arrow_up=unbind
+keybind = super+alt+arrow_down=unbind
+keybind = super+alt+arrow_left=unbind
+keybind = super+alt+arrow_right=unbind
+
+# Ghosttyネイティブペインリサイズを無効化
+keybind = super+ctrl+arrow_up=unbind
+keybind = super+ctrl+arrow_down=unbind
+keybind = super+ctrl+arrow_left=unbind
+keybind = super+ctrl+arrow_right=unbind
+
+# Ghosttyネイティブペイン均等化を無効化
+keybind = super+ctrl+equal=unbind
+
+# Ghosttyネイティブタブ閉じるを無効化（tmuxで管理）
+keybind = super+alt+w=unbind
 
 # ===== Wezterm互換キーバインド → tmuxコマンド =====
 # \x01 = Ctrl+a (tmuxプリフィックス)
