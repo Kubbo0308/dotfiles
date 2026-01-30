@@ -16,10 +16,10 @@ font-size = 16
 font-thicken = true
 
 # ===== Background =====
-background-image = ~/.config/wezterm/config/your_name.gif
-background-image-opacity = 0.3
+background-image = /Users/y-kubo/.dotfiles/config/ghostty/ghostty_background.png
+background-image-opacity = 0.5
 background-image-fit = cover
-background-opacity = 0.85
+background-opacity = 0.7
 background-blur = true
 
 # ===== Window =====
