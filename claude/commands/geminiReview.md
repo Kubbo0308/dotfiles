@@ -9,4 +9,4 @@ argument-hint: <file-path> - file to review or review type
 **MUST reference `gemini` skill for CLI usage.**
 **MUST reference `gemini:code-review` for review templates.**
 
-Execute a code review for the provided file using Gemini CLI review templates from the skill references.
+Execute: `cat <file> | gemini -p "review this code"` (pipe via stdin, no `--file` flag)

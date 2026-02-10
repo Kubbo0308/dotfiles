@@ -1,105 +1,121 @@
 # Code Review with Gemini CLI
 
-## Basic Review
+## Basic Review (stdin)
 
 ```bash
-gemini --prompt="Review this code for bugs, performance issues, and security concerns." --file="src/main.ts"
+cat src/main.ts | gemini -p "review this code for bugs, performance, and security"
 ```
 
-## Detailed Review Template
+## Detailed Review
 
 ```bash
-gemini --prompt="
-Review the following code:
+cat src/main.ts | gemini -p "
+Review this code thoroughly:
 
-【Aspects】
 1. Bugs and logical errors
 2. Performance issues
 3. Security vulnerabilities
 4. Readability and maintainability
 5. Best practice compliance
-6. Error handling
-7. Test coverage gaps
+6. Error handling gaps
+7. Test coverage needs
 
-【Output Format】
-- Specific line numbers for each issue
-- Concrete code examples for improvements
-- Priority levels: High / Medium / Low
-" --file="path/to/file"
+Output: specific line references, concrete fixes, priority (High/Medium/Low)
+"
 ```
 
 ## Pull Request Review
 
 ```bash
-# Review a git diff
-git diff main...HEAD | gemini -p "
-Review this pull request diff:
+# Review staged changes
+git diff --staged | gemini -p "
+Review this PR diff:
 1. Validity of changes
 2. Impact on existing code
 3. Testing requirements
 4. Code style consistency
-Provide constructive comments with specific suggestions."
+Provide constructive feedback with specific suggestions."
+
+# Review branch diff
+git diff main...HEAD | gemini -p "review this PR for issues"
 ```
 
 ## Security-Focused Review
 
 ```bash
-gemini --prompt="
-Security review checklist:
+cat src/auth.ts | gemini -p "
+Security review:
 - Input validation
-- SQL injection / NoSQL injection
-- Authentication and authorization
+- SQL/NoSQL injection
+- Authentication/authorization flaws
 - Sensitive data handling
 - XSS vulnerabilities
 - CSRF protection
-- API key / secret management
-Provide specific countermeasures for each issue found.
-" --file="path/to/file"
+- Secret management
+Provide specific countermeasures for each issue."
 ```
 
 ## Performance-Focused Review
 
 ```bash
-gemini --prompt="
-Performance review checklist:
+cat src/api.ts | gemini -p "
+Performance review:
 - Algorithm complexity (time & space)
 - Memory usage and leaks
 - Database query efficiency (N+1, missing indexes)
 - Network optimization
 - Cache utilization
 - Unnecessary computations
-Provide specific optimization suggestions.
-" --file="path/to/file"
+Provide specific optimization suggestions."
 ```
 
 ## Multi-File Review
 
 ```bash
-gemini --prompt="
-Review these files for:
-- Inter-file dependencies and coupling
+cat src/api.ts src/service.ts src/repository.ts | gemini -p "
+Review these files together for:
+- Inter-file coupling
 - Architectural consistency
 - Separation of concerns
-- Interface design
-" --file="src/api.ts" --file="src/service.ts" --file="src/repository.ts"
+- Interface design"
 ```
 
-## Collaboration Mode (Claude + Gemini)
+## Auto-Approve Mode (for trusted operations)
 
-When Claude and Gemini collaborate on review:
+```bash
+# Let Gemini fix issues directly
+cat src/main.ts | gemini -p "fix all lint errors in this code" -y
+
+# Plan mode (read-only, no modifications)
+cat src/main.ts | gemini -p "suggest improvements" --approval-mode plan
+```
+
+## JSON Output for CI/CD
+
+```bash
+git diff --staged | gemini -p "review and list issues as JSON array" -o json
+```
+
+## Session-Based Review
+
+```bash
+# Start review session
+gemini -i "let's review the authentication module"
+
+# Later, resume the same session
+gemini -r latest
+```
+
+## Claude + Gemini Collaboration
+
+When Claude orchestrates review via Gemini:
 
 ```bash
 # Claude generates context, Gemini reviews
-CONTEXT="$(git diff --staged)"
-gemini <<EOF
-Review the following staged changes:
-$CONTEXT
+git diff --staged | gemini -p "review this diff. focus on breaking changes and missing tests"
 
-Focus on:
-- Breaking changes
-- Missing error handling
-- Test coverage gaps
-EOF
+# Parse structured output
+git diff | gemini -p "list all issues as JSON" -o json
 ```
 
-Claude then integrates Gemini's findings with its own analysis.
+Claude integrates Gemini's findings with its own analysis for comprehensive review.

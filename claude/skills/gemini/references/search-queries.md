@@ -1,82 +1,82 @@
-# Effective Search Query Patterns
+# Effective Search Patterns with Gemini CLI
+
+Gemini CLI has **built-in Google Search grounding** - no `WebSearch:` prefix needed.
 
 ## Technical Documentation
 
 ```bash
-gemini -p "WebSearch: React hooks best practices 2026"
-gemini -p "WebSearch: Go error handling patterns idiomatic"
-gemini -p "WebSearch: TypeScript 5.x strict mode migration guide"
+gemini -p "React hooks best practices 2026"
+gemini -p "Go error handling patterns idiomatic"
+gemini -p "TypeScript 5.x strict mode migration guide"
+gemini -p "nix-darwin configuration options reference"
 ```
 
 ## Error Debugging
 
 ```bash
 # Use exact error messages
-gemini -p "WebSearch: TypeError cannot read property of undefined JavaScript"
-gemini -p "WebSearch: ECONNREFUSED 127.0.0.1:5432 postgres"
-gemini -p "WebSearch: nix-darwin activate-system fails on boot macOS"
+gemini -p "TypeError cannot read property of undefined JavaScript"
+gemini -p "ECONNREFUSED 127.0.0.1:5432 postgres connection"
+gemini -p "nix-darwin activate-system fails on boot macOS"
 ```
 
 ## Framework & Library Research
 
 ```bash
-gemini -p "WebSearch: Next.js 15 app router migration guide 2026"
-gemini -p "WebSearch: Tailwind CSS v4 breaking changes"
-gemini -p "WebSearch: OpenAI API rate limits pricing 2026"
+gemini -p "Next.js 15 app router migration guide 2026"
+gemini -p "Tailwind CSS v4 breaking changes from v3"
+gemini -p "OpenAI API rate limits and pricing 2026"
 ```
 
-## X (Twitter) Search
-
-**IMPORTANT: Always verify X results with official sources.**
+## X (Twitter) / Social Search
 
 ```bash
-# Developer announcements
-gemini -p "WebSearch: site:x.com react team announcement 2026"
-
-# Community feedback
-gemini -p "WebSearch: site:x.com typescript 5.x developer feedback"
-
-# Release news
-gemini -p "WebSearch: site:x.com vercel next.js release"
+gemini -p "site:x.com react team announcement 2026"
+gemini -p "site:x.com typescript 5.x developer feedback"
+gemini -p "site:x.com vercel next.js release"
 ```
 
-### Verification Required
-
-X results MUST be cross-referenced because:
-- Unverified accounts can post misleading info
-- Outdated tweets may appear in results
-- Context may be missing from short posts
-
+**IMPORTANT**: Always verify X results with official sources.
 See `web-search` skill for full verification guidelines.
 
 ## Site-Specific Patterns
 
 ```bash
-# GitHub
-gemini -p "WebSearch: site:github.com nix-darwin activate-system issue"
+# GitHub issues/discussions
+gemini -p "site:github.com nix-darwin activate-system issue"
 
 # Stack Overflow
-gemini -p "WebSearch: site:stackoverflow.com React useEffect cleanup async"
+gemini -p "site:stackoverflow.com React useEffect cleanup async"
 
 # Official docs
-gemini -p "WebSearch: site:reactjs.org concurrent features guide"
+gemini -p "site:react.dev concurrent features guide"
 ```
 
-## Search Operators
+## Combining Stdin + Search
 
-| Operator | Example | Purpose |
-|----------|---------|---------|
-| `site:` | `site:x.com query` | Limit to specific site |
-| `"exact"` | `"exact error message"` | Exact phrase match |
-| `OR` | `React OR Vue performance` | Either term |
-| `-` | `JavaScript -jQuery` | Exclude term |
-| `after:` | `after:2025 query` | Recent results only |
+```bash
+# Pass code context with search query
+cat src/api.ts | gemini -p "what are best practices for this pattern? search for latest recommendations"
+
+# Error log analysis with web search
+npm test 2>&1 | gemini -p "explain and find solutions for these failures"
+```
+
+## JSON Output for Parsing
+
+```bash
+# Get structured results
+gemini -p "compare React vs Vue vs Svelte performance 2026" -o json
+
+# Stream results
+gemini -p "latest Node.js security advisories" -o stream-json
+```
 
 ## Multi-Source Strategy
 
-For comprehensive research, combine sources:
+For comprehensive research, combine approaches:
 
-1. `gemini -p "WebSearch: topic"` - General web
-2. `gemini -p "WebSearch: site:github.com topic"` - Code & issues
-3. `gemini -p "WebSearch: site:x.com topic"` - Community pulse
+1. `gemini -p "topic"` - General search with Google grounding
+2. `gemini -p "site:github.com topic"` - Code & issues
+3. `gemini -p "site:x.com topic"` - Community pulse
 4. Cross-reference findings across sources

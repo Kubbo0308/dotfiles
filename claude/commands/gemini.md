@@ -8,4 +8,6 @@ argument-hint: <search-query> - what you want to search for
 
 **MUST reference `gemini` skill for CLI usage and patterns.**
 
-Execute a web search for the provided query using Gemini CLI, then summarize the most relevant findings.
+Execute: `gemini -p "query"` (no `WebSearch:` prefix needed - Google Search grounding is built-in)
+
+Summarize the most relevant findings with sources.

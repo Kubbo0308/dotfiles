@@ -3,70 +3,84 @@ name: gemini
 description: Google Gemini CLI integration for web search, code review, and cross-agent collaboration. Use when you need web search via Gemini, code review with a second opinion, or real-time technical research.
 ---
 
-# Gemini CLI Integration
+# Gemini CLI Integration (v0.27.3+)
 
 ## When to Use
 
-- **Web Search**: `gemini -p "WebSearch: query"` for technical research
-- **Code Review**: `gemini --prompt="review" --file="path"` for second opinion
-- **X (Twitter) Search**: `gemini -p "WebSearch: site:x.com query"`
-- **Collaboration**: Pipe context to Gemini for cross-agent analysis
+- **Web Search**: Gemini has built-in Google Search grounding
+- **Code Review**: Pipe code via stdin for second opinion
+- **Session Continuity**: Resume previous sessions with `-r`
+- **Headless Automation**: `-p` flag for CI/CD and scripting
 
 ## Quick Start
 
 ```bash
-# Web search
-gemini -p "WebSearch: React 19 new features 2026"
+# Web search (Google Search grounding built-in)
+gemini -p "latest React 19 features 2026"
 
-# Code review
-gemini --prompt="Review this code for bugs and security issues" --file="src/main.ts"
+# Code review via stdin
+cat src/main.ts | gemini -p "review this code for bugs and security issues"
 
-# Pipe context
-git diff | gemini -p "Review this diff for issues"
+# Git diff review
+git diff | gemini -p "review this diff"
 
-# Here-doc for complex prompts
-gemini <<EOF
-Analyze the following architecture and suggest improvements:
-$(cat docs/architecture.md)
-EOF
+# JSON output for parsing
+gemini -p "explain this error: ECONNREFUSED" -o json
+
+# Auto-approve all actions
+gemini -p "refactor this function" -y
+
+# Resume previous session
+gemini -r latest
+gemini -r 5
 ```
 
 ## Key Points
 
-- **Use `-p` flag** for single-line prompts
-- **Use `--file`** to pass files for review
-- **Use heredoc** (`<<EOF`) for complex multi-line prompts
-- **Add year** to searches for latest results (e.g., "2026")
-- **MUST verify X (Twitter) results** - see web-search skill
+- **No `WebSearch:` prefix needed** - Google Search grounding is built-in
+- **Use `-p` for headless mode** (non-interactive, exits after response)
+- **Use `-i` for prompt + interactive** (runs prompt then stays interactive)
+- **Pipe stdin** with `-p` to pass file/diff content
+- **`-r/--resume`** resumes sessions (interactive mode only, NOT with `-p`)
+- **`-o json`** for structured output parsing
+- **`-y/--yolo`** auto-accepts all tool actions
+
+## Session Management
+
+- **`-r/--resume`**: Resume by index or `"latest"` - **interactive mode only**
+- **`--list-sessions`**: List sessions for current project
+- **`-p` is stateless**: Each `-p` call is independent, no session continuity
+- **Workaround**: Pass all context via stdin in each `-p` call
+- **Workaround**: Use `-o json` to capture output, feed into next call
+- Sessions stored in `~/.gemini/tmp/<project_hash>/chats/`
+- Interactive commands: `/resume`, `/chat save <tag>`, `/chat resume <tag>`, `/compress`
 
 ## Common Patterns
 
 ```bash
-# Technical documentation search
-gemini -p "WebSearch: TypeScript 5.x strict mode best practices 2026"
+# Technical research
+gemini -p "Go error handling best practices idiomatic 2026"
 
 # Error debugging
-gemini -p "WebSearch: TypeError cannot read property of undefined React 19"
+gemini -p "TypeError cannot read property of undefined React 19"
 
-# X (Twitter) developer insights
-gemini -p "WebSearch: site:x.com react team announcement 2026"
+# Multi-file context via stdin
+cat src/api.ts src/service.ts | gemini -p "review these files for consistency"
 
-# Multi-file review
-gemini --prompt="Review these files for consistency" --file="src/a.ts" --file="src/b.ts"
+# Specific model
+gemini -p "explain this architecture" -m gemini-2.5-flash
 
-# Git diff review
-git diff HEAD~1 | gemini -p "Review this diff. Focus on bugs and security."
+# Session management
+gemini --list-sessions          # List all sessions
+gemini -r latest                # Resume most recent
+gemini --delete-session 3       # Delete session #3
 
-# Collaboration mode
-PROMPT="Review: $(cat src/main.ts)"
-gemini <<EOF
-$PROMPT
-Focus on: security, performance, readability
-EOF
+# With additional workspace directories
+gemini -p "analyze this project" --include-directories ../shared-lib
 ```
 
 ## References
 
-- [cli-options.md](references/cli-options.md) - All CLI options and usage
+- [cli-options.md](references/cli-options.md) - All CLI flags and subcommands
 - [search-queries.md](references/search-queries.md) - Effective search patterns
-- [code-review.md](references/code-review.md) - Code review templates and best practices
+- [code-review.md](references/code-review.md) - Code review patterns
