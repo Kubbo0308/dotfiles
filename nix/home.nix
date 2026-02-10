@@ -135,6 +135,21 @@
         # npm global packages (Nix store is read-only)
         export NPM_CONFIG_PREFIX="$HOME/.npm-global"
         export PATH="$HOME/.npm-global/bin:$PATH"
+
+        # ct: Claude Code Agent Team in tmux split-pane mode
+        ct() {
+          if [ -n "$TMUX" ]; then
+            claude --teammate-mode tmux "$@"
+          else
+            tmux new-session -s claude-team "claude --teammate-mode tmux $*"
+          fi
+        }
+
+        # nix-darwin system profile fallback
+        # /run/current-system/sw/bin may not exist if boot activation fails
+        if [[ -d /nix/var/nix/profiles/system/sw/bin ]] && [[ ! -e /run/current-system ]]; then
+          export PATH="/nix/var/nix/profiles/system/sw/bin:$PATH"
+        fi
       '';
     };
 
