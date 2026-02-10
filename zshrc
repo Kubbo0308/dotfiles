@@ -11,6 +11,11 @@ if [ -e '/etc/static/zshrc' ]; then
   . '/etc/static/zshrc'
 fi
 
+# Fallback PATH for nix-darwin commands (ensures darwin-rebuild is always available)
+# This prevents the chicken-and-egg problem after reboot
+export PATH="/run/current-system/sw/bin:$PATH"
+export PATH="/nix/var/nix/profiles/default/bin:$PATH"
+
 # Docker Desktop CLI (must be before oh-my-zsh for docker plugin)
 export PATH="/Applications/Docker.app/Contents/Resources/bin:$PATH"
 

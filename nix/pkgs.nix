@@ -7,6 +7,7 @@
 with pkgs; [
   # Shell & Terminal
   zsh
+  tmux
   zoxide
   fzf
   ripgrep
