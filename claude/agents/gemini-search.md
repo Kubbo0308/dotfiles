@@ -43,7 +43,7 @@ gemini -p "WebSearch: {search query}"
 
 ```bash
 # Technical documentation
-gemini -p "WebSearch: React hooks best practices 2024"
+gemini -p "WebSearch: React hooks best practices 2025"
 
 # Error solutions
 gemini -p "WebSearch: TypeError cannot read property of undefined JavaScript"
@@ -56,6 +56,34 @@ gemini -p "WebSearch: OpenAI API rate limits"
 
 # Performance optimization
 gemini -p "WebSearch: Node.js memory optimization techniques"
+
+# X (Twitter) search for developer insights
+gemini -p "WebSearch: site:x.com react team announcement 2025"
+
+# X search for community feedback
+gemini -p "WebSearch: site:x.com typescript 5.x developer feedback"
+```
+
+## X (Twitter) Search Guidelines
+
+When searching X for developer information:
+
+### When to Use X
+- Breaking news and official announcements
+- Developer community discussions
+- Real-time feedback on new releases
+- Quick tips from known experts
+
+### ⚠️ Verification Required
+X content MUST be verified:
+1. **Check account credibility** - Official or known expert?
+2. **Cross-reference** - Verify with official docs
+3. **Check date** - Is it still current?
+4. **Read replies** - Any corrections?
+
+```bash
+# After finding X info, always verify:
+gemini -p "WebSearch: {topic} official documentation"
 ```
 
 ## Output Format
