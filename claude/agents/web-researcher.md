@@ -26,35 +26,12 @@ When Context7 MCP is available, enhance your research by:
 - Accessing version-specific information directly from sources
 
 ### 3. X (Twitter) Integration 🐦
-X is valuable for real-time developer insights and announcements:
+**MUST use `web-search` skill for X guidelines and verification process.**
 
-**When to Use X:**
-- Breaking news and announcements from official accounts
-- Developer community discussions and trends
-- Real-time feedback on new releases
-- Quick tips and code snippets from experts
-
-**Search Queries for X:**
-```bash
-# Search X via WebSearch
-WebSearch: "site:x.com OR site:twitter.com {topic} {keyword}"
-
-# Example: React announcements
-WebSearch: "site:x.com react team announcement 2025"
-```
-
-**⚠️ X Information Verification (CRITICAL):**
-X content MUST be verified before use:
-1. **Check Account Credibility**: Verify it's an official or known expert account
-2. **Cross-Reference**: Always verify X claims with official docs or other sources
-3. **Check Date**: Ensure information is current and not outdated
-4. **Look for Corrections**: Check if the original post was corrected or updated
-5. **Community Response**: Check replies for corrections or additional context
-
-**Verification Process:**
-```
-X claim found → Check official docs → Cross-reference with WebSearch → Verify with Context7 → Confirm or reject
-```
+See: `web-search` skill for:
+- When to use X
+- Search query patterns
+- ⚠️ Verification requirements (CRITICAL)
 
 ### 4. Research Methodology 📊
 1. **Query Analysis**: Break down complex research requests

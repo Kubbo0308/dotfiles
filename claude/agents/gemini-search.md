@@ -64,27 +64,11 @@ gemini -p "WebSearch: site:x.com react team announcement 2025"
 gemini -p "WebSearch: site:x.com typescript 5.x developer feedback"
 ```
 
-## X (Twitter) Search Guidelines
+## X (Twitter) Search
 
-When searching X for developer information:
+**MUST use `web-search` skill for X guidelines and verification.**
 
-### When to Use X
-- Breaking news and official announcements
-- Developer community discussions
-- Real-time feedback on new releases
-- Quick tips from known experts
-
-### ⚠️ Verification Required
-X content MUST be verified:
-1. **Check account credibility** - Official or known expert?
-2. **Cross-reference** - Verify with official docs
-3. **Check date** - Is it still current?
-4. **Read replies** - Any corrections?
-
-```bash
-# After finding X info, always verify:
-gemini -p "WebSearch: {topic} official documentation"
-```
+See: `web-search` skill for verification requirements.
 
 ## Output Format
 
