@@ -1,10 +1,10 @@
-projects = { }
 # Local projects intentionally omitted from repo; set per machine
-notify = ["bash", ".codex/notify_macos.sh"]
-model = "gpt-5.2-codex"
+# notify script disabled - causes errors
+# notify = ["bash", "~/.dotfiles/codex/notify_macos.sh"]
+model = "gpt-5.3-codex"
 
 # 推論の深さ（none | low | medium | high）
-model_reasoning_effort = "high"
+model_reasoning_effort = "medium"
 
 # 推論サマリーの表示（auto | none）
 model_reasoning_summary = "auto"
@@ -13,6 +13,10 @@ model_reasoning_summary = "auto"
 hide_agent_reasoning = true
 show_raw_agent_reasoning = false
 network_access = true
+personality = "pragmatic"
+
+[projects."/Users/y-kubo/.dotfiles"]
+trust_level = "trusted"
 
 [features]
 web_search_request = true
