@@ -1,0 +1,219 @@
+name: refactoring-team
+description: "リファクタリング: 品質監査・計画・テスト・リファクタ・レビューの一貫したワークフロー"
+category: refactoring
+
+lead:
+  name: planner
+  subagent_type: task-decomposer
+  role: "リファクタリング計画・進捗管理"
+  responsibilities:
+    - "リファクタリング対象の優先度付け"
+    - "安全なリファクタリング手順の計画"
+    - "品質ゲートの管理"
+
+members:
+  - name: analyzer
+    subagent_type: codebase-analyzer
+    role: "コードベース分析"
+    responsibilities:
+      - "現行アーキテクチャの把握"
+      - "コードの依存関係の分析"
+      - "リファクタリング対象の特定"
+    condition: "always"
+
+  - name: quality-auditor
+    subagent_type: clean-code-fp-reviewer
+    role: "品質監査"
+    responsibilities:
+      - "凝集度・結合度の評価"
+      - "コードスメルの検出"
+      - "リファクタリング前後の品質比較"
+    condition: "always"
+
+  - name: refactorer
+    subagent_type: general-purpose
+    role: "リファクタリング実装"
+    responsibilities:
+      - "コードのリファクタリング"
+      - "既存テストの修正"
+      - "新規テストの追加"
+    condition: "always"
+
+  - name: tester
+    subagent_type: test
+    role: "特性化テスト・回帰テスト"
+    responsibilities:
+      - "リファクタリング前の特性化テスト作成"
+      - "リファクタリング後の回帰テスト実行"
+      - "テストカバレッジの確認"
+    condition: "always"
+
+  - name: codex-reviewer
+    subagent_type: codex-reviewer
+    role: "Codex CLI レビュー"
+    responsibilities:
+      - "リファクタリング差分の自動レビュー"
+    condition: "always"
+
+  - name: gemini-reviewer
+    subagent_type: code-reviewer-gemini
+    role: "ベストプラクティスレビュー"
+    responsibilities:
+      - "最新パターンとの照合"
+      - "リファクタリング手法の妥当性確認"
+    condition: "always"
+
+  - name: pre-commit
+    subagent_type: pre-commit-checker
+    role: "コミット前チェック"
+    responsibilities:
+      - "diff の表示とユーザー確認"
+      - "コミット可否の判断"
+    condition: "always"
+
+language_variants:
+  go:
+    replacements:
+      - base_name: refactorer
+        subagent_type: go-developer
+      - base_name: tester
+        subagent_type: test
+  typescript:
+    replacements:
+      - base_name: refactorer
+        subagent_type: typescript-developer
+      - base_name: tester
+        subagent_type: typescript-test-generator
+
+workflow:
+  steps:
+    - name: audit
+      description: "コードベース分析と品質監査を並列で実行"
+      execution: parallel
+      tasks:
+        - name: codebase-analysis
+          assigned_to: analyzer
+          description: "現行アーキテクチャと依存関係を分析"
+          inputs:
+            - "refactoring_target"
+            - "target_directory"
+          outputs:
+            - "architecture_overview"
+            - "dependency_graph"
+            - "affected_files"
+
+        - name: quality-audit
+          assigned_to: quality-auditor
+          description: "現行コードの品質メトリクスを評価"
+          inputs:
+            - "refactoring_target"
+            - "target_directory"
+          outputs:
+            - "quality_metrics"
+            - "code_smells"
+            - "improvement_suggestions"
+
+    - name: planning
+      description: "監査結果を基にリファクタリング計画を立案"
+      execution: sequential
+      tasks:
+        - name: create-plan
+          assigned_to: planner
+          description: "安全なリファクタリング手順を計画"
+          inputs:
+            - "architecture_overview"
+            - "dependency_graph"
+            - "quality_metrics"
+            - "code_smells"
+          outputs:
+            - "refactoring_plan"
+            - "refactoring_tasks"
+            - "risk_assessment"
+
+    - name: characterization-tests
+      description: "リファクタリング前の特性化テストを作成"
+      execution: sequential
+      tasks:
+        - name: create-characterization-tests
+          assigned_to: tester
+          description: "現行の振る舞いを保証する特性化テストを作成・実行"
+          inputs:
+            - "affected_files"
+            - "refactoring_plan"
+          outputs:
+            - "characterization_tests"
+            - "baseline_test_results"
+
+    - name: refactor
+      description: "計画に基づいてリファクタリングを実行"
+      execution: sequential
+      tasks:
+        - name: implement-refactoring
+          assigned_to: refactorer
+          description: "コードのリファクタリングとテスト修正"
+          inputs:
+            - "refactoring_plan"
+            - "refactoring_tasks"
+            - "characterization_tests"
+          outputs:
+            - "refactored_code"
+            - "updated_tests"
+
+    - name: final-review
+      description: "リファクタリング結果の並列レビュー"
+      execution: parallel
+      tasks:
+        - name: quality-comparison
+          assigned_to: quality-auditor
+          description: "リファクタリング前後の品質比較"
+          inputs:
+            - "refactored_code"
+            - "quality_metrics"
+            - "git diff"
+          outputs:
+            - "quality_comparison"
+            - "remaining_issues"
+
+        - name: codex-review
+          assigned_to: codex-reviewer
+          description: "Codex CLI によるリファクタリング差分レビュー"
+          inputs:
+            - "git diff"
+          outputs:
+            - "codex_issues"
+
+        - name: best-practice-review
+          assigned_to: gemini-reviewer
+          description: "最新パターンとの照合"
+          inputs:
+            - "refactored_code"
+            - "git diff"
+          outputs:
+            - "best_practice_issues"
+
+    - name: finalize
+      description: "コミット前チェックとコミット"
+      execution: sequential
+      tasks:
+        - name: pre-commit-check
+          assigned_to: pre-commit
+          description: "diff を表示し、ユーザーにコミット確認を取る"
+          inputs:
+            - "refactored_code"
+            - "quality_comparison"
+          outputs:
+            - "commit_approval"
+
+completion:
+  required_outputs:
+    - "refactored_code"
+    - "characterization_tests"
+    - "quality_comparison"
+    - "commit_approval"
+  quality_gates:
+    - "全特性化テストがパス"
+    - "品質メトリクスが改善または維持"
+    - "新たなコードスメルが導入されていない"
+    - "全レビューの Critical 問題が解決済み"
+    - "pre-commit チェック通過"
+

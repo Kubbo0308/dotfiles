@@ -1,0 +1,238 @@
+name: feature-team
+description: "機能追加: 要件分析から実装・レビュー・PRまでの一貫したワークフロー"
+category: feature
+
+lead:
+  name: planner
+  subagent_type: task-decomposer
+  role: "要件分解・タスク計画・進捗管理"
+  responsibilities:
+    - "要件をアクション可能なタスクに分解"
+    - "タスク間の依存関係を定義"
+    - "進捗の追跡と計画の調整"
+
+members:
+  - name: analyzer
+    subagent_type: codebase-analyzer
+    role: "コードベース分析"
+    responsibilities:
+      - "既存アーキテクチャの把握"
+      - "影響範囲の特定"
+      - "実装パターンの調査"
+    condition: "always"
+
+  - name: researcher
+    subagent_type: web-researcher
+    role: "技術リサーチ"
+    responsibilities:
+      - "未知の技術やライブラリの調査"
+      - "ベストプラクティスの収集"
+      - "類似実装の参考例の取得"
+    condition: "always"
+
+  - name: developer
+    subagent_type: general-purpose
+    role: "機能実装"
+    responsibilities:
+      - "コードの設計と実装"
+      - "ユニットテストの作成"
+      - "ドキュメントの更新"
+    condition: "always"
+
+  - name: tester
+    subagent_type: test
+    role: "テスト生成・実行"
+    responsibilities:
+      - "テストケースの設計"
+      - "テストの実装と実行"
+      - "カバレッジの確認"
+    condition: "always"
+
+  - name: clean-code-reviewer
+    subagent_type: clean-code-fp-reviewer
+    role: "クリーンコード観点レビュー"
+    responsibilities:
+      - "凝集度・結合度の評価"
+      - "命名規則の確認"
+      - "関数型パターンの推奨"
+    condition: "always"
+
+  - name: security-reviewer
+    subagent_type: security
+    role: "セキュリティレビュー"
+    responsibilities:
+      - "脆弱性の検出"
+      - "セキュアコーディングの確認"
+    condition: "always"
+
+  - name: gemini-reviewer
+    subagent_type: code-reviewer-gemini
+    role: "ベストプラクティスレビュー"
+    responsibilities:
+      - "最新パターンとの照合"
+      - "業界標準の確認"
+    condition: "always"
+
+  - name: pre-commit
+    subagent_type: pre-commit-checker
+    role: "コミット前チェック"
+    responsibilities:
+      - "diff の表示とユーザー確認"
+      - "コミット可否の判断"
+    condition: "always"
+
+  - name: pr-creator
+    subagent_type: pull-request
+    role: "PR 作成"
+    responsibilities:
+      - "PR タイトルと説明の生成"
+      - "PR の作成と提出"
+    condition: "always"
+
+language_variants:
+  go:
+    replacements:
+      - base_name: developer
+        subagent_type: go-developer
+      - base_name: tester
+        subagent_type: test
+  typescript:
+    replacements:
+      - base_name: developer
+        subagent_type: typescript-developer
+      - base_name: tester
+        subagent_type: typescript-test-generator
+
+workflow:
+  steps:
+    - name: analysis
+      description: "コードベース分析と技術リサーチを並列で実行"
+      execution: parallel
+      tasks:
+        - name: codebase-analysis
+          assigned_to: analyzer
+          description: "既存コードの構造・パターン・影響範囲を分析"
+          inputs:
+            - "feature_requirements"
+            - "target_directory"
+          outputs:
+            - "architecture_overview"
+            - "affected_files"
+            - "existing_patterns"
+
+        - name: tech-research
+          assigned_to: researcher
+          description: "関連技術やベストプラクティスを調査"
+          inputs:
+            - "feature_requirements"
+            - "technology_stack"
+          outputs:
+            - "best_practices"
+            - "reference_implementations"
+
+    - name: planning
+      description: "分析結果を基にタスクを計画"
+      execution: sequential
+      tasks:
+        - name: task-decomposition
+          assigned_to: planner
+          description: "要件を具体的な実装タスクに分解し、依存関係を設定"
+          inputs:
+            - "architecture_overview"
+            - "affected_files"
+            - "best_practices"
+            - "feature_requirements"
+          outputs:
+            - "implementation_tasks"
+            - "task_dependencies"
+
+    - name: implementation
+      description: "計画に基づいて実装とテストを実行"
+      execution: sequential
+      tasks:
+        - name: develop-feature
+          assigned_to: developer
+          description: "機能のコード実装"
+          inputs:
+            - "implementation_tasks"
+            - "existing_patterns"
+            - "best_practices"
+          outputs:
+            - "implemented_code"
+            - "unit_tests"
+
+        - name: generate-tests
+          assigned_to: tester
+          description: "追加テストの生成と実行"
+          inputs:
+            - "implemented_code"
+            - "implementation_tasks"
+          outputs:
+            - "test_results"
+            - "coverage_report"
+
+    - name: review
+      description: "複数の観点から並列レビュー"
+      execution: parallel
+      tasks:
+        - name: clean-code-review
+          assigned_to: clean-code-reviewer
+          description: "クリーンコード・関数型プログラミング観点でレビュー"
+          inputs:
+            - "implemented_code"
+            - "git diff"
+          outputs:
+            - "clean_code_issues"
+
+        - name: security-review
+          assigned_to: security-reviewer
+          description: "セキュリティ脆弱性を検査"
+          inputs:
+            - "implemented_code"
+            - "git diff"
+          outputs:
+            - "security_issues"
+
+        - name: best-practice-review
+          assigned_to: gemini-reviewer
+          description: "最新ベストプラクティスとの照合"
+          inputs:
+            - "implemented_code"
+            - "git diff"
+          outputs:
+            - "best_practice_issues"
+
+    - name: finalize
+      description: "コミットと PR 作成"
+      execution: sequential
+      tasks:
+        - name: pre-commit-check
+          assigned_to: pre-commit
+          description: "diff を表示し、ユーザーにコミット確認を取る"
+          inputs:
+            - "implemented_code"
+            - "review_fixes"
+          outputs:
+            - "commit_approval"
+
+        - name: create-pr
+          assigned_to: pr-creator
+          description: "PR を作成し提出"
+          inputs:
+            - "commit_approval"
+            - "feature_requirements"
+            - "review_report"
+          outputs:
+            - "pr_url"
+
+completion:
+  required_outputs:
+    - "implemented_code"
+    - "test_results"
+    - "pr_url"
+  quality_gates:
+    - "全テストがパス"
+    - "Critical セキュリティ問題なし"
+    - "コードレビューの Critical/Major 問題が解決済み"
+    - "pre-commit チェック通過"
+

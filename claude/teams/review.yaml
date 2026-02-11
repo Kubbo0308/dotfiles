@@ -1,0 +1,183 @@
+name: review-team
+description: "PR/コードレビュー: 複数の専門レビュワーが並列でコードを多角的にレビューし、結果を統合する"
+category: review
+
+lead:
+  name: aggregator
+  subagent_type: general-purpose
+  role: "レビュー結果の集約・レポート作成"
+  responsibilities:
+    - "全レビュワーの結果を Critical/Major/Minor に分類"
+    - "統合レポートの生成"
+    - "修正サイクルの管理（--auto モード時）"
+
+members:
+  - name: security-reviewer
+    subagent_type: security
+    role: "セキュリティ専門分析"
+    responsibilities:
+      - "OWASP Top 10 脆弱性の検出"
+      - "認証・認可の問題検出"
+      - "データ漏洩リスクの評価"
+    condition: "always"
+
+  - name: clean-code-reviewer
+    subagent_type: clean-code-fp-reviewer
+    role: "クリーンコード＆関数型プログラミング観点"
+    responsibilities:
+      - "凝集度・結合度の評価"
+      - "命名規則の確認"
+      - "純粋関数・イミュータビリティの推奨"
+    condition: "always"
+
+  - name: gemini-reviewer
+    subagent_type: code-reviewer-gemini
+    role: "最新ベストプラクティス照合"
+    responsibilities:
+      - "Gemini Web 検索で最新パターンを取得"
+      - "業界標準との比較"
+    condition: "always"
+
+  - name: codex-reviewer
+    subagent_type: codex-reviewer
+    role: "Codex CLI による非インタラクティブレビュー"
+    responsibilities:
+      - "codex review --uncommitted による包括的分析"
+      - "認証問題時の fallback: codex exec with piped diff"
+    condition: "always"
+
+  - name: go-reviewer
+    subagent_type: go-reviewer
+    role: "Go コード専門レビュー"
+    responsibilities:
+      - "Idiomatic Go パターンの確認"
+      - "エラーハンドリングの検証"
+      - "テストカバレッジの評価"
+      - "レイヤー責任の確認"
+    condition: "language:go"
+
+  - name: typescript-reviewer
+    subagent_type: typescript-reviewer
+    role: "TypeScript/React 専門レビュー"
+    responsibilities:
+      - "型安全性の確認"
+      - "パフォーマンス問題の検出"
+      - "React パターンの評価"
+      - "レイヤー責任の確認"
+    condition: "language:typescript"
+
+language_variants: {}
+
+workflow:
+  steps:
+    - name: detection
+      description: "変更ファイルの検出と言語分類"
+      execution: sequential
+      tasks:
+        - name: detect-changes
+          assigned_to: aggregator
+          description: "git diff で変更ファイルを検出し、言語ごとに分類する"
+          inputs:
+            - "git diff --name-only HEAD"
+            - "git diff --staged --name-only"
+          outputs:
+            - "changed_files_by_language"
+            - "detected_languages"
+
+    - name: parallel-review
+      description: "全レビュワーによる並列レビュー"
+      execution: parallel
+      tasks:
+        - name: security-analysis
+          assigned_to: security-reviewer
+          description: "セキュリティ脆弱性の検出"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff"
+          outputs:
+            - "security_issues"
+
+        - name: clean-code-analysis
+          assigned_to: clean-code-reviewer
+          description: "クリーンコード・関数型プログラミング観点のレビュー"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff"
+          outputs:
+            - "clean_code_issues"
+
+        - name: gemini-analysis
+          assigned_to: gemini-reviewer
+          description: "最新ベストプラクティスとの照合"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff"
+          outputs:
+            - "gemini_issues"
+
+        - name: codex-analysis
+          assigned_to: codex-reviewer
+          description: "Codex CLI によるレビュー"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff"
+          outputs:
+            - "codex_issues"
+
+        - name: go-analysis
+          assigned_to: go-reviewer
+          description: "Go 専門レビュー（Go ファイルがある場合のみ）"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff (Go files)"
+          outputs:
+            - "go_issues"
+
+        - name: typescript-analysis
+          assigned_to: typescript-reviewer
+          description: "TypeScript 専門レビュー（TS/JS ファイルがある場合のみ）"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff (TS/JS files)"
+          outputs:
+            - "typescript_issues"
+
+    - name: aggregation
+      description: "レビュー結果の統合とレポート生成"
+      execution: sequential
+      tasks:
+        - name: aggregate-results
+          assigned_to: aggregator
+          description: "全レビュー結果を Critical/Major/Minor に分類し、統合レポートを生成"
+          inputs:
+            - "security_issues"
+            - "clean_code_issues"
+            - "gemini_issues"
+            - "codex_issues"
+            - "go_issues"
+            - "typescript_issues"
+          outputs:
+            - "review_report"
+            - "issues_by_severity"
+
+    - name: fix-cycle
+      description: "修正サイクル（--auto モード時のみ、最大5回繰り返し）"
+      execution: sequential
+      tasks:
+        - name: apply-fixes
+          assigned_to: aggregator
+          description: "Critical + Major 問題を修正し、再レビューを実行"
+          inputs:
+            - "issues_by_severity"
+          outputs:
+            - "applied_fixes"
+            - "remaining_issues"
+
+completion:
+  required_outputs:
+    - "review_report"
+    - "issues_by_severity"
+  quality_gates:
+    - "全 Critical 問題が解決済みまたは報告済み"
+    - "レビュー結果が統合レポートに含まれている"
+

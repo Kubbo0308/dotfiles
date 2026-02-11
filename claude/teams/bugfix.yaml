@@ -1,0 +1,182 @@
+name: bugfix-team
+description: "バグ修正: 調査・再現・修正・検証の一貫したワークフロー"
+category: bugfix
+
+lead:
+  name: coordinator
+  subagent_type: task-decomposer
+  role: "調査コーディネート・修正計画"
+  responsibilities:
+    - "バグの調査方針を決定"
+    - "修正タスクの分解と優先度付け"
+    - "修正完了の判定"
+
+members:
+  - name: investigator
+    subagent_type: codebase-analyzer
+    role: "コードベース調査"
+    responsibilities:
+      - "バグの根本原因の特定"
+      - "影響範囲の分析"
+      - "関連コードの調査"
+    condition: "always"
+
+  - name: researcher
+    subagent_type: web-researcher
+    role: "技術リサーチ"
+    responsibilities:
+      - "既知のバグパターンの調査"
+      - "ライブラリ/フレームワークの既知問題の確認"
+      - "修正方法のベストプラクティス収集"
+    condition: "always"
+
+  - name: fixer
+    subagent_type: general-purpose
+    role: "バグ修正実装"
+    responsibilities:
+      - "修正コードの実装"
+      - "回帰テストの追加"
+      - "関連ドキュメントの更新"
+    condition: "always"
+
+  - name: security-reviewer
+    subagent_type: security
+    role: "セキュリティ影響確認"
+    responsibilities:
+      - "修正がセキュリティ問題を導入していないか確認"
+      - "元のバグにセキュリティ影響がないか評価"
+    condition: "always"
+
+  - name: clean-code-reviewer
+    subagent_type: clean-code-fp-reviewer
+    role: "コード品質レビュー"
+    responsibilities:
+      - "修正コードの品質確認"
+      - "技術的負債の増加を防止"
+    condition: "always"
+
+  - name: pre-commit
+    subagent_type: pre-commit-checker
+    role: "コミット前チェック"
+    responsibilities:
+      - "diff の表示とユーザー確認"
+      - "コミット可否の判断"
+    condition: "always"
+
+language_variants:
+  go:
+    replacements:
+      - base_name: fixer
+        subagent_type: go-developer
+  typescript:
+    replacements:
+      - base_name: fixer
+        subagent_type: typescript-developer
+
+workflow:
+  steps:
+    - name: investigation
+      description: "コードベース調査と既知問題リサーチを並列で実行"
+      execution: parallel
+      tasks:
+        - name: code-investigation
+          assigned_to: investigator
+          description: "バグの根本原因と影響範囲を特定"
+          inputs:
+            - "bug_description"
+            - "error_logs"
+            - "reproduction_steps"
+          outputs:
+            - "root_cause"
+            - "affected_files"
+            - "impact_analysis"
+
+        - name: known-issues-research
+          assigned_to: researcher
+          description: "既知のバグパターンや類似問題を調査"
+          inputs:
+            - "bug_description"
+            - "technology_stack"
+          outputs:
+            - "known_patterns"
+            - "suggested_fixes"
+
+    - name: reproduction
+      description: "バグの再現確認と修正計画の立案"
+      execution: sequential
+      tasks:
+        - name: plan-fix
+          assigned_to: coordinator
+          description: "調査結果を基に修正計画を立案"
+          inputs:
+            - "root_cause"
+            - "impact_analysis"
+            - "known_patterns"
+            - "suggested_fixes"
+          outputs:
+            - "fix_plan"
+            - "fix_tasks"
+
+    - name: fix
+      description: "修正の実装"
+      execution: sequential
+      tasks:
+        - name: implement-fix
+          assigned_to: fixer
+          description: "バグ修正コードの実装と回帰テストの追加"
+          inputs:
+            - "fix_plan"
+            - "root_cause"
+            - "affected_files"
+          outputs:
+            - "fixed_code"
+            - "regression_tests"
+
+    - name: verification
+      description: "修正の検証を並列で実行"
+      execution: parallel
+      tasks:
+        - name: security-check
+          assigned_to: security-reviewer
+          description: "修正がセキュリティ問題を導入していないか確認"
+          inputs:
+            - "fixed_code"
+            - "git diff"
+          outputs:
+            - "security_assessment"
+
+        - name: quality-check
+          assigned_to: clean-code-reviewer
+          description: "修正コードの品質を確認"
+          inputs:
+            - "fixed_code"
+            - "git diff"
+          outputs:
+            - "quality_assessment"
+
+    - name: commit
+      description: "コミット前チェックとコミット"
+      execution: sequential
+      tasks:
+        - name: pre-commit-check
+          assigned_to: pre-commit
+          description: "diff を表示し、ユーザーにコミット確認を取る"
+          inputs:
+            - "fixed_code"
+            - "security_assessment"
+            - "quality_assessment"
+          outputs:
+            - "commit_approval"
+
+completion:
+  required_outputs:
+    - "fixed_code"
+    - "regression_tests"
+    - "commit_approval"
+  quality_gates:
+    - "根本原因が特定済み"
+    - "回帰テストが追加済み"
+    - "全テストがパス"
+    - "セキュリティレビュー通過"
+    - "pre-commit チェック通過"
+

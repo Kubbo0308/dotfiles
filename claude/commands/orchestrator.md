@@ -87,3 +87,41 @@ Adapted Plan: Step 1 → Step 2 → Skip Step 3 → Simplified Step 4 (just comm
 After Step 2: "Found critical architectural issue"
 Adapted Plan: Step 1 → Step 2 → New Step 2.5 (analyze architecture) → Modified Step 3
 ```
+
+## Team Definition Loading
+
+タスクカテゴリに対応するチーム定義ファイル (`claude/teams/*.yaml`) を活用して、チームを自動構成できます。
+
+### チーム定義ファイル
+
+| ファイル | カテゴリ | 用途 |
+|----------|----------|------|
+| `claude/teams/feature.yaml` | feature | 機能追加 |
+| `claude/teams/bugfix.yaml` | bugfix | バグ修正 |
+| `claude/teams/refactoring.yaml` | refactoring | リファクタリング |
+| `claude/teams/review.yaml` | review | PR/コードレビュー |
+
+### Loading Process
+
+1. **Read team definition**: `claude/teams/<category>.yaml` を Read ツールで読み込む
+2. **Detect language**: 変更ファイルの拡張子または `go.mod` / `package.json` の存在から言語を検出
+3. **Filter members**: `condition` フィールドで該当しないメンバーを除外
+   - `"always"` → 常に含む
+   - `"language:go"` → Go ファイルが検出された場合のみ
+   - `"language:typescript"` → TS/JS ファイルが検出された場合のみ
+4. **Apply language variants**: 検出言語に対応する `language_variants` の `replacements` を適用し、`subagent_type` を差し替え
+5. **Create team**: `TeamCreate` でチームを作成
+6. **Create tasks**: YAML の `workflow.steps` に基づき `TaskCreate` で依存関係付きタスクを作成
+7. **Spawn teammates**: 各メンバーを `Task` ツールで `team_name` パラメータ付きでスポーン
+
+### Example: Feature Team (Go Project)
+
+```
+1. Read claude/teams/feature.yaml
+2. Detect: .go files found, go.mod exists → language = "go"
+3. Filter: go-reviewer included, typescript-reviewer excluded
+4. Variants: developer → go-developer, tester → test (unchanged)
+5. TeamCreate: name="feature-team"
+6. TaskCreate: analysis(parallel) → planning → implementation → review(parallel) → finalize
+7. Task: spawn planner, analyzer, researcher, go-developer, tester, ...
+```
