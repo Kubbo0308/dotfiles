@@ -1,25 +1,67 @@
 name: review-team
-description: "PR/コードレビュー: 複数の専門レビュワーが並列でコードを多角的にレビューし、結果を統合する"
+description: "3モデル戦略レビュー: Claude (設計・アーキ) + Gemini (最新ベストプラクティス) + Codex (バグ・セキュリティ) の3社並列レビュー"
 category: review
+
+# === 3-Model Review Strategy ===
+#
+# 各 AI プロバイダの強みに特化した役割分担:
+#
+# | Provider  | Agent              | Focus                        | Why                              |
+# |-----------|--------------------|------------------------------|----------------------------------|
+# | Claude    | review             | Architecture, Design, Logic  | Deep reasoning, long context     |
+# | Gemini    | code-reviewer-gemini | Best Practices, Deprecation | Google Search grounding          |
+# | OpenAI    | codex-reviewer     | Bug Patterns, Security       | Pattern matching, OWASP          |
+#
+# 補助レビュワー (Claude-based, 観点特化):
+# - clean-code-fp-reviewer: 凝集度・結合度・関数型パターン
+# - security: セキュリティ深掘り (Codex と相互補完)
+# - 言語別レビュワー: go-reviewer / typescript-reviewer
 
 lead:
   name: aggregator
   subagent_type: general-purpose
-  role: "レビュー結果の集約・レポート作成"
+  role: "レビュー結果の集約・レポート作成・3モデル結果の統合"
   responsibilities:
-    - "全レビュワーの結果を Critical/Major/Minor に分類"
-    - "統合レポートの生成"
+    - "3プロバイダ (Claude/Gemini/Codex) の結果を統合"
+    - "重複指摘の排除とユニーク指摘の抽出"
+    - "Critical/Major/Minor への分類"
     - "修正サイクルの管理（--auto モード時）"
 
 members:
-  - name: security-reviewer
-    subagent_type: security
-    role: "セキュリティ専門分析"
+  # === Core 3-Model Reviewers (常に並列実行) ===
+
+  - name: claude-reviewer
+    subagent_type: review
+    role: "Claude: 設計・アーキテクチャ・ロジック深掘りレビュー"
     responsibilities:
-      - "OWASP Top 10 脆弱性の検出"
-      - "認証・認可の問題検出"
-      - "データ漏洩リスクの評価"
+      - "アーキテクチャ影響度の分析"
+      - "設計パターンの正誤判定"
+      - "複雑なビジネスロジックの検証"
+      - "API 契約と後方互換性の確認"
+      - "型設計の妥当性評価"
     condition: "always"
+
+  - name: gemini-reviewer
+    subagent_type: code-reviewer-gemini
+    role: "Gemini: Web 検索付き最新ベストプラクティスレビュー"
+    responsibilities:
+      - "最新ベストプラクティスとの照合 (Google Search grounding)"
+      - "非推奨 API・パターンの検出"
+      - "ライブラリの既知問題・脆弱性の確認"
+      - "マイグレーション推奨の提示"
+    condition: "always"
+
+  - name: codex-reviewer
+    subagent_type: codex-reviewer
+    role: "Codex: バグパターン検出・セキュリティ脆弱性分析"
+    responsibilities:
+      - "バグパターンの検出 (null ref, off-by-one, etc.)"
+      - "OWASP Top 10 セキュリティ脆弱性の検出"
+      - "エラーハンドリングのギャップ検出"
+      - "並行処理の問題検出"
+    condition: "always"
+
+  # === Supplementary Reviewers (Claude-based, 観点特化) ===
 
   - name: clean-code-reviewer
     subagent_type: clean-code-fp-reviewer
@@ -30,21 +72,16 @@ members:
       - "純粋関数・イミュータビリティの推奨"
     condition: "always"
 
-  - name: gemini-reviewer
-    subagent_type: code-reviewer-gemini
-    role: "最新ベストプラクティス照合"
+  - name: security-reviewer
+    subagent_type: security
+    role: "セキュリティ深掘り分析 (Codex レビューを補完)"
     responsibilities:
-      - "Gemini Web 検索で最新パターンを取得"
-      - "業界標準との比較"
+      - "Codex が検出した脆弱性の詳細分析"
+      - "認証・認可フローの検証"
+      - "データ保護・暗号化の確認"
     condition: "always"
 
-  - name: codex-reviewer
-    subagent_type: codex-reviewer
-    role: "Codex CLI による非インタラクティブレビュー"
-    responsibilities:
-      - "codex review --uncommitted による包括的分析"
-      - "認証問題時の fallback: codex exec with piped diff"
-    condition: "always"
+  # === Language-Specific Reviewers (該当言語がある場合のみ) ===
 
   - name: go-reviewer
     subagent_type: go-reviewer
@@ -84,19 +121,42 @@ workflow:
             - "changed_files_by_language"
             - "detected_languages"
 
-    - name: parallel-review
-      description: "全レビュワーによる並列レビュー"
+    - name: core-3model-review
+      description: "3プロバイダ (Claude/Gemini/Codex) による並列コアレビュー"
       execution: parallel
       tasks:
-        - name: security-analysis
-          assigned_to: security-reviewer
-          description: "セキュリティ脆弱性の検出"
+        - name: claude-architecture-review
+          assigned_to: claude-reviewer
+          description: "Claude: アーキテクチャ・設計・ロジックの深掘りレビュー"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff"
+            - "surrounding context files"
+          outputs:
+            - "claude_issues"
+
+        - name: gemini-bestpractice-review
+          assigned_to: gemini-reviewer
+          description: "Gemini: 最新ベストプラクティスとの照合 (Web 検索付き)"
           inputs:
             - "changed_files_by_language"
             - "git diff"
           outputs:
-            - "security_issues"
+            - "gemini_issues"
 
+        - name: codex-bugsec-review
+          assigned_to: codex-reviewer
+          description: "Codex: バグパターン・セキュリティ脆弱性の検出"
+          inputs:
+            - "changed_files_by_language"
+            - "git diff"
+          outputs:
+            - "codex_issues"
+
+    - name: supplementary-review
+      description: "補助レビュワーによる並列レビュー (コア3モデルを補完)"
+      execution: parallel
+      tasks:
         - name: clean-code-analysis
           assigned_to: clean-code-reviewer
           description: "クリーンコード・関数型プログラミング観点のレビュー"
@@ -106,23 +166,15 @@ workflow:
           outputs:
             - "clean_code_issues"
 
-        - name: gemini-analysis
-          assigned_to: gemini-reviewer
-          description: "最新ベストプラクティスとの照合"
+        - name: security-deep-analysis
+          assigned_to: security-reviewer
+          description: "セキュリティ深掘り分析 (Codex 結果を参照して補完)"
           inputs:
             - "changed_files_by_language"
             - "git diff"
+            - "codex_issues (security-related)"
           outputs:
-            - "gemini_issues"
-
-        - name: codex-analysis
-          assigned_to: codex-reviewer
-          description: "Codex CLI によるレビュー"
-          inputs:
-            - "changed_files_by_language"
-            - "git diff"
-          outputs:
-            - "codex_issues"
+            - "security_issues"
 
         - name: go-analysis
           assigned_to: go-reviewer
@@ -143,17 +195,23 @@ workflow:
             - "typescript_issues"
 
     - name: aggregation
-      description: "レビュー結果の統合とレポート生成"
+      description: "3モデル + 補助レビュー結果の統合とレポート生成"
       execution: sequential
       tasks:
         - name: aggregate-results
           assigned_to: aggregator
-          description: "全レビュー結果を Critical/Major/Minor に分類し、統合レポートを生成"
+          description: >
+            全レビュー結果を統合:
+            1. 3モデル間の重複指摘を排除
+            2. 各モデルのユニークな発見を強調
+            3. Critical/Major/Minor に分類
+            4. モデル別サマリーを含む統合レポートを生成
           inputs:
-            - "security_issues"
-            - "clean_code_issues"
+            - "claude_issues"
             - "gemini_issues"
             - "codex_issues"
+            - "clean_code_issues"
+            - "security_issues"
             - "go_issues"
             - "typescript_issues"
           outputs:
@@ -178,6 +236,7 @@ completion:
     - "review_report"
     - "issues_by_severity"
   quality_gates:
+    - "3モデル (Claude/Gemini/Codex) すべてのレビューが完了"
     - "全 Critical 問題が解決済みまたは報告済み"
     - "レビュー結果が統合レポートに含まれている"
-
+    - "モデル別サマリーが含まれている"

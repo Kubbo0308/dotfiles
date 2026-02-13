@@ -1,14 +1,27 @@
 ---
-description: "Multi-Review: マルチエージェントコードレビュー。言語別・観点別の専門レビュワーが並列でコードをレビュー。--auto で自動修正モード"
+description: "Multi-Review: 3モデル戦略 (Claude/Gemini/Codex) による並列コードレビュー。--auto で自動修正モード"
 arguments:
   - name: options
     description: "--auto for auto-fix mode (up to 5 iterations)"
     required: false
 ---
 
-# Multi-Review (mr) - マルチエージェントコードレビュー 🔍
+# Multi-Review (mr) - 3モデル戦略コードレビュー
 
-言語別・観点別の専門レビュワーがコードを多角的にレビューします。
+3社の AI プロバイダ (Claude/Gemini/Codex) が、それぞれの強みに特化してコードを多角的にレビューします。
+
+## 3-Model Strategy
+
+| Provider | Agent | Focus | Why |
+|----------|-------|-------|-----|
+| **Claude** (Anthropic) | `review` | 設計・アーキテクチャ・ロジック | 深い推論力、長いコンテキスト理解 |
+| **Gemini** (Google) | `code-reviewer-gemini` | 最新ベストプラクティス・非推奨検出 | Google Search grounding で鮮度最高 |
+| **Codex** (OpenAI) | `codex-reviewer` | バグパターン・セキュリティ脆弱性 | パターンマッチング、OWASP 検出に強い |
+
+**補助レビュワー** (Claude-based、観点特化):
+- `clean-code-fp-reviewer`: 凝集度・結合度・関数型パターン
+- `security`: セキュリティ深掘り (Codex を補完)
+- 言語別: `go-reviewer` / `typescript-reviewer`
 
 ## Options
 
@@ -32,41 +45,45 @@ git diff --staged --name-only
 - `.sql` (dbt project) → dbt reviewer
 - `.md` → Markdown reviewer
 
-### Step 2: 並列レビュー実行
+### Step 2: コア3モデルレビュー（並列実行）
 
-検出された言語に対応するレビュワーを **並列で** 起動します。
+**必ず3プロバイダすべてを並列で起動する。** 各プロバイダの担当観点:
 
-各レビュワーに渡す情報:
-1. 変更されたファイルの一覧
-2. 各ファイルの差分 (`git diff`)
-3. ファイルの全文（コンテキスト用）
+#### Claude (`review` agent) - 設計・アーキ・ロジック
+- アーキテクチャ影響度の分析
+- 設計パターンの正誤判定
+- 複雑なビジネスロジックの検証
+- API 契約と後方互換性
+- 型設計の妥当性
 
-**使用するサブエージェント:**
+#### Gemini (`code-reviewer-gemini` agent) - 最新ベストプラクティス
+- 最新ベストプラクティスとの照合 (Web 検索付き)
+- 非推奨 API・パターンの検出
+- ライブラリの既知問題・脆弱性
+- マイグレーション推奨
 
-#### 🌐 共通レビュワー（常に実行）
-- `security`: セキュリティ専門分析（OWASP Top 10、脆弱性検出）
-- `clean-code-fp-reviewer`: クリーンコード＆関数型プログラミング専門
+#### Codex (`codex-reviewer` agent) - バグ・セキュリティ
+- バグパターン (null ref, off-by-one, etc.)
+- OWASP Top 10 セキュリティ脆弱性
+- エラーハンドリングのギャップ
+- 並行処理の問題
+
+### Step 3: 補助レビュー（並列実行）
+
+コア3モデルに加え、以下の補助レビュワーも並列実行:
+
+- `security`: セキュリティ専門分析（Codex 結果を補完）
+- `clean-code-fp-reviewer`: クリーンコード＆関数型プログラミング
   - **MUST use Skills**: `clean-code`, `functional-programming`
-  - 凝集度（7レベル）、結合度（7レベル）、命名規則
-  - 純粋関数、イミュータビリティ、宣言的パターン
-  - 参照: `claude/skills/clean-code/`, `claude/skills/functional-programming/`
-- `code-reviewer-gemini`: Gemini Web検索で最新ベストプラクティスを取得
-- `code-reviewer-cursor`: Cursor AIによる包括的レビュー
-- `codex-reviewer`: OpenAI Codex CLIによる非インタラクティブレビュー
-  - Primary: `codex review --uncommitted` または `--base main`
-  - Fallback: `codex exec` with piped diff（認証問題時）
-  - 参照: `claude/skills/codex-integration/SKILL.md`
+- 言語別レビュワー（該当ファイルがある場合のみ）
 
-#### 📝 言語別レビュワー（該当ファイルがある場合のみ）
-- `go-reviewer`: Go コード専門（Idiomatic, Test, Consistency, Layer）
-- `typescript-reviewer`: TypeScript/React 専門（Type Safety, Performance, Layer）
-- `terraform-reviewer`: Terraform 専門（Idiomatic, Consistency, Validation）
-- `dbt-reviewer`: dbt/SQL 専門（SQL Style, Schema, Privacy Governance）
-- `markdown-reviewer`: Markdown 専門（CLAUDE.md/SKILL.md/一般で観点分岐）
+### Step 4: レビュー結果の統合
 
-### Step 3: レビュー結果の統合
+全レビュワーからの結果を統合し、以下のように分類:
 
-全レビュワーからのJSON結果を統合し、以下のように分類します:
+1. **3モデル間の重複指摘を排除** - 同じ問題を複数モデルが指摘した場合はマージ
+2. **各モデルのユニークな発見を強調** - そのモデルだけが見つけた問題をハイライト
+3. **Critical/Major/Minor に分類**
 
 #### 🔴 Critical Issues (即時対応必須)
 - セキュリティ脆弱性
@@ -83,7 +100,7 @@ git diff --staged --name-only
 - ドキュメント改善
 - リファクタリング提案
 
-### Step 4: 対応確認（通常モード）
+### Step 5: 対応確認（通常モード）
 
 **通常モード**の場合、開発者に確認します:
 
@@ -104,13 +121,13 @@ git diff --staged --name-only
 - このステップをスキップ
 - すべてのCritical + Major問題を自動修正
 
-### Step 5: 修正の適用
+### Step 6: 修正の適用
 
 選択された問題に対して修正を適用します。
 
 修正後、関連するファイルに対して**再度レビュー**を実行し、新たな問題がないか確認します。
 
-### Step 6: 繰り返し（自動修正モードのみ）
+### Step 7: 繰り返し（自動修正モードのみ）
 
 **自動修正モード**の場合:
 1. 修正後に再レビュー
@@ -123,46 +140,55 @@ git diff --staged --name-only
 最終的なレビューサマリー:
 
 ```markdown
-## 🔍 Multi-Review Summary
+## Multi-Review Summary (3-Model Strategy)
 
-### 📊 Statistics
+### Model Coverage
+| Provider | Agent | Focus | Issues Found |
+|----------|-------|-------|--------------|
+| Claude   | review | Architecture & Design | 3 |
+| Gemini   | code-reviewer-gemini | Best Practices | 2 |
+| Codex    | codex-reviewer | Bugs & Security | 4 |
+| (supplementary) | clean-code-fp, security, etc. | Specialized | 3 |
+
+### Statistics
 | Language | Files | Critical | Major | Minor |
 |----------|-------|----------|-------|-------|
 | Go       | 3     | 0        | 2     | 1     |
 | TypeScript | 5   | 1        | 3     | 4     |
-| Terraform | 2    | 0        | 1     | 0     |
 
 ### 🔴 Critical Issues (must fix)
-1. **[typescript]** `src/api/auth.ts:42` - XSS vulnerability in user input
+1. **[codex/security]** `src/api/auth.ts:42` - XSS vulnerability in user input
    - Suggestion: Use DOMPurify to sanitize input
 
 ### 🟠 Major Issues (should fix)
-1. **[go]** `internal/handler/user.go:28` - Missing error context
-   - Suggestion: Wrap error with `fmt.Errorf("failed to get user: %w", err)`
+1. **[claude/architecture]** `src/services/user.ts:28` - Leaking domain logic to handler
+   - Suggestion: Extract to domain service layer
+2. **[gemini/deprecation]** `src/utils/date.ts:15` - moment.js is deprecated
+   - Suggestion: Migrate to date-fns (source: https://...)
 
 ### 🟡 Minor Issues (nice to have)
-1. **[go]** `internal/service/order.go:15` - Consider using table-driven test
+1. **[clean-code]** `src/utils/calc.ts:10` - Common coupling via global state
 
 ### ✅ Applied Fixes
 - Fixed XSS vulnerability in `src/api/auth.ts`
-- Added error context in `internal/handler/user.go`
 
 ### 📝 Deferred Issues
-- Table-driven test suggestion (minor, manual review needed)
+- moment.js migration (major, requires planning)
 ```
 
 ## Implementation Notes
 
-1. **並列実行**: 各言語レビュワーは独立して並列実行
-2. **JSON出力**: レビュワーはJSON形式で結果を返す
-3. **冪等性**: 同じコードに対して同じレビュー結果
-4. **コンテキスト保持**: 修正後も元の問題コンテキストを保持
+1. **3プロバイダ必須**: Claude, Gemini, Codex すべてを起動すること
+2. **並列実行**: 各レビュワーは独立して並列実行
+3. **重複排除**: 統合時に同一問題のマージ
+4. **JSON出力**: レビュワーはJSON形式で結果を返す
+5. **モデル別サマリー**: 各プロバイダの発見を区別して表示
 
 ## Error Handling
 
-- レビュワーがタイムアウト: 該当言語のレビューをスキップ
+- レビュワーがタイムアウト: 該当レビューをスキップ（残りで継続）
+- CLI未インストール (gemini/codex): 警告を出して残りのモデルで継続
 - JSON解析エラー: レビュワーの生出力をログに記録
-- 修正失敗: 問題をDeferredリストに移動
 
 ## Usage Examples
 
@@ -180,9 +206,9 @@ git diff --staged --name-only
 
 1. First, detect changed files using `git diff`
 2. Classify files by language/type
-3. Launch appropriate reviewers in parallel using Task tool
-4. Aggregate results and present to user
-5. If --auto mode, proceed with auto-fix; otherwise ask for confirmation
+3. **Launch all 3 core model reviewers in parallel** (Claude, Gemini, Codex)
+4. Launch supplementary reviewers in parallel
+5. Aggregate results with deduplication and model attribution
+6. If --auto mode, proceed with auto-fix; otherwise ask for confirmation
 
 $ARGUMENTS
-
