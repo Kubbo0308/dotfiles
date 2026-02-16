@@ -32,3 +32,9 @@ keybind = super+shift+enter=toggle_fullscreen
 
 # Claude Code用改行
 keybind = alt+enter=text:\n
+
+# ペイン削除
+keybind = cmd+shift+w=close_surface
+
+# lazygit起動（現在のペインで）
+keybind = cmd+g=text:lazygit\x0d

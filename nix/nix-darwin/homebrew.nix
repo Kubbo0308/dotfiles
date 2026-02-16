@@ -33,6 +33,7 @@
     # GUI applications (casks)
     casks = [
       # Development
+      "ghostty"
       "wezterm"
       "visual-studio-code"
       "cursor"

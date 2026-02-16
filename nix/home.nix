@@ -46,6 +46,7 @@
         gl = "git log --oneline";
         gp = "git push";
         grsh = "git reset --soft HEAD^";
+        lg = "lazygit";
 
         # Docker
         dc = "docker compose";
