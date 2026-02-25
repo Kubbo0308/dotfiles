@@ -2,6 +2,9 @@
 # https://ghostty.org/docs/config
 # シンプル構成: tmuxは必要な時だけ手動起動
 
+# ===== Local Override (machine-specific, not tracked in git) =====
+config-file = ?local.conf
+
 # ===== Theme =====
 theme = "TokyoNight Night"
 
@@ -12,7 +15,7 @@ font-size = 16
 font-thicken = true
 
 # ===== Background =====
-background-image = /Users/y-kubo/.dotfiles/config/ghostty/ghostty_background.png
+background-image = ghostty_background.png
 background-image-opacity = 0.9
 background-image-fit = cover
 background-opacity = 0.85
