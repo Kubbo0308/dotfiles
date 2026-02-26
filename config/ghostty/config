@@ -41,3 +41,9 @@ keybind = cmd+shift+w=close_surface
 
 # lazygit起動（現在のペインで）
 keybind = cmd+g=text:lazygit\x0d
+
+# ペイン移動 (Ctrl+Shift+hjkl)
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:bottom
+keybind = ctrl+shift+k=goto_split:top
+keybind = ctrl+shift+l=goto_split:right
