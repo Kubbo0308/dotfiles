@@ -1,4 +1,5 @@
 {
+  "_note": "Hooks consolidated into settings.json. This file kept as reference backup.",
   "hooks": {
     "Notification": [
       {
@@ -11,6 +12,14 @@
           {
             "type": "command",
             "command": "osascript -e 'display notification \"Claude Code is waiting for your response.\" with title \"Claude Code\" sound name \"Funk\"'"
+          },
+          {
+            "type": "command",
+            "command": "say -v Kyoko 'クロードからの通知があるばい' &"
+          },
+          {
+            "type": "command",
+            "command": "echo '{}' | cmux claude-hook notification 2>/dev/null || true"
           }
         ]
       }
@@ -26,6 +35,14 @@
           {
             "type": "command",
             "command": "osascript -e 'display notification \"Claude Code has completed the task.\" with title \"Claude Code\" sound name \"Glass\"'"
+          },
+          {
+            "type": "command",
+            "command": "say -v Kyoko 'タスク完了したとよ' &"
+          },
+          {
+            "type": "command",
+            "command": "echo '{}' | cmux claude-hook stop 2>/dev/null || true"
           }
         ]
       }
