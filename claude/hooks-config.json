@@ -15,10 +15,6 @@
           },
           {
             "type": "command",
-            "command": "say -v Kyoko 'クロードからの通知があるばい' &"
-          },
-          {
-            "type": "command",
             "command": "echo '{}' | cmux claude-hook notification 2>/dev/null || true"
           }
         ]
@@ -35,10 +31,6 @@
           {
             "type": "command",
             "command": "osascript -e 'display notification \"Claude Code has completed the task.\" with title \"Claude Code\" sound name \"Glass\"'"
-          },
-          {
-            "type": "command",
-            "command": "say -v Kyoko 'タスク完了したとよ' &"
           },
           {
             "type": "command",

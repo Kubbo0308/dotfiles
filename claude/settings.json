@@ -7,10 +7,11 @@
   "permissions": {
     "allow": [
       "Bash(*)",
+      "Read",
       "Edit",
       "Write",
       "WebSearch",
-      "WebFetch(domain:*)",
+      "WebFetch",
       "Skill(*)",
       "mcp__*__*"
     ],
@@ -61,10 +62,6 @@
           },
           {
             "type": "command",
-            "command": "~/.dotfiles/claude/hooks/say-notify.sh notification"
-          },
-          {
-            "type": "command",
             "command": "echo '{}' | cmux claude-hook notification 2>/dev/null || true"
           }
         ]
@@ -81,10 +78,6 @@
           {
             "type": "command",
             "command": "osascript -e \"display notification \\\"$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null || echo 'unknown') / $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')\\\" with title \\\"タスク完了\\\" sound name \\\"Glass\\\"\""
-          },
-          {
-            "type": "command",
-            "command": "~/.dotfiles/claude/hooks/say-notify.sh stop"
           },
           {
             "type": "command",
