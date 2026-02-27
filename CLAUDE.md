@@ -67,7 +67,7 @@ nvim
 │   │   └── lua/plugins/  # Plugin configurations (lazy.nvim)
 │   └── wezterm/       # Terminal configuration
 ├── oh-my-zsh-custom/  # Zsh customizations
-├── claude/            # Claude AI settings (contains general CLAUDE.md)
+├── claude/            # Claude Code config (symlinked as ~/.claude)
 ├── docs/              # Documentation (git-commands.md)
 └── zshrc             # Main Zsh configuration
 ```
