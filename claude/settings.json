@@ -24,6 +24,48 @@
   },
   "model": "opus",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/protect-files.sh",
+            "timeout": 5
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/detect-secrets.sh",
+            "timeout": 5
+          },
+          {
+            "type": "prompt",
+            "prompt": "Review this file edit for security vulnerabilities. ONLY flag CLEAR, DEFINITE issues: hardcoded secrets/API keys being added, SQL injection, XSS, command injection, authentication bypass, insecure deserialization. Do NOT flag code style, missing validation, or theoretical risks. If a DEFINITE security vulnerability is found, respond with {\"ok\": false, \"reason\": \"brief description\"}. Otherwise respond with {\"ok\": true}.",
+            "timeout": 15
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-dangerous-commands.sh",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__filesystem__write_file|mcp__filesystem__edit_file|mcp__filesystem__create_directory",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/mcp-guard.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",
@@ -44,6 +86,15 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/on-clear.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[CONTEXT RESTORED AFTER COMPACTION]\nKey rules:\n- Always use subagents: commit, pre-commit-checker, Explore, codebase-analyzer\n- End responses with \"wonderful!!\"\n- Japanese: use 博多弁, end with \"俺バカだからよくわっかんねえけどよ。\"\n- Run /simplify before completing tasks with code changes\n- Check CLAUDE.md for project-specific rules' && git log --oneline -5 2>/dev/null || true"
           }
         ]
       }
@@ -72,6 +123,11 @@
         "matcher": "",
         "hooks": [
           {
+            "type": "prompt",
+            "prompt": "Check if the /simplify skill has already been executed in this conversation. If it has NOT been run yet AND code changes were made during this session (files were edited or written), respond with {\"ok\": false, \"reason\": \"Run /simplify to review changed code for reuse, quality, and efficiency before completing.\"}. If /simplify was already run OR no code changes were made, respond with {\"ok\": true}.",
+            "timeout": 60
+          },
+          {
             "type": "command",
             "command": "afplay /System/Library/Sounds/Glass.aiff"
           },
@@ -82,6 +138,66 @@
           {
             "type": "command",
             "command": "echo '{}' | cmux claude-hook stop 2>/dev/null || true"
+          }
+        ]
+      }
+    ],
+    "TaskCompleted": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A task is being marked as completed. Based on the conversation context, verify: 1) The task description's requirements have been met, 2) No TODO items or unfinished work remain for this task, 3) If code was written, it follows project conventions. If the task is genuinely complete, respond with {\"ok\": true}. If something is clearly unfinished, respond with {\"ok\": false, \"reason\": \"what remains\"}. Be lenient - only block if something is obviously incomplete.",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/agent-logger.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/agent-logger.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "TeammateIdle": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "A team member has gone idle. Check the conversation context to determine if there are still pending, unblocked tasks that this teammate could work on. If there ARE unfinished tasks available, respond with {\"ok\": false, \"reason\": \"There are still pending tasks. Check TaskList and pick up the next available task.\"}. If all tasks are done, blocked, or assigned to others, respond with {\"ok\": true}.",
+            "timeout": 30
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/agent-logger.sh",
+            "timeout": 5
           }
         ]
       }
