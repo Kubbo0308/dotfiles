@@ -7,7 +7,7 @@ if [ -z "$COMMAND" ]; then
   exit 0
 fi
 
-# Critical: absolutely never allow
+# Critical: absolutely never allow (bash builtins, no subprocess)
 CRITICAL_PATTERNS=(
   "rm -rf /"
   "rm -rf ~"
@@ -28,19 +28,12 @@ for pattern in "${CRITICAL_PATTERNS[@]}"; do
   fi
 done
 
-# High risk patterns (regex)
-HIGH_RISK_REGEX=(
-  'curl\s.*\|\s*(ba)?sh'
-  'wget\s.*\|\s*(ba)?sh'
-  'chmod\s+777\b'
-  'chmod\s+-R\s+777\b'
-)
+# High risk patterns (single combined grep call for efficiency)
+HIGH_RISK_RE='curl\s.*\|\s*(ba)?sh|wget\s.*\|\s*(ba)?sh|chmod\s+777\b|chmod\s+-R\s+777\b|curl\s.*-d\s.*\$\(env\)|curl\s.*-d\s.*process\.env|wget\s.*--post-data.*env|nc\s+-e\s|ncat\s+-e\s|python3?\s+-c\s.*urllib|python3?\s+-c\s.*requests|python3?\s+-c\s.*socket|node\s+-e\s.*https?\.|node\s+-e\s.*fetch|node\s+-e\s.*process\.env|nslookup\s.*\$\(|dig\s.*\$\('
 
-for regex in "${HIGH_RISK_REGEX[@]}"; do
-  if echo "$COMMAND" | grep -qE "$regex"; then
-    echo "⚠️ HIGH RISK: Blocked potentially dangerous command matching pattern '$regex'" >&2
-    exit 2
-  fi
-done
+if echo "$COMMAND" | grep -qE "$HIGH_RISK_RE"; then
+  echo "⚠️ HIGH RISK: Blocked potentially dangerous command" >&2
+  exit 2
+fi
 
 exit 0

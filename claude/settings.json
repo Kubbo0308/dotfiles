@@ -39,8 +39,13 @@
             "timeout": 5
           },
           {
+            "type": "command",
+            "command": "~/.claude/hooks/detect-env-exfiltration.sh",
+            "timeout": 5
+          },
+          {
             "type": "prompt",
-            "prompt": "Review this file edit for security vulnerabilities. ONLY flag CLEAR, DEFINITE issues: hardcoded secrets/API keys being added, SQL injection, XSS, command injection, authentication bypass, insecure deserialization. Do NOT flag code style, missing validation, or theoretical risks. If a DEFINITE security vulnerability is found, respond with {\"ok\": false, \"reason\": \"brief description\"}. Otherwise respond with {\"ok\": true}.",
+            "prompt": "Review this file edit for security vulnerabilities. Flag these DEFINITE issues: 1) hardcoded secrets/API keys, 2) SQL injection, XSS, command injection, 3) authentication bypass, insecure deserialization, 4) process.env/os.environ being sent to external URLs or logged in bulk, 5) suspicious packages from node_modules that send data externally, 6) code patterns copied from cloned OSS that contain obfuscated code or hidden external endpoints, 7) eval()/new Function() with untrusted input. Do NOT flag code style or theoretical risks. If a DEFINITE vulnerability is found, respond with {\"ok\": false, \"reason\": \"brief description\"}. Otherwise respond with {\"ok\": true}.",
             "timeout": 15
           }
         ]
@@ -109,7 +114,7 @@
           },
           {
             "type": "command",
-            "command": "osascript -e \"display notification \\\"$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null || echo 'unknown') / $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')\\\" with title \\\"入力待ち\\\" sound name \\\"Funk\\\"\""
+            "command": "PROJECT=$(basename \"$(git rev-parse --show-toplevel 2>/dev/null)\" 2>/dev/null | tr -cd 'a-zA-Z0-9._-') && [ -z \"$PROJECT\" ] && PROJECT='unknown' ; BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -cd 'a-zA-Z0-9._-/') && [ -z \"$BRANCH\" ] && BRANCH='unknown' ; osascript -e \"display notification \\\"$PROJECT / $BRANCH\\\" with title \\\"入力待ち\\\" sound name \\\"Funk\\\"\""
           },
           {
             "type": "command",
@@ -133,7 +138,7 @@
           },
           {
             "type": "command",
-            "command": "osascript -e \"display notification \\\"$(basename $(git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null || echo 'unknown') / $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')\\\" with title \\\"タスク完了\\\" sound name \\\"Glass\\\"\""
+            "command": "PROJECT=$(basename \"$(git rev-parse --show-toplevel 2>/dev/null)\" 2>/dev/null | tr -cd 'a-zA-Z0-9._-') && [ -z \"$PROJECT\" ] && PROJECT='unknown' ; BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null | tr -cd 'a-zA-Z0-9._-/') && [ -z \"$BRANCH\" ] && BRANCH='unknown' ; osascript -e \"display notification \\\"$PROJECT / $BRANCH\\\" with title \\\"タスク完了\\\" sound name \\\"Glass\\\"\""
           },
           {
             "type": "command",
@@ -201,11 +206,23 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/package-audit.sh",
+            "timeout": 5
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
     "type": "command",
     "command": "node ~/.claude/statusline.js"
   },
-  "skipDangerousModePermissionPrompt": true
+  "skipDangerousModePermissionPrompt": false
 }
