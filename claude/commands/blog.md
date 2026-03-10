@@ -92,6 +92,8 @@ After the greeting, switch to formal tone for the rest of the article.
 
 5. **Do NOT use `---` (horizontal rules) between sections** — headings already provide visual separation, and `---` creates redundant lines on the blog
 
+6. **Inline citations are MANDATORY** — when mentioning any person, study, article, or external source, always include a link to the source at or near the first mention. Readers should never encounter a name or claim without knowing where it comes from. Use `[Name (Source)](URL)` format inline, not just in the references section at the end
+
 ### Accordion Usage
 
 Use `<details>/<summary>` for:
