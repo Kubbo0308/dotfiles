@@ -19,6 +19,9 @@
       "Bash(sudo:*)",
       "Bash(rm:*)",
       "Bash(eval:*)",
+      "Bash(chmod:*)",
+      "Bash(crontab:*)",
+      "Bash(launchctl:*)",
       "NotebookEdit"
     ]
   },
