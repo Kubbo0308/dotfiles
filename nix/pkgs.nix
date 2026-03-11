@@ -44,7 +44,7 @@ with pkgs; [
 
   # AI CLI Tools
   gemini-cli
-  codex
+  # codex - managed via npm global (@openai/codex) for faster updates
 
   # Build Tools
   gnumake

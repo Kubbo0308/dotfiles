@@ -18,7 +18,7 @@ font-thicken = true
 background-image = ghostty_background.png
 background-image-opacity = 0.9
 background-image-fit = cover
-background-opacity = 0.85
+background-opacity = 0.5
 background-blur = true
 
 # ===== Window =====

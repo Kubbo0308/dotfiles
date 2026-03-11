@@ -82,6 +82,9 @@ config/nvim/*_GUIDE.md
 config/nvim/*_SUMMARY.md
 config/nvim/*_FIX_*.md
 
+# Ghostty local overrides (machine-specific)
+config/ghostty/local.conf
+
 # Wezterm logs and temporary files
 wezterm/.claude/
 wezterm/logs/
