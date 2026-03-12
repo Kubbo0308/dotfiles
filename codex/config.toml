@@ -15,8 +15,7 @@ show_raw_agent_reasoning = false
 network_access = true
 personality = "pragmatic"
 
-[projects."/Users/y-kubo/.dotfiles"]
-trust_level = "trusted"
+# Projects configured per-machine (do not hardcode absolute paths)
 
 [features]
 web_search_request = true

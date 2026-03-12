@@ -7,6 +7,9 @@ if [ -z "$FILE_PATH" ]; then
   exit 0
 fi
 
+# Normalize path to prevent traversal bypass
+FILE_PATH=$(realpath "$FILE_PATH" 2>/dev/null || echo "$FILE_PATH")
+
 # Sensitive directories that should not be modified via MCP
 BLOCKED_DIRS=(
   "/.ssh"

@@ -37,6 +37,8 @@ claude/logs/
 # MCP server data directories
 claude/mcp/servers/*.json
 !claude/mcp/servers/*-template.json
+claude/mcp/claude-desktop.json
+claude/mcp/package-lock.json
 codex/mcp/config.toml
 
 # Serena MCP cache and index files
@@ -80,7 +82,7 @@ oh-my-zsh/
 !oh-my-zsh-custom/
 
 # Neovim temporary files
-nvim/lazy-lock.json
+**/lazy-lock.json
 nvim/*.tmp
 nvim/swap/
 nvim/backup/

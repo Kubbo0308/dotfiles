@@ -64,7 +64,7 @@
         ]
       },
       {
-        "matcher": "mcp__filesystem__write_file|mcp__filesystem__edit_file|mcp__filesystem__create_directory",
+        "matcher": "mcp__filesystem__write_file|mcp__filesystem__edit_file|mcp__filesystem__create_directory|mcp__filesystem__move_file|mcp__filesystem__delete_file",
         "hooks": [
           {
             "type": "command",
