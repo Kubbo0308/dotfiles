@@ -3,6 +3,9 @@
 *.swp
 *.bak
 
+# Duplicate config directory (use config/ instead)
+.config/
+
 # Local environment specific settings
 local/
 claude/settings.local.json
