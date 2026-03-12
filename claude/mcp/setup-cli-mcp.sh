@@ -17,8 +17,19 @@ echo -e "${GREEN}Setting up MCP servers for Claude Code CLI...${NC}\n"
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 ENV_FILE="${SCRIPT_DIR}/environments/.env.local"
 
-# Load environment variables if .env.local exists
+# Load environment variables if .env.local exists (with ownership/permission validation)
 if [ -f "$ENV_FILE" ]; then
+    # Verify file is owned by current user
+    if [ "$(stat -f '%u' "$ENV_FILE")" != "$(id -u)" ]; then
+        echo -e "${RED}ERROR: $ENV_FILE not owned by current user. Aborting.${NC}" >&2
+        exit 1
+    fi
+    # Verify file is not world/group writable
+    FILE_PERMS=$(stat -f '%Lp' "$ENV_FILE")
+    if [[ "$FILE_PERMS" =~ [2367][2367]$ ]]; then
+        echo -e "${RED}ERROR: $ENV_FILE has unsafe permissions (${FILE_PERMS}). Run: chmod 600 $ENV_FILE${NC}" >&2
+        exit 1
+    fi
     echo -e "${GREEN}Loading environment variables from .env.local${NC}"
     source "$ENV_FILE"
 else

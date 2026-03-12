@@ -115,6 +115,7 @@ claude/paste-cache/
 claude/plans/
 
 # Codex confidential files
+codex/models_cache.json
 codex/auth.json
 codex/history.jsonl
 codex/history.jsonl.*
