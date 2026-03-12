@@ -35,6 +35,10 @@ get_repo_name() {
 
 cmd_new() {
     local branch_name="${1:?Branch name is required}"
+    if [[ ! "$branch_name" =~ ^[a-zA-Z0-9/_.-]+$ ]]; then
+        err "Invalid branch name: only a-z, A-Z, 0-9, /, _, ., - are allowed"
+        exit 1
+    fi
     local base_branch="${2:-main}"
     local repo_name
     repo_name="$(get_repo_name)"
@@ -61,7 +65,7 @@ cmd_new() {
     # Create cmux workspace and rename it
     info "Creating cmux workspace..."
     local ws_output
-    ws_output=$(cmux new-workspace --command "cd $worktree_path && exec zsh" 2>&1)
+    ws_output=$(cmux new-workspace --command "cd '${worktree_path}' && exec zsh" 2>&1)
     local ws_ref
     ws_ref=$(echo "$ws_output" | grep -oE 'workspace:[0-9]+' | head -1)
     if [ -n "$ws_ref" ]; then
@@ -93,6 +97,10 @@ cmd_list() {
 
 cmd_remove() {
     local branch_name="${1:?Branch name is required}"
+    if [[ ! "$branch_name" =~ ^[a-zA-Z0-9/_.-]+$ ]]; then
+        err "Invalid branch name: only a-z, A-Z, 0-9, /, _, ., - are allowed"
+        exit 1
+    fi
     local repo_name
     repo_name="$(get_repo_name)"
     local worktree_path="$WORKTREE_BASE/$repo_name/$branch_name"

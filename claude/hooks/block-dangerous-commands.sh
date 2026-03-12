@@ -1,7 +1,7 @@
 #!/bin/bash
 # Block dangerous shell commands
 INPUT=$(cat)
-COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
+COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty' | tr '\n' ' ')
 
 if [ -z "$COMMAND" ]; then
   exit 0

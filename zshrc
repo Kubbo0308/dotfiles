@@ -27,7 +27,7 @@ plugins=(git docker brew github zsh-autosuggestions zsh-syntax-highlighting zsh-
 
 source $ZSH/oh-my-zsh.sh
 
-ZSH_HIGHLIGHT_HIGHTLIGHTERS=(main brackets cursor root)
+ZSH_HIGHLIGHT_HIGHLIGHTERS=(main brackets cursor root)
 ## 連想配列
 typeset -A ZSH_HIGHLIGHT_STYLES
 # ブラケット

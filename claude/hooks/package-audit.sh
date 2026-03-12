@@ -8,7 +8,7 @@ if [ -z "$COMMAND" ]; then
 fi
 
 # Single regex for all package install commands
-INSTALL_RE='npm (install|i |add)|yarn add|pnpm (add|install)|bun (add|install)|pip3? install|go get'
+INSTALL_RE='npm (install|i |add)|yarn add|pnpm (add|install)|bun (add|install)|pip3? install|go get|gem install|cargo (add|install)|composer require|brew install'
 
 if [[ "$COMMAND" =~ $INSTALL_RE ]]; then
   echo "📦 SECURITY REMINDER: Package installation detected." >&2
