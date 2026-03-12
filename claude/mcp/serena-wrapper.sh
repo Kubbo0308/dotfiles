@@ -70,7 +70,7 @@ start_serena_server() {
 
     # Start Serena with SSE transport in background
     nohup "$UVX_PATH" \
-        --from "git+https://github.com/oraios/serena" \
+        --from "git+https://github.com/oraios/serena@v0.1.4" \
         serena start-mcp-server \
         --context "$SERENA_CONTEXT" \
         --transport sse \

@@ -85,24 +85,24 @@ fi
 
 # Add Playwright MCP
 add_mcp_server "playwright" \
-    npx -y "@playwright/mcp@latest"
+    npx -y "@playwright/mcp@0.0.68"
 
 # Add Chrome DevTools MCP
 add_mcp_server "chrome-devtools" \
-    npx -y "chrome-devtools-mcp@latest" \
+    npx -y "chrome-devtools-mcp@0.20.0" \
     --isolated=true \
     --headless="${CHROME_HEADLESS}" \
     --viewport="${CHROME_VIEWPORT}"
 
 # Add Filesystem MCP
 add_mcp_server "filesystem" \
-    npx -y "@modelcontextprotocol/server-filesystem" \
+    npx -y "@modelcontextprotocol/server-filesystem@2026.1.14" \
     "${HOME}/Desktop" \
     "${HOME}/Downloads"
 
 # Add Context7 MCP
 add_mcp_server "context7" \
-    npx -y "@upstash/context7-mcp"
+    npx -y "@upstash/context7-mcp@2.1.4"
 
 # Add PostgreSQL MCP (if connection string is set)
 if [ -n "${POSTGRES_CONNECTION_STRING}" ]; then

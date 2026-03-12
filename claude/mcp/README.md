@@ -98,7 +98,7 @@ Both methods are idempotent - if Serena is already running, nothing happens.
 
 **Web automation and browser interaction.**
 
-- **Command**: `npx -y @playwright/mcp@latest`
+- **Command**: `npx -y @playwright/mcp@0.0.68`
 - **Data directory**: `servers/playwright-data/`
 - **Features**:
   - Web automation
@@ -109,7 +109,7 @@ Both methods are idempotent - if Serena is already running, nothing happens.
 
 **Browser automation and debugging capabilities.**
 
-- **Command**: `npx -y chrome-devtools-mcp@latest`
+- **Command**: `npx -y chrome-devtools-mcp@0.20.0`
 - **Features**:
   - Browser automation (26 tools)
   - Performance tracing and analysis
