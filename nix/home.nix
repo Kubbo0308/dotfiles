@@ -19,7 +19,7 @@
 
   # User packages (in addition to system packages)
   home.packages = with pkgs; [
-    # Add user-specific packages here
+    lefthook
   ];
 
   # Program configurations
@@ -57,6 +57,12 @@
 
         # AI Assistants
         clawd = "npx clawdbot";
+
+        # Chrome with debug port (for MCP tools)
+        chrome-debug = "~/.dotfiles/.scripts/chrome-debug.sh";
+
+        # Token usage (requires node >= 20.19.4)
+        ccusage = "mise x node@20.19.4 -- npx ccusage@latest";
       };
 
       # Oh-My-Zsh configuration

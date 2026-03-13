@@ -1,0 +1,54 @@
+# Lefthook - Git hooks manager
+# Harness Engineering: deterministic quality gates at pre-commit layer
+
+pre-commit:
+  parallel: true
+  commands:
+    go-lint:
+      glob: "*.go"
+      run: |
+        if command -v golangci-lint &>/dev/null; then
+          golangci-lint run --fix {staged_files}
+        fi
+    go-fmt:
+      glob: "*.go"
+      run: |
+        if command -v gofmt &>/dev/null; then
+          gofmt -w {staged_files} && git add {staged_files}
+        fi
+    ts-lint:
+      glob: "*.{ts,tsx,js,jsx}"
+      run: |
+        if command -v biome &>/dev/null; then
+          biome check --write {staged_files} && git add {staged_files}
+        elif command -v oxlint &>/dev/null; then
+          oxlint {staged_files}
+        fi
+    ts-typecheck:
+      glob: "*.{ts,tsx}"
+      run: |
+        if [ -f tsconfig.json ]; then
+          npx tsc --noEmit 2>&1 | head -30
+        fi
+    shell-lint:
+      glob: "*.sh"
+      run: |
+        if command -v shellcheck &>/dev/null; then
+          shellcheck {staged_files}
+        fi
+    nix-fmt:
+      glob: "*.nix"
+      run: |
+        if command -v nixfmt &>/dev/null; then
+          nixfmt {staged_files} && git add {staged_files}
+        fi
+
+pre-push:
+  parallel: true
+  commands:
+    go-test:
+      glob: "*.go"
+      run: |
+        if [ -f go.mod ]; then
+          go test ./... 2>&1 | tail -20
+        fi
