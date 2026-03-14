@@ -8,7 +8,7 @@ const COMPACT_PCT = parseInt(process.env.CLAUDE_AUTOCOMPACT_PCT_OVERRIDE || '80'
 const COMPACT_MARKER_AT = Math.max(10, Math.min(90, Math.floor(COMPACT_PCT / 10) * 10));
 
 // Bar config: 10 segments x 2 chars = 20 fill chars + 9 separators + 2 brackets
-const SEGMENT_WIDTH = 2;
+const SEGMENT_WIDTH = 1;
 const NUM_SEGMENTS = 10;
 
 // ANSI colors
@@ -73,12 +73,12 @@ function renderUsageBar(usedPct) {
         : C.dim + '░' + C.reset;
     }
 
-    // Separator after segment (not after last)
+    // Compact threshold marker only (no separators between segments)
     if (seg < NUM_SEGMENTS - 1) {
       const boundaryPct = (seg + 1) * 10;
-      bar += boundaryPct === COMPACT_MARKER_AT
-        ? C.cyan + C.bold + '┃' + C.reset
-        : C.dim + '│' + C.reset;
+      if (boundaryPct === COMPACT_MARKER_AT) {
+        bar += C.cyan + C.bold + '┃' + C.reset;
+      }
     }
   }
 
