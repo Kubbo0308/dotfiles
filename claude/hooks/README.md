@@ -1,52 +1,68 @@
 # Claude Code Hooks
 
-Claude Codeのフック設定を管理するディレクトリです。
+Claude Code のライフサイクルフックを管理するディレクトリです。`settings.json` の `hooks` セクションで設定されています。
+
+## フック一覧 (11 scripts)
+
+### セキュリティ (PreToolUse)
+
+| Script | Matcher | 用途 |
+|--------|---------|------|
+| `detect-secrets.sh` | `Edit\|Write` | ハードコードされたシークレット・APIキーの検出 |
+| `detect-env-exfiltration.sh` | `Edit\|Write` | 環境変数の外部送信パターン検出 |
+| `protect-files.sh` | `Edit\|Write` | `.env`、鍵ファイル等の機密ファイル編集ブロック |
+| `protect-linter-config.sh` | `Edit\|Write` | リンター・フォーマッター設定ファイルの保護 |
+| `block-dangerous-commands.sh` | `Bash` | 危険なシェルコマンドのブロック |
+| `mcp-guard.sh` | `mcp__filesystem__*` | MCP 経由の機密ディレクトリ書き込みブロック |
+
+### 品質管理 (PostToolUse)
+
+| Script | Matcher | 用途 |
+|--------|---------|------|
+| `post-edit-lint.sh` | `Write\|Edit` | ファイル編集後の自動リント (Go/TS/Shell/Nix) |
+| `package-audit.sh` | `Bash` | パッケージインストール後のセキュリティ監査警告 |
+
+### ライフサイクル
+
+| Script | Event | 用途 |
+|--------|-------|------|
+| `on-clear.sh` | `SessionStart:clear` | `/clear` 後に `/sync-main` を促す |
+| `pre-compact.sh` | `PreCompact` | コンパクション前の重要コンテキスト保存 |
+| `agent-logger.sh` | `SubagentStart/Stop`, `WorktreeRemove` | エージェント活動のログ記録 |
+
+### 共有ライブラリ
+
+| File | 用途 |
+|------|------|
+| `lib/file-guard.sh` | フック共通ヘルパー（stdin パース、ファイルパス抽出） |
+
+## Prompt Hooks (settings.json 内で定義)
+
+スクリプトファイルではなく `settings.json` 内にインラインで定義されたプロンプトフック:
+
+| Event | 用途 |
+|-------|------|
+| `PreToolUse:Edit\|Write` | セキュリティ脆弱性の AI レビュー |
+| `Stop` | `/simplify` 実行チェック |
+| `TaskCompleted` | タスク完了検証 |
+| `TeammateIdle` | 未処理タスクの確認 |
+
+## イベントフロー
+
+```
+SessionStart → on-clear.sh (clear時) / serena-wrapper.sh (常時)
+    ↓
+PreToolUse → security checks (Edit/Write/Bash/MCP)
+    ↓
+PostToolUse → auto-lint (Edit/Write) / package-audit (Bash)
+    ↓
+SubagentStart/Stop → agent-logger.sh
+    ↓
+PreCompact → pre-compact.sh
+    ↓
+Stop → /simplify check + notification
+```
 
 ## セットアップ
 
-`settings.json` は機密情報を含む可能性があるため `.gitignore` で除外されています。
-新しいマシンでセットアップする場合は、以下の設定を `~/.claude/settings.json` に手動で追加してください。
-
-### hooks 設定の追加
-
-`~/.claude/settings.json` に以下を追加:
-
-```json
-{
-  "hooks": {
-    "SessionStart": [
-      {
-        "matcher": "clear",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/on-clear.sh"
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-既存の settings.json がある場合は、`hooks` キーをマージしてください。
-
-## 利用可能なフック
-
-### on-clear.sh
-
-`/clear` コマンド実行時に自動で発火するフックです。
-
-**機能:**
-- セッション開始時に `/sync-main` を実行するよう促すコンテキストを注入
-- main ブランチとの同期を促すことで、クリーンな状態で新しいセッションを開始
-
-**関連コマンド:**
-- `/sync-main` - 変更を処理してmainブランチに同期
-
-## ワークフロー
-
-1. 作業完了後、`/clear` を実行
-2. フックが発火し、Claude が `/sync-main` の実行を提案
-3. 変更を stash/commit した後、main ブランチに同期
-4. クリーンな状態で新しいセッションを開始
+フック設定は `settings.json` に含まれています。新しいマシンでは `settings.json` をセットアップしてください（シンボリンク経由で自動反映）。

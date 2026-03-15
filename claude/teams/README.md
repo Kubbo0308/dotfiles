@@ -20,6 +20,7 @@
 | `bugfix.yaml` | バグ修正 | 調査・再現・修正・検証 |
 | `refactoring.yaml` | リファクタリング | 品質監査・計画・テスト・リファクタ・レビュー |
 | `review.yaml` | コードレビュー | `/mr` コマンドの構造化版。3モデル戦略並列レビュー |
+| `support-class-refactor/` | カスタムチーム | プロジェクト固有のリファクタリングチーム定義 |
 
 ## YAML スキーマ
 
@@ -44,8 +45,8 @@ members:                  # チームメンバー
 language_variants:        # 言語別 subagent_type 差し替え
   go:
     replacements:
-      - base_name: string       # members の name
-        subagent_type: string   # 差し替え先エージェント
+      - base_name: string
+        subagent_type: string
   typescript:
     replacements:
       - base_name: string
@@ -58,7 +59,7 @@ workflow:
       execution: "sequential" | "parallel"
       tasks:
         - name: string
-          assigned_to: string     # member name または lead name
+          assigned_to: string
           description: string
           inputs: [string]
           outputs: [string]
@@ -70,36 +71,28 @@ completion:
 
 ## 使い方
 
-### 1. Orchestrator からの利用
+### Orchestrator からの利用
 
-`/orchestrator` コマンド実行時、orchestrator が以下の手順でチーム定義を活用します:
+`/orchestrator` コマンド実行時:
 
-1. `claude/teams/<category>.yaml` を Read で読み込み
+1. `claude/teams/<category>.yaml` を読み込み
 2. 言語検出（git diff のファイル拡張子 / `go.mod` / `package.json`）
 3. `condition` フィルタリングと `language_variants` 適用
-4. `TeamCreate` → `TaskCreate`（依存関係付き）→ `Task` で Teammate をスポーン
+4. `TeamCreate` → `TaskCreate`（依存関係付き）→ Teammate をスポーン
 
-### 2. 言語検出ロジック
+### 言語検出
 
 | 検出対象 | Go | TypeScript |
 |----------|-----|-----------|
 | ファイル拡張子 | `.go` | `.ts`, `.tsx`, `.js`, `.jsx` |
 | プロジェクトファイル | `go.mod` | `package.json` |
 
-### 3. condition フィールド
+### condition フィールド
 
 - `"always"` — 常にチームに参加
 - `"language:go"` — Go ファイルが検出された場合のみ
 - `"language:typescript"` — TypeScript/JavaScript ファイルが検出された場合のみ
 
-### 4. language_variants 適用
-
-言語が検出された場合、`replacements` に記載された `base_name` に該当するメンバーの `subagent_type` を差し替えます。
-
-例: Go プロジェクトの場合、`developer` メンバーの `subagent_type` が `general-purpose` → `go-developer` に変更されます。
-
 ## `/mr` コマンドとの関係
 
-`review.yaml` は `/mr` コマンドの構造化版です。`/mr` は引き続き直接使用可能で、`review.yaml` はチームベースのオーケストレーションで使用されます。
-
-両方とも **3-Model Strategy** (Claude/Gemini/Codex) に基づいて動作します。
+`review.yaml` は `/mr` コマンドの構造化版です。`/mr` は引き続き直接使用可能で、`review.yaml` はチームベースのオーケストレーションで使用されます。両方とも **3-Model Strategy** に基づいて動作します。
