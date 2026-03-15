@@ -53,7 +53,7 @@
           },
           {
             "type": "prompt",
-            "prompt": "Review this file edit for security vulnerabilities. Flag these DEFINITE issues: 1) hardcoded secrets/API keys, 2) SQL injection, XSS, command injection, 3) authentication bypass, insecure deserialization, 4) process.env/os.environ being sent to external URLs or logged in bulk, 5) suspicious packages from node_modules that send data externally, 6) code patterns copied from cloned OSS that contain obfuscated code or hidden external endpoints, 7) eval()/new Function() with untrusted input. Do NOT flag code style or theoretical risks. If a DEFINITE vulnerability is found, respond with {\"ok\": false, \"reason\": \"brief description\"}. Otherwise respond with {\"ok\": true}.",
+            "prompt": "Review this file edit for security vulnerabilities. Flag these DEFINITE issues: 1) hardcoded secrets/API keys (NOT project IDs, resource names, or non-secret identifiers like GCP project names), 2) SQL injection, XSS, command injection, 3) authentication bypass, insecure deserialization, 4) process.env/os.environ being sent to external URLs or logged in bulk, 5) suspicious packages from node_modules that send data externally, 6) code patterns copied from cloned OSS that contain obfuscated code or hidden external endpoints, 7) eval()/new Function() with untrusted input. Do NOT flag: code style, theoretical risks, writing to /tmp (standard temp directory), .env files that only contain non-secret config, or shell scripts referencing project identifiers. If a DEFINITE vulnerability is found, respond with {\"ok\": false, \"reason\": \"brief description\"}. Otherwise respond with {\"ok\": true}.",
             "timeout": 15
           }
         ]
@@ -137,7 +137,7 @@
         "hooks": [
           {
             "type": "prompt",
-            "prompt": "Check if the /simplify skill has already been executed in this conversation. If it has NOT been run yet AND code changes were made during this session (files were edited or written), respond with {\"ok\": false, \"reason\": \"Run /simplify to review changed code for reuse, quality, and efficiency before completing.\"}. If /simplify was already run OR no code changes were made, respond with {\"ok\": true}.",
+            "prompt": "Check if the /simplify skill has already been executed in this conversation. If it has NOT been run yet AND substantive source code changes were made during this session (application logic in .ts/.js/.py/.go/.rs/.sh files was edited — NOT just config files, markdown, JSON settings, YAML, or infrastructure-only changes like deploy scripts and cron jobs), respond with {\"ok\": false, \"reason\": \"Run /simplify to review changed code for reuse, quality, and efficiency before completing.\"}. If /simplify was already run OR no substantive source code changes were made, respond with {\"ok\": true}.",
             "timeout": 60
           },
           {
