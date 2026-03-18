@@ -214,6 +214,21 @@
     # };
   };
 
+  # Launchd agents
+  launchd.agents.brew-upgrade-claude-code = {
+    enable = true;
+    config = {
+      Label = "com.homebrew.upgrade.claude-code";
+      ProgramArguments = [
+        "/bin/sh" "-c"
+        "/opt/homebrew/bin/brew update && /opt/homebrew/bin/brew upgrade --cask claude-code"
+      ];
+      StartCalendarInterval = [{ Hour = 9; Minute = 0; }];
+      StandardOutPath = "/tmp/brew-upgrade-claude-code.log";
+      StandardErrorPath = "/tmp/brew-upgrade-claude-code.log";
+    };
+  };
+
   # Environment variables
   home.sessionVariables = {
     EDITOR = "nvim";
