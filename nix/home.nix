@@ -63,6 +63,9 @@
 
         # Token usage (requires node >= 20.19.4)
         ccusage = "mise x node@20.19.4 -- npx ccusage@latest";
+
+        # Homebrew Claude Code upgrade
+        brewc = "brew upgrade --cask claude-code";
       };
 
       # Oh-My-Zsh configuration
