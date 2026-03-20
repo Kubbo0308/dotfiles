@@ -6,6 +6,9 @@
 # Duplicate config directory (use config/ instead)
 .config/
 
+# Development projects (should live in ~/development, not here)
+development/
+
 # Local environment specific settings
 local/
 claude/settings.local.json
@@ -113,6 +116,7 @@ claude/plugins/marketplaces/
 claude/cache/
 claude/paste-cache/
 claude/plans/
+claude/sessions/
 
 # Codex confidential files
 codex/models_cache.json

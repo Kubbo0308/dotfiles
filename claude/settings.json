@@ -13,7 +13,8 @@
       "WebSearch",
       "WebFetch",
       "Skill(*)",
-      "mcp__*__*"
+      "mcp__*__*",
+      "mcp__chrome-devtools__*"
     ],
     "deny": [
       "Bash(sudo:*)",
@@ -25,7 +26,6 @@
       "NotebookEdit"
     ]
   },
-  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -254,5 +254,13 @@
     "type": "command",
     "command": "node ~/.claude/statusline.js"
   },
-  "skipDangerousModePermissionPrompt": false
+  "skipDangerousModePermissionPrompt": false,
+  "extraKnownMarketplaces": {
+    "claude-plugins-official": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-official"
+      }
+    }
+  }
 }
