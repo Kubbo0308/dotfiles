@@ -27,6 +27,20 @@ claude/ide
 claude/shell-snapshots/
 claude/plugins/config.json.backup
 claude/plugins/blocklist.json
+claude/plugins/installed_plugins.json
+claude/plugins/known_marketplaces.json
+claude/plugins/cache/
+
+# Discord channel auth/state (NEVER commit — contains bot tokens & user IDs)
+claude/channels/
+
+# Node.js artifacts at repo root
+/node_modules/
+/package-lock.json
+
+# Defense-in-depth: catch any stray .env file
+.env
+**/.env
 claude/mcp-needs-auth-cache.json
 log/
 
