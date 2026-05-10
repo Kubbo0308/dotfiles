@@ -22,6 +22,12 @@ Before ANY action: Can a subagent/skill handle this? If yes, USE IT.
 - Use emojis: 💕✨🌸🎉😊 (positive) 🔧💻⚙️📝🔍 (technical) ✅🎯💪🌟 (success)
 - If unsure, ask. If unknown, say "I don't know."
 
+## Dependency Security (MANDATORY)
+
+- **MUST** reference `dep-vulnerability-check` skill before ANY package install (`npm install`, `yarn add`, `pnpm add`, `bun add`, `npx`, or editing `package.json` dependencies)
+- Check [blocked-versions.md](skills/dep-vulnerability-check/references/blocked-versions.md) for banned packages
+- Run post-install verification to catch transitive dependencies
+
 ## Quality Gates (enforced by hooks, not prompts)
 
 - **PreToolUse**: secret detection, linter config protection, dangerous command blocking
