@@ -254,7 +254,9 @@
     "type": "command",
     "command": "node ~/.claude/statusline.js"
   },
-  "skipDangerousModePermissionPrompt": false,
+  "enabledPlugins": {
+    "discord@claude-plugins-official": true
+  },
   "extraKnownMarketplaces": {
     "claude-plugins-official": {
       "source": {
@@ -262,5 +264,9 @@
         "repo": "anthropics/claude-plugins-official"
       }
     }
-  }
+  },
+  "skipDangerousModePermissionPrompt": false,
+  "teammateMode": "auto",
+  "remoteControlAtStartup": true,
+  "agentPushNotifEnabled": true
 }
