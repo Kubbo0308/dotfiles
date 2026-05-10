@@ -19,7 +19,7 @@ SERENA_HOST="${SERENA_HOST:-127.0.0.1}"
 SERENA_PID_FILE="${HOME}/.cache/serena/serena.pid"
 SERENA_LOG_FILE="${HOME}/.cache/serena/serena.log"
 UVX_PATH="${UVX_PATH:-${HOME}/.local/bin/uvx}"
-SERENA_CONTEXT="${SERENA_CONTEXT:-claude-code}"
+SERENA_CONTEXT="${SERENA_CONTEXT:-agent}"
 
 # Ensure cache directory exists
 mkdir -p "${HOME}/.cache/serena"
@@ -70,13 +70,12 @@ start_serena_server() {
 
     # Start Serena with SSE transport in background
     nohup "$UVX_PATH" \
-        --from "git+https://github.com/oraios/serena@v0.1.4" \
-        serena start-mcp-server \
+        --from "git+https://github.com/oraios/serena@2025-06-20" \
+        serena-mcp-server \
         --context "$SERENA_CONTEXT" \
         --transport sse \
         --host "$SERENA_HOST" \
         --port "$SERENA_PORT" \
-        --project-from-cwd \
         >> "$SERENA_LOG_FILE" 2>&1 &
 
     local pid=$!
