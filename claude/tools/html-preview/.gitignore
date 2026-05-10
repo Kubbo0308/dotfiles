@@ -1,0 +1,9 @@
+node_modules/
+*.log
+.DS_Store
+
+# Never commit credentials or local config
+sa.json
+*.key
+.env
+.env.*

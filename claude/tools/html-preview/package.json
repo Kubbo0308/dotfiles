@@ -1,0 +1,27 @@
+{
+  "name": "html-preview",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Convert markdown/HTML to a self-contained rich HTML page, upload to GCS, return a signed URL.",
+  "bin": {
+    "html-preview": "./bin/html-preview.ts"
+  },
+  "scripts": {
+    "start": "tsx bin/html-preview.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
+    "commander": "^12.1.0",
+    "marked": "^14.1.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
