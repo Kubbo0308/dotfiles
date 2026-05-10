@@ -51,6 +51,34 @@ process.stdin.on('end', () => {
 
     const windowDisplay = formatTokens(windowSize);
     console.log(`📁 ${currentDir}${branchPart} | 🤖 ${model} | ${bar} ${pctDisplay} ${tokenDisplay}/${windowDisplay}`);
+
+    // Rate limits line (Claude Max subscribers only)
+    const rateLimits = data.rate_limits;
+    if (rateLimits && (rateLimits.five_hour != null || rateLimits.seven_day != null)) {
+      const parts = [];
+
+      if (rateLimits.five_hour != null) {
+        const pct5h = rateLimits.five_hour.used_percentage;
+        const resetsAt5h = rateLimits.five_hour.resets_at;
+        const bar5h = renderRateLimitBar(pct5h);
+        const pct5hDisplay = colorize(Math.round(pct5h) + '%', pct5h);
+        const resetTime = formatResetTime(resetsAt5h, 'time');
+        parts.push(`5h ${bar5h} ${pct5hDisplay} (resets ${resetTime})`);
+      }
+
+      if (rateLimits.seven_day != null) {
+        const pct7d = rateLimits.seven_day.used_percentage;
+        const resetsAt7d = rateLimits.seven_day.resets_at;
+        const bar7d = renderRateLimitBar(pct7d);
+        const pct7dDisplay = colorize(Math.round(pct7d) + '%', pct7d);
+        const resetDate = formatResetTime(resetsAt7d, 'date');
+        parts.push(`7d ${bar7d} ${pct7dDisplay} (resets ${resetDate})`);
+      }
+
+      if (parts.length > 0) {
+        console.log(`⏱️  ${parts.join(' | ')}`);
+      }
+    }
   } catch (error) {
     console.log(`📁 ${path.basename(process.cwd())} | ⚠️  ${error.message}`);
   }
@@ -103,4 +131,33 @@ function getGitBranch(cwd) {
       cwd, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe']
     }).trim() || null;
   } catch { return null; }
+}
+
+function renderRateLimitBar(usedPct) {
+  const pct = Math.min(100, Math.max(0, usedPct));
+  const fillColor = pct < 50 ? C.green : pct < 80 ? C.yellow : C.red;
+  const filled = Math.round(pct / 10);
+
+  let bar = C.dim + '[' + C.reset;
+  for (let i = 0; i < 10; i++) {
+    bar += i < filled
+      ? fillColor + '█' + C.reset
+      : C.dim + '░' + C.reset;
+  }
+  bar += C.dim + ']' + C.reset;
+  return bar;
+}
+
+function formatResetTime(epochSeconds, mode) {
+  if (!epochSeconds) return '?';
+  const d = new Date(epochSeconds * 1000);
+  if (mode === 'time') {
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    return `${hh}:${mm}`;
+  }
+  // mode === 'date'
+  const month = d.toLocaleString('en-US', { month: 'short' });
+  const day = d.getDate();
+  return `${month} ${day}`;
 }
