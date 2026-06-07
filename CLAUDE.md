@@ -50,3 +50,10 @@ Symlinks: `~/.zshrc`, `~/.config/nvim`, `~/.claude` → dotfiles
 - No eval()/new Function() with untrusted input
 - Logging does not expose sensitive data
 - No suspicious packages in require()/import
+
+## Learned Lessons (auto-maintained by harness — additive only)
+
+Project-specific lessons captured by `/reflect` land here. See `claude/harness/README.md`.
+
+<!-- HARNESS:LESSONS:START -->
+<!-- HARNESS:LESSONS:END -->

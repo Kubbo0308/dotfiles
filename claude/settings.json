@@ -90,6 +90,11 @@
           {
             "type": "command",
             "command": "echo '{\"session_id\":\"'$(uuidgen)'\"}' | cmux claude-hook session-start 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/harness/scripts/session-digest.sh 2>/dev/null || true",
+            "timeout": 5
           }
         ]
       },
@@ -135,6 +140,16 @@
       {
         "matcher": "",
         "hooks": [
+          {
+            "type": "prompt",
+            "prompt": "Harness reflection gate. Check whether the user MEANINGFULLY corrected you this session — i.e. they told you to do something differently, reverted/rejected your change, re-explained a requirement you missed, or a repeated wrong assumption caused failures. This is NOT triggered by normal follow-up requests, scope additions, or minor tweaks. If such a durable correction occurred AND the /reflect skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"Run /reflect to capture this session's lesson into the rule hierarchy before finishing.\"}. Otherwise respond with {\"ok\": true}.",
+            "timeout": 30
+          },
+          {
+            "type": "prompt",
+            "prompt": "Harness tool-evolution gate. Check whether a SKILL, SUB-AGENT, or SLASH-COMMAND you invoked this session clearly UNDERPERFORMED — it produced a wrong-shaped, low-quality, or off-target result that you or the user had to work around, redo, or correct. This is about a TOOL's definition being improvable, NOT about the task content (that is /reflect's job). If such a tool underperformed AND the /evolve skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"A tool underperformed this session — run /evolve to record the feedback and improve its definition.\"}. Otherwise respond with {\"ok\": true}.",
+            "timeout": 30
+          },
           {
             "type": "prompt",
             "prompt": "Check if the /simplify skill has already been executed in this conversation. If it has NOT been run yet AND substantive source code changes were made during this session (application logic in .ts/.js/.py/.go/.rs/.sh files was edited — NOT just config files, markdown, JSON settings, YAML, or infrastructure-only changes like deploy scripts and cron jobs), respond with {\"ok\": false, \"reason\": \"Run /simplify to review changed code for reuse, quality, and efficiency before completing.\"}. If /simplify was already run OR no substantive source code changes were made, respond with {\"ok\": true}.",

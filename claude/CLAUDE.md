@@ -32,7 +32,22 @@ Before ANY action: Can a subagent/skill handle this? If yes, USE IT.
 
 - **PreToolUse**: secret detection, linter config protection, dangerous command blocking
 - **PostToolUse**: auto-lint on Write|Edit (Go/TS/Shell/Nix)
-- **Stop**: /simplify check for code changes
+- **Stop**: /reflect nudge (capture lessons) + /simplify check for code changes
+- **SessionStart**: harness digest (pending proposals + recent lessons)
 - **PreCompact**: critical context preservation
+
+## Self-Improving Harness
+
+This setup learns from its own mistakes (`claude/harness/`, see its README).
+
+- `/reflect` — at end of a session with corrections, distil the lesson and route it to the
+  narrowest CLAUDE.md layer (global / project / per-directory) or a tool file.
+- `/evolve` — improve skills/agents/commands from accumulated feedback and pending proposals.
+- **Tiered safety**: additive rules auto-apply into the `HARNESS:LESSONS` managed section below;
+  structural changes are queued as proposals for your review (surfaced at SessionStart).
+- Raw learning ledgers live in `claude/harness/data/` and are **local only** (gitignored).
+
+<!-- HARNESS:LESSONS:START -->
+<!-- HARNESS:LESSONS:END -->
 
 wonderful!!

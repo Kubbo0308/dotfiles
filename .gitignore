@@ -51,6 +51,13 @@ claude/teams/
 claude/backups/
 claude/logs/
 
+# Self-improving harness: raw learning data is LOCAL ONLY (may contain project details).
+# Scripts/commands/agents ARE committed; only the ledgers and pending proposals are not.
+claude/harness/data/*
+claude/harness/proposals/*
+!claude/harness/data/.gitkeep
+!claude/harness/proposals/.gitkeep
+
 # MCP server data directories
 claude/mcp/servers/*.json
 !claude/mcp/servers/*-template.json
