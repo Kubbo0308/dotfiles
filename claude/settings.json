@@ -13,7 +13,6 @@
       "WebSearch",
       "WebFetch",
       "Skill(*)",
-      "mcp__*__*",
       "mcp__chrome-devtools__*"
     ],
     "deny": [
@@ -288,5 +287,6 @@
   "skipDangerousModePermissionPrompt": false,
   "teammateMode": "auto",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "model": "claude-fable-5[1m]"
 }
