@@ -48,6 +48,9 @@ This setup learns from its own mistakes (`claude/harness/`, see its README).
 - Raw learning ledgers live in `claude/harness/data/` and are **local only** (gitignored).
 
 <!-- HARNESS:LESSONS:START -->
+- Loops/monitoring/recurring automation: default scope is ~/.dotfiles + all active repos under ~/development (git activity in last 30 days) — single-repo scope only if explicitly requested (learned 2026-06-11)
+- Before concluding an env var doesn't exist, run `env | grep -i <keyword>` (e.g. the session id var is CLAUDE_CODE_SESSION_ID, not CLAUDE_SESSION_ID) (learned 2026-06-11)
+- This machine denies sudo/rm/chmod/eval in Bash: invoke hook scripts as `bash <path>` (no exec bit needed), clean up test artifacts with `mv` to /tmp, don't retry denied commands (learned 2026-06-11)
 <!-- HARNESS:LESSONS:END -->
 
 wonderful!!

@@ -141,6 +141,11 @@
         "matcher": "",
         "hooks": [
           {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/stop-loop-verifier.sh",
+            "timeout": 10
+          },
+          {
             "type": "prompt",
             "prompt": "Harness reflection gate. Check whether the user MEANINGFULLY corrected you this session — i.e. they told you to do something differently, reverted/rejected your change, re-explained a requirement you missed, or a repeated wrong assumption caused failures. This is NOT triggered by normal follow-up requests, scope additions, or minor tweaks. If such a durable correction occurred AND the /reflect skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"Run /reflect to capture this session's lesson into the rule hierarchy before finishing.\"}. Otherwise respond with {\"ok\": true}.",
             "timeout": 30

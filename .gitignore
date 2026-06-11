@@ -51,6 +51,9 @@ claude/teams/
 claude/backups/
 claude/logs/
 
+# Loop engineering runtime state (definitions in claude/LOOP.md ARE committed)
+claude/loops/
+
 # Self-improving harness: raw learning data is LOCAL ONLY (may contain project details).
 # Scripts/commands/agents ARE committed; only the ledgers and pending proposals are not.
 claude/harness/data/*
