@@ -160,6 +160,10 @@
         if [[ -d /nix/var/nix/profiles/system/sw/bin ]] && [[ ! -e /run/current-system ]]; then
           export PATH="/nix/var/nix/profiles/system/sw/bin:$PATH"
         fi
+
+        # Re-prepend npm-global so npm-installed CLIs (gemini, codex, etc.)
+        # win over the nix-darwin fallback above
+        export PATH="$HOME/.npm-global/bin:$PATH"
       '';
     };
 
