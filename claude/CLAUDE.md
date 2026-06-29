@@ -47,10 +47,25 @@ This setup learns from its own mistakes (`claude/harness/`, see its README).
   structural changes are queued as proposals for your review (surfaced at SessionStart).
 - Raw learning ledgers live in `claude/harness/data/` and are **local only** (gitignored).
 
+## Memory Convention (freshness)
+
+When writing a memory file under `memory/`, add a `created:` date to its `metadata:` block so
+recall can judge how old a fact is. For fact types that go stale (`feedback`, `project`), also
+add an optional `freshness_sla` (e.g. `180d`); when `created + freshness_sla` is exceeded, treat
+the memory as stale and re-verify before relying on it. `user` facts rarely need an SLA.
+
+```yaml
+metadata:
+  type: feedback
+  created: 2026-06-30      # required
+  freshness_sla: 180d      # optional — only for facts that age
+```
+
 <!-- HARNESS:LESSONS:START -->
 - Loops/monitoring/recurring automation: default scope is ~/.dotfiles + all active repos under ~/development (git activity in last 30 days) — single-repo scope only if explicitly requested (learned 2026-06-11)
 - Before concluding an env var doesn't exist, run `env | grep -i <keyword>` (e.g. the session id var is CLAUDE_CODE_SESSION_ID, not CLAUDE_SESSION_ID) (learned 2026-06-11)
 - This machine denies sudo/rm/chmod/eval in Bash: invoke hook scripts as `bash <path>` (no exec bit needed), clean up test artifacts with `mv` to /tmp, don't retry denied commands (learned 2026-06-11)
+- Keep a small/targeted feature change (e.g. adding one entry to a Set/flag/list) scoped to exactly that in its PR; audit total diff vs the request before pushing. If a mid-conversation refactor request or a /simplify cleanup would inflate the diff, surface it and offer it as a SEPARATE PR rather than silently bundling it into the feature PR. (learned 2026-06-23)
 <!-- HARNESS:LESSONS:END -->
 
 wonderful!!
