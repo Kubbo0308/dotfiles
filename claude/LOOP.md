@@ -16,6 +16,21 @@ the loop; the loop prompts the agent.
   reads it from there, NOT from agent-writable runtime state. The hook also
   caps consecutive blocked stops at 2x max_iterations, so a loop can never
   spin forever.
+- **Stuck detection (no-progress).** The Stop hook escalates automatically when
+  the verifier returns the *same* `continue` feedback two iterations running —
+  a loop that is not converging hands off to a human instead of burning its
+  remaining budget. This is enforced at the machine layer, not left to the
+  verifier's judgment. (See *Design rationale* below.)
+- **Cost budget.** A loop's de-facto token budget is `max_iterations` × its
+  per-iteration cost. Each loop carries a `cost_tier` (low / med / high); the
+  human sizes `max_iterations` and schedule frequency against it. Agentic loops
+  run ~4x (single-agent) to ~15x (multi-agent) the tokens of a plain chat, so
+  treat cost as a first-class design input, not an afterthought.
+- **Context budget.** Iterations of one `/loop-run` share a single session, so
+  context *accumulates* across them — caps are deliberately small to stay ahead
+  of context rot. Prefer a fresh `/loop-run` (clean context) over a high
+  `max_iterations` for long jobs; lean on `STATE.md` as the durable spine that
+  survives a context reset, not on in-session memory.
 - **Kill switch.** `jq '.force_stop = true' ~/.claude/loops/<name>/state.json`
   (then save over it) halts the loop at its next stop.
 - **State is the artifact.** Runtime state lives in `~/.claude/loops/<name>/`
@@ -52,6 +67,7 @@ removes it when the loop finalises.
 ## daily-triage
 
 - level: **L1 (report-only — never edits anything outside its own loop dir)**
+- cost_tier: **low** (cheap read-only signals, summarised one line per repo)
 - schedule: manual, or `/loop 1d /loop-run daily-triage`
 - max_iterations: see `loops.json`
 - implementer: main session (report-only triage)
@@ -106,6 +122,7 @@ removes it when the loop finalises.
 ## pr-babysitter
 
 - level: **L1 (report-only)**
+- cost_tier: **high** (per-PR CI + review queries, short schedule = many runs)
 - schedule: manual, or `/loop 6h /loop-run pr-babysitter`
 - implementer: main session (report-only)
 - verifier: `loop-verifier` subagent
@@ -122,6 +139,7 @@ removes it when the loop finalises.
 ## ci-sweeper
 
 - level: **L1 (report-only)**
+- cost_tier: **high** (scans many repos' run logs; keep to log heads only)
 - schedule: manual, or `/loop 1d /loop-run ci-sweeper`
 - implementer: main session (report-only)
 - verifier: `loop-verifier` subagent
@@ -139,6 +157,7 @@ removes it when the loop finalises.
 ## dependency-sweeper
 
 - level: **L1 (report-only)**
+- cost_tier: **med** (audit/list per active project; bounded by 30-day filter)
 - schedule: manual, or `/loop 1d /loop-run dependency-sweeper`
 - implementer: main session (report-only)
 - verifier: `loop-verifier` subagent
@@ -158,6 +177,7 @@ removes it when the loop finalises.
 ## post-merge-cleanup
 
 - level: **L1 (report-only)**
+- cost_tier: **low** (local git inspection only, no network)
 - schedule: manual, or `/loop 1d /loop-run post-merge-cleanup`
 - implementer: main session (report-only)
 - verifier: `loop-verifier` subagent
@@ -171,3 +191,35 @@ removes it when the loop finalises.
 - out_of_scope: deleting branches/worktrees, committing, stashing — report only
 - report format: High-Priority = uncommitted work at risk; Watch = deletable
   merged/gone branches per repo; Noise = everything else
+
+---
+
+## Design rationale & sources
+
+This harness follows the 2025-2026 loop-engineering consensus: *design the loop
+and stay the engineer; don't become the person who just presses start.*
+The choices above map to current best practice:
+
+- **Termination is layered, not single.** A loop ends on any of: verifier
+  `success`/`escalate`, `max_iterations`, the 2x block-cap stall backstop, the
+  new same-feedback stuck-detector, or the human kill switch. Multiple
+  independent stop conditions are the documented guardrail against runaway
+  loops. — [Agentic Loops: From ReAct to Loop Engineering](https://datasciencedojo.com/blog/agentic-loops-explained-from-react-to-loop-engineering-2026-guide/)
+- **The kill switch lives below the agent.** `max_iterations` is read from the
+  committed `loops.json` by the Stop hook, never from agent-writable state — a
+  prompt-level kill switch can be argued around; an infra-level one cannot.
+  — [AI Agent Guardrails: Kill Switches, Escalation, Recovery](https://www.codebridge.tech/articles/ai-agent-guardrails-for-production-kill-switches-escalation-paths-and-safe-recovery)
+- **Maker ≠ checker.** A session never grades its own work; the `loop-verifier`
+  subagent does, default-REJECT. Put *something that can say no* in every loop.
+  — [Building Effective AI Agents (Anthropic)](https://www.anthropic.com/research/building-effective-agents)
+- **State is the artifact; context is a budget.** Iterations share a session, so
+  caps stay small and `STATE.md` carries continuity across context resets,
+  hedging context rot. — [Effective Context Engineering for AI Agents (Anthropic)](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- **Start at L1.** Maintenance loops (triage, PR-babysitting, CI, deps) run
+  report-only until proven, then graduate per the documented criteria.
+  — [cobusgreyling/loop-engineering](https://github.com/cobusgreyling/loop-engineering)
+
+Deferred until the first L2 loop exists (intentionally not built yet): the L2
+verifier checklist, worktree isolation for the implementer, an escalation packet
+(proposed action + evidence + cost estimate + risk flags) at each human gate,
+and a multi-judge panel for high-risk auto-fix decisions.

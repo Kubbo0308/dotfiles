@@ -93,6 +93,17 @@ case "$VERDICT" in
     ;;
 esac
 
+# No-progress / stuck detection: a loop that returns the SAME `continue`
+# feedback two iterations running is not converging - escalate to a human
+# instead of burning the remaining iteration budget. Enforced here (machine
+# layer), not left to the verifier's judgment alone.
+STUCK=$(jq -r '(.records // []) as $r |
+  if ($r | length) >= 2
+     and ($r[-1].verdict == "continue") and ($r[-2].verdict == "continue")
+     and ($r[-1].feedback == $r[-2].feedback) and (($r[-1].feedback // "") != "")
+  then "stuck" else "" end' "$STATE_FILE")
+[ "$STUCK" = "stuck" ] && finish "escalated" "stuck loop: identical 'continue' feedback two iterations running - no progress, escalating to human."
+
 # Caps apply only to non-terminal verdicts.
 [ "$BLOCKS" -ge "$BLOCK_CAP" ] && finish "escalated" "stop-hook block cap ($BLOCK_CAP) reached - escalating to human."
 [ "$ITERATION" -ge "$MAX_ITER" ] && finish "escalated" "max_iterations ($MAX_ITER) reached without success - escalating to human."

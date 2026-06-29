@@ -1,22 +1,27 @@
 {
   "daily-triage": {
     "level": "L1",
+    "cost_tier": "low",
     "max_iterations": 3
   },
   "pr-babysitter": {
     "level": "L1",
+    "cost_tier": "high",
     "max_iterations": 3
   },
   "ci-sweeper": {
     "level": "L1",
+    "cost_tier": "high",
     "max_iterations": 2
   },
   "dependency-sweeper": {
     "level": "L1",
+    "cost_tier": "med",
     "max_iterations": 3
   },
   "post-merge-cleanup": {
     "level": "L1",
+    "cost_tier": "low",
     "max_iterations": 2
   }
 }
