@@ -66,6 +66,7 @@ metadata:
 - Before concluding an env var doesn't exist, run `env | grep -i <keyword>` (e.g. the session id var is CLAUDE_CODE_SESSION_ID, not CLAUDE_SESSION_ID) (learned 2026-06-11)
 - This machine denies sudo/rm/chmod/eval in Bash: invoke hook scripts as `bash <path>` (no exec bit needed), clean up test artifacts with `mv` to /tmp, don't retry denied commands (learned 2026-06-11)
 - Keep a small/targeted feature change (e.g. adding one entry to a Set/flag/list) scoped to exactly that in its PR; audit total diff vs the request before pushing. If a mid-conversation refactor request or a /simplify cleanup would inflate the diff, surface it and offer it as a SEPARATE PR rather than silently bundling it into the feature PR. (learned 2026-06-23)
+- Lead investigations/answers with the result (cause → fix, terse). Stop-hook skills (/simplify, /evolve, /reflect) may run, but keep their execution logs and triage out of the reply — at most one line saying it was recorded. The user does not read ceremony dumps. (learned 2026-06-30)
 <!-- HARNESS:LESSONS:END -->
 
 wonderful!!
