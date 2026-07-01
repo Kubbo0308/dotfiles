@@ -26,6 +26,17 @@ if [ ! -f "$FILE" ]; then
   exit 1
 fi
 
+# If the target is a symlink (e.g. a repo's CLAUDE.md -> AGENTS.md), resolve to
+# the real file and write there. We must append to the canonical document and
+# never replace the symlink itself with a regular file.
+while [ -L "$FILE" ]; do
+  link="$(readlink "$FILE")"
+  case "$link" in
+    /*) FILE="$link" ;;
+    *)  FILE="$(cd "$(dirname "$FILE")" && pwd -P)/$link" ;;
+  esac
+done
+
 # Collapse to a single line; strip leading bullet markers the caller may have added.
 TEXT="$(printf '%s' "$TEXT" | tr '\n' ' ' | sed -E 's/^[[:space:]]*[-*][[:space:]]*//; s/[[:space:]]+$//')"
 BULLET="- ${TEXT} (learned $(harness_date))"
@@ -40,9 +51,14 @@ fi
 
 # Insert the bullet immediately before the END marker (additive only).
 TMP="$(mktemp)"
+trap 'rm -f "$TMP"' EXIT
 awk -v end="$HARNESS_LESSONS_END" -v bullet="$BULLET" '
   $0 ~ end && !done { print bullet; done=1 }
   { print }
-' "$FILE" > "$TMP" && mv "$TMP" "$FILE"
+' "$FILE" > "$TMP"
+# Write back in place rather than `mv`, which would replace the file (and any
+# symlink) and reset its mode to mktemp's 0600. Redirection preserves the
+# existing inode, permissions, and link.
+cat "$TMP" > "$FILE"
 
 echo "apply-rule: added to $FILE"
