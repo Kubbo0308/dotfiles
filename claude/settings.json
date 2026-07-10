@@ -91,7 +91,7 @@
           },
           {
             "type": "command",
-            "command": "echo '{\"session_id\":\"'$(uuidgen)'\"}' | cmux claude-hook session-start 2>/dev/null || true"
+            "command": "echo '{\"session_id\":\"'$(uuidgen)'\"}' | cmux claude-hook session-start >/dev/null 2>&1 || true"
           },
           {
             "type": "command",
@@ -133,7 +133,7 @@
           },
           {
             "type": "command",
-            "command": "echo '{}' | cmux claude-hook notification 2>/dev/null || true"
+            "command": "echo '{}' | cmux claude-hook notification >/dev/null 2>&1 || true"
           }
         ]
       }
@@ -149,18 +149,18 @@
           },
           {
             "type": "prompt",
-            "prompt": "FIRST AND HIGHEST PRIORITY: if the /reflect skill has already been invoked even once anywhere earlier in this conversation, respond {\"ok\": true} immediately and evaluate nothing else — running it once is sufficient for the whole session, so do NOT re-fire merely because a correction occurred. Otherwise: Harness reflection gate. Check whether the user MEANINGFULLY corrected you this session — i.e. they told you to do something differently, reverted/rejected your change, re-explained a requirement you missed, or a repeated wrong assumption caused failures. This is NOT triggered by normal follow-up requests, scope additions, or minor tweaks. If such a durable correction occurred AND the /reflect skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"Run /reflect to capture this session's lesson into the rule hierarchy before finishing.\"}. Otherwise respond with {\"ok\": true}.",
+            "prompt": "FIRST AND HIGHEST PRIORITY: if the /reflect skill has already been invoked even once anywhere earlier in this conversation, respond {\"ok\": true} immediately and evaluate nothing else — running it once is sufficient for the whole session, so do NOT re-fire merely because a correction occurred. If the conversation shows a compaction/summary/continuation block and the earlier turns are not visible, do NOT assume the skill was skipped: lean toward allowing the stop unless a NEW, clearly-unaddressed correction is visible in the post-summary turns. Otherwise: Harness reflection gate. Check whether the user MEANINGFULLY corrected you this session — i.e. they told you to do something differently, reverted/rejected your change, re-explained a requirement you missed, or a repeated wrong assumption caused failures. This is NOT triggered by normal follow-up requests, scope additions, or minor tweaks. If such a durable correction occurred AND the /reflect skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"Run /reflect to capture this session's lesson into the rule hierarchy before finishing.\"}. Otherwise respond with {\"ok\": true}.",
             "timeout": 30
           },
           {
             "type": "prompt",
-            "prompt": "FIRST AND HIGHEST PRIORITY: if the /evolve skill has already been invoked even once anywhere earlier in this conversation, respond {\"ok\": true} immediately and evaluate nothing else — running it once is sufficient for the whole session. Otherwise: Harness tool-evolution gate. Check whether a SKILL, SUB-AGENT, or SLASH-COMMAND you invoked this session clearly UNDERPERFORMED — it produced a wrong-shaped, low-quality, or off-target result that you or the user had to work around, redo, or correct. This is about a TOOL's definition being improvable, NOT about the task content (that is /reflect's job). If such a tool underperformed AND the /evolve skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"A tool underperformed this session — run /evolve to record the feedback and improve its definition.\"}. Otherwise respond with {\"ok\": true}.",
+            "prompt": "FIRST AND HIGHEST PRIORITY: if the /evolve skill has already been invoked even once anywhere earlier in this conversation, respond {\"ok\": true} immediately and evaluate nothing else — running it once is sufficient for the whole session. If the conversation shows a compaction/summary/continuation block and the earlier turns are not visible, do NOT assume the skill was skipped: lean toward allowing the stop unless a NEW, clearly-unaddressed tool underperformance is visible in the post-summary turns. Otherwise: Harness tool-evolution gate. Check whether a SKILL, SUB-AGENT, or SLASH-COMMAND you invoked this session clearly UNDERPERFORMED — it produced a wrong-shaped, low-quality, or off-target result that you or the user had to work around, redo, or correct. This is about a TOOL's definition being improvable, NOT about the task content (that is /reflect's job). If such a tool underperformed AND the /evolve skill has NOT yet been run this conversation, respond with {\"ok\": false, \"reason\": \"A tool underperformed this session — run /evolve to record the feedback and improve its definition.\"}. Otherwise respond with {\"ok\": true}.",
             "timeout": 30
           },
           {
-            "type": "prompt",
-            "prompt": "FIRST AND HIGHEST PRIORITY: if the /simplify skill has already been invoked even once anywhere earlier in this conversation, respond {\"ok\": true} immediately and evaluate nothing else — running it once is sufficient for the whole session. Otherwise: Check if the /simplify skill has already been executed in this conversation. If it has NOT been run yet AND substantive source code changes were made during this session (application logic in .ts/.js/.py/.go/.rs/.sh files was edited — NOT just config files, markdown, JSON settings, YAML, or infrastructure-only changes like deploy scripts and cron jobs), respond with {\"ok\": false, \"reason\": \"Run /simplify to review changed code for reuse, quality, and efficiency before completing.\"}. If /simplify was already run OR no substantive source code changes were made, respond with {\"ok\": true}.",
-            "timeout": 60
+            "type": "command",
+            "command": "bash ~/.claude/hooks/stop-simplify-gate.sh",
+            "timeout": 15
           },
           {
             "type": "command",
@@ -172,7 +172,7 @@
           },
           {
             "type": "command",
-            "command": "echo '{}' | cmux claude-hook stop 2>/dev/null || true"
+            "command": "echo '{}' | cmux claude-hook stop >/dev/null 2>&1 || true"
           }
         ]
       }
@@ -287,9 +287,10 @@
       }
     }
   },
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": false,
   "teammateMode": "auto",
   "remoteControlAtStartup": true,
   "agentPushNotifEnabled": true,
-  "tui": "fullscreen"
+  "skipWorkflowUsageWarning": true
 }
