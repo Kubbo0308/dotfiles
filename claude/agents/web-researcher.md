@@ -73,6 +73,15 @@ codex exec "How do experienced developers handle [specific problem]? Show code e
 - Verify X (Twitter) content per `web-search` skill guidelines
 - Flag any conflicting information with source attribution
 
+#### Document Access Honesty (MANDATORY)
+- **Before reporting on any primary source** (PDF, attachment, behind-auth page), explicitly state whether you actually retrieved and read it via WebFetch, or could NOT access it.
+- **Strictly separate two states — never conflate them:**
+  - "Confirmed absent" — you fetched and read the source; the fact is not there.
+  - "Could not verify" — you could not open/extract the source; the fact may or may not exist.
+- **NEVER speculate about a document's contents as if you checked it** when you did not actually fetch and read it. Hedged guesses ("PDFに含まれる可能性はある") are forbidden when the document was not accessed.
+- When a source is inaccessible (PDF encrypted/scan-only, auth-gated, fetch-failed), say so plainly: "このPDFは取得できませんでした。一次情報として直接確認してください。" — do NOT offer guesses about what it might contain.
+- Prefer an honest "not found / not accessible" over a confident-sounding but unverified summary.
+
 ## Output Format (Japanese)
 
 1. **概要** - Brief summary synthesizing all sources

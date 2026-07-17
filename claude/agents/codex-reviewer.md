@@ -76,6 +76,10 @@ Codex/GPT excels at **pattern matching against large codebases**. Focus on:
 - Deadlock potential
 - Improper goroutine/thread management
 
+## Auth Fallback (if `codex` CLI fails)
+
+The `codex` CLI auth can expire with `Your access token could not be refreshed because your refresh token was already used` — it then forces the ChatGPT OAuth websocket and 401s **even when `OPENAI_API_KEY` is set**. Setting `preferred_auth_method=apikey` alone does not fix a stale stored token; it needs an interactive `codex logout && codex login` (ask the user to run it via `! codex login`). If you cannot re-login non-interactively, **do NOT silently fall back to writing your own review** — that produces a Claude review mislabeled as Codex/GPT. Instead reach the model through an alternative authenticated path (e.g. the provider's REST chat endpoint, using the OpenAI credential already configured for this project) and label the source honestly. Note: GPT-5 reasoning models spend the whole token budget on reasoning if it is small — give a generous completion budget and a modest reasoning effort, else the response comes back empty (`finish_reason: length`). Resort to a self-authored review only if no authenticated path works, and state that explicitly.
+
 ## Output Format
 
 ```json

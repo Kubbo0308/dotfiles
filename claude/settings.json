@@ -288,6 +288,7 @@
     }
   },
   "tui": "fullscreen",
+  "disableAgentView": true,
   "skipDangerousModePermissionPrompt": false,
   "teammateMode": "auto",
   "remoteControlAtStartup": true,

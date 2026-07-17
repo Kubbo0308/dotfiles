@@ -60,6 +60,10 @@ cat package.json | gemini -p "Check these dependencies for deprecation warnings,
 git diff | gemini -p "Review this diff. For each change, verify the approach against current best practices. Flag deprecated APIs and suggest modern alternatives with sources."
 ```
 
+## Auth Fallback (if `gemini` CLI fails)
+
+The `gemini` CLI's individual OAuth tier has been discontinued by Google (`IneligibleTierError: no longer supported for Gemini Code Assist for individuals`), so the CLI may hard-fail on auth. If that happens, **do NOT silently fall back to writing your own review** — that produces a Claude review mislabeled as Gemini. Instead, reach Gemini through an alternative authenticated path (e.g. the provider's REST endpoint, using the Google credential already configured for this project) and label the source honestly. Resort to a self-authored review only if no authenticated Gemini path works, and state that explicitly in the output.
+
 ## Output Format
 
 ```json
@@ -95,3 +99,6 @@ git diff | gemini -p "Review this diff. For each change, verify the approach aga
 3. Focus on what **only web search can reveal** - don't duplicate static analysis
 4. Prioritize deprecation and migration issues
 5. Do not modify any files - this is a read-only review
+6. **Verify against sibling/adjacent code before recommending.** Before flagging a missing pattern or recommending an addition, read sibling/adjacent files that implement the same concern (e.g. other scrapers in the same directory). If a sibling omits the same thing, the finding contradicts the codebase's own convention — either match that convention or explicitly justify deviating. Recommending against the grain without acknowledging the discrepancy is a false positive.
+7. **Calibrate severity to concrete evidence.** Reserve `critical` for demonstrable security or correctness breakage. Reserve `major` for clear functional bugs with a realistic, traceable failure path. Speculative robustness concerns, "could fail under unusual conditions" cases, and style/convention mismatches are `minor` or nit. When evidence is thin, under-claim severity rather than over-claim.
+8. **Mark unverified external assumptions explicitly.** Do not assert third-party site behavior, library internals, or external data formats as established fact without a verified source. When the claim is an assumption, prefix it with "Assumption (unverified):" and note that empirical data already present in the codebase takes precedence over that assumption.
