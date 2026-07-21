@@ -51,6 +51,10 @@ echo "🔗 Step 4/5: Installing dotfiles and creating symlinks..."
 "$DOTFILES_DIR/.scripts/install.sh"
 echo ""
 
+# 4.5. Apply macOS app defaults (machine-local, not covered by symlinks)
+bash "$DOTFILES_DIR/.scripts/setup-macos-defaults.sh"
+echo ""
+
 # 5. Source zshrc to apply changes
 echo "🔄 Step 5/5: Applying shell configuration..."
 if [[ -f "$HOME/.zshrc" ]]; then

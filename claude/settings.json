@@ -28,6 +28,7 @@
       "NotebookEdit"
     ]
   },
+  "model": "claude-fable-5[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -272,6 +273,7 @@
       }
     ]
   },
+  "disableAgentView": true,
   "statusLine": {
     "type": "command",
     "command": "node ~/.claude/statusline.js"
@@ -288,10 +290,9 @@
     }
   },
   "tui": "fullscreen",
-  "disableAgentView": true,
   "skipDangerousModePermissionPrompt": false,
+  "skipWorkflowUsageWarning": true,
   "teammateMode": "auto",
   "remoteControlAtStartup": true,
-  "agentPushNotifEnabled": true,
-  "skipWorkflowUsageWarning": true
+  "agentPushNotifEnabled": true
 }

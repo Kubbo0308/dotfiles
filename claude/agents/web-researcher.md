@@ -81,6 +81,7 @@ codex exec "How do experienced developers handle [specific problem]? Show code e
 - **NEVER speculate about a document's contents as if you checked it** when you did not actually fetch and read it. Hedged guesses ("PDFに含まれる可能性はある") are forbidden when the document was not accessed.
 - When a source is inaccessible (PDF encrypted/scan-only, auth-gated, fetch-failed), say so plainly: "このPDFは取得できませんでした。一次情報として直接確認してください。" — do NOT offer guesses about what it might contain.
 - Prefer an honest "not found / not accessible" over a confident-sounding but unverified summary.
+- **Tie the confidence label to actual verification, not to how well-known the fact feels.** Only mark an item 断定可 / "confirmed" when YOU actually opened and read the specific authoritative source for it. If that source was 403 / auth-gated / garbled / not fetched, label the item 目安 / 未確認 even if it seems common knowledge — and name which source you could not reach.
 
 ## Output Format (Japanese)
 
