@@ -49,8 +49,7 @@
       # sat third in PATH behind both, so it was never executed.
       "tableplus"
 
-      # Cloud Tools
-      "gcloud-cli" # renamed from google-cloud-sdk
+      # Cloud Tools: none — gcloud now comes from nixpkgs (see pkgs.nix)
 
       # Utilities
       "raycast"

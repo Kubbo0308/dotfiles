@@ -56,6 +56,11 @@ with pkgs; [
   httpie
 
   # Cloud & Infrastructure
+  # Moved off the gcloud-cli cask: that cask is auto_updates, so brew never
+  # upgraded it (stuck at 552.0.0), and its python@3.14 dependency made
+  # `brew bundle cleanup` propose removals that `brew uninstall` then refused
+  # on every activation. Extra components now need withExtraComponents.
+  google-cloud-sdk
   # awscli2
   # terraform
   # kubectl
