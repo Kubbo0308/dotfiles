@@ -44,7 +44,9 @@
       "visual-studio-code"
       "cursor"
       "drawio"
-      "claude-code"
+      # claude-code is intentionally absent: the CLI in use is the npm install
+      # at ~/.npm-global/bin/claude, reached via cmux's wrapper. The brew cask
+      # sat third in PATH behind both, so it was never executed.
       "tableplus"
 
       # Cloud Tools
