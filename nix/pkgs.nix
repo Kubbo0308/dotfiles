@@ -37,7 +37,7 @@ with pkgs; [
   # Node.js Tools (migrated from npm global)
   pnpm
   yarn
-  nodePackages.prettier
+  prettier # was nodePackages.prettier; the nodePackages set was removed from nixpkgs
   typescript
   typescript-language-server
   eslint_d
@@ -59,6 +59,9 @@ with pkgs; [
   # awscli2
   # terraform
   # kubectl
+
+  # Database
+  turso-cli
 
   # Misc Utilities
   tree
