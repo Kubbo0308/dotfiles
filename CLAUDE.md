@@ -56,4 +56,5 @@ Symlinks: `~/.zshrc`, `~/.config/nvim`, `~/.claude` → dotfiles
 Project-specific lessons captured by `/reflect` land here. See `claude/harness/README.md`.
 
 <!-- HARNESS:LESSONS:START -->
+- nix-darwin homebrew.nix: a `brew bundle cleanup` dry-run taken BEFORE activation cannot predict what cleanup will actually do — onActivation runs autoUpdate/upgrade and installs newly-declared casks first, which changes the dependency graph cleanup then evaluates (e.g. installing the renamed gcloud-cli made mpdecimal/readline/sqlite required, and an ffmpeg upgrade pulled in sdl3). Treat the dry-run as indicative only. Also: a tap-scoped cask (`owner/tap/name`) is a DIFFERENT identity from the public cask (`name`) — declaring the bare name does not cover it, and an empty `taps` list makes every tap-scoped install a removal candidate. Reconcile `brew list --cask --full-name` against the declaration, not the short names. (learned 2026-08-03)
 <!-- HARNESS:LESSONS:END -->
